@@ -2040,7 +2040,7 @@
             </button>
         </div>
 
-        <!-- Return link — only shown when NOT live -->
+        <!-- Return link -->
         <div id="returnToManagerWrap" style="margin-top:1.5rem;">
             <a href="./index.html" class="return-link">← Return to Experiment Manager</a>
         </div>
@@ -3237,7 +3237,8 @@
         const returnWrap = document.getElementById('returnToManagerWrap');
         
         if (actionsEl) actionsEl.style.display = isLive ? 'none' : 'flex';
-        if (returnWrap) returnWrap.style.display = isLive ? 'none' : 'block';
+        // Always show return wrap for now as requested
+        if (returnWrap) returnWrap.style.display = 'block';
 
         if (isLive) {
             document.getElementById('thankyouSubtext').textContent = 'Your contribution to this research is greatly appreciated. You may now close this window.';
