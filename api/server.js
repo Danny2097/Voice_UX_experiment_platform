@@ -494,6 +494,38 @@ async function handle(req, res) {
             return;
         }
 
+        // ── GET /api/audio/:experimentId/export ──────────────────
+        //    Bundles all audio files for an experiment into a .tar.gz
+        const audioExportMatch = pathname.match(/^\/api\/audio\/([^/]+)\/export$/);
+        if (audioExportMatch && method === 'GET') {
+            const expId = audioExportMatch[1];
+            const expDir = path.join(AUDIO_DIR, expId);
+            
+            if (!fs.existsSync(expDir)) {
+                return send(res, 404, { error: 'No audio files found for this experiment' });
+            }
+
+            const files = fs.readdirSync(expDir).filter(f => AUDIO_EXTS.some(ext => f.endsWith(`.${ext}`)));
+            if (files.length === 0) {
+                return send(res, 404, { error: 'No audio files found for this experiment' });
+            }
+
+            // Set headers for download
+            res.writeHead(200, {
+                'Content-Type':        'application/gzip',
+                'Content-Disposition': `attachment; filename="audio_export_${expId}.tar.gz"`,
+                'Cache-Control':       'no-store'
+            });
+
+            // Use system tar to stream the directory
+            const { spawn } = require('child_process');
+            const tar = spawn('tar', ['-cz', '-C', AUDIO_DIR, expId]);
+            
+            tar.stdout.pipe(res);
+            tar.stderr.on('data', (data) => console.error(`[API] Tar error: ${data}`));
+            return;
+        }
+
         // ── GET /api/audio/:experimentId ──────────────────────────
         //    Lists all audio files available for an experiment
         const audioListMatch = pathname.match(/^\/api\/audio\/([^/]+)$/);

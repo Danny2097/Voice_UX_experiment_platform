@@ -850,17 +850,19 @@
         }
 
         .toast {
-            background: white;
-            border: 1px solid #e2e6ed;
+            background: #2c3e50;
+            color: white;
+            border: 1px solid #34495e;
             border-radius: 6px;
             padding: 12px 16px;
             margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             font-size: 14px;
             display: flex;
             align-items: center;
             gap: 12px;
             animation: slideIn 0.3s ease-out;
+            z-index: 9999;
         }
 
         @keyframes slideIn {
@@ -875,6 +877,7 @@
         }
 
         .toast.success {
+            background: #eafaf1;
             border-color: #27ae60;
             color: #155724;
         }
@@ -887,6 +890,7 @@
         }
 
         .toast.error {
+            background: #fadbd8;
             border-color: #e74c3c;
             color: #a93226;
         }
@@ -894,6 +898,19 @@
         .toast.error::before {
             content: '✕';
             color: #e74c3c;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .toast.info {
+            background: #eef0fe;
+            border-color: #4f6ef7;
+            color: #1e3a8a;
+        }
+
+        .toast.info::before {
+            content: 'ℹ';
+            color: #4f6ef7;
             font-weight: bold;
             font-size: 16px;
         }
@@ -2065,6 +2082,9 @@
                                     <button class="btn btn-secondary btn-sm" id="btnExportAllCSV">
                                         📄 Download Summary (CSV)
                                     </button>
+                                    <button class="btn btn-secondary btn-sm" id="btnExportAllAudio">
+                                        🎤 Download All Audio (TGZ)
+                                    </button>
                                 </div>
                                 <p class="form-hint">Bulk export includes all participant transcripts, interaction logs, and metadata for this experiment.</p>
                                 
@@ -2186,6 +2206,9 @@
                 });
                 document.getElementById('btnExportAllCSV').addEventListener('click', async () => {
                     await exportParticipantsCSV(exp);
+                });
+                document.getElementById('btnExportAllAudio').addEventListener('click', () => {
+                    window.location.href = `/api/audio/${exp.id}/export`;
                 });
                 document.getElementById('btnDeleteExperimentDeep').addEventListener('click', async () => {
                     if (confirm(`⚠️ DANGER: This will permanently delete the experiment "${exp.name}" AND all participant data, transcripts, and audio recordings. This cannot be undone. Proceed?`)) {
