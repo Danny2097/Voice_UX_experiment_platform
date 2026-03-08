@@ -1790,7 +1790,21 @@
                                 <div class="toggle-label">Include Search Bar</div>
                             </div>
 
-                            <div class="form-group" style="margin-top: 1rem;">
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showNav ? 'active' : ''}" id="toggleNav">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Navigation Bar</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showFooter ? 'active' : ''}" id="toggleFooter">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Footer</div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 1.5rem;">
                                 <label for="gridOverlayStyle">Overlay Style</label>
                                 <select id="gridOverlayStyle">
                                     <option value="lines" ${exp.grid.gridOverlayStyle === 'lines' ? 'selected' : ''}>Subtle Lines (Light)</option>
@@ -1808,20 +1822,6 @@
                                     <option value="golden" ${exp.grid.gridOverlayStyle === 'golden' ? 'selected' : ''}>Golden Ratio</option>
                                     <option value="isometric" ${exp.grid.gridOverlayStyle === 'isometric' ? 'selected' : ''}>Isometric Grid</option>
                                 </select>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showNav ? 'active' : ''}" id="toggleNav">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Navigation Bar</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showFooter ? 'active' : ''}" id="toggleFooter">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Footer</div>
                             </div>
 
                             <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e6ed;">
