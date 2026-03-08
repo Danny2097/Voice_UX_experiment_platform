@@ -66,79 +66,93 @@
         .consent-screen {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary, #ffffff);
+            inset: 0;
+            background: #f8f9fb;
             overflow-y: auto;
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
         .consent-screen.active {
-            display: block;
+            display: flex;
         }
 
         .consent-container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
+            max-width: 640px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: #fff;
+            border: 1px solid #e2e6ed;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         }
 
         .consent-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
 
         .consent-header h1 {
-            font-size: 2rem;
-            margin: 0 0 0.5rem 0;
-            color: var(--text-primary, #1a1a1a);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
         }
 
         .consent-header p {
-            font-size: 1.1rem;
-            color: var(--text-secondary, #666);
+            font-size: 0.95rem;
+            color: #7f8fa3;
             margin: 0;
         }
 
         .consent-pis {
-            background: var(--bg-secondary, #f5f5f5);
-            padding: 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border-left: 4px solid var(--primary, #007bff);
+            background: #f8f9fb;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e6ed;
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
         }
 
         .consent-pis h2 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             margin-top: 0;
             margin-bottom: 1rem;
-            color: var(--text-primary, #1a1a1a);
+            color: #1a1a1a;
+            border-bottom: 3px solid #4f6ef7;
+            display: inline-block;
+            padding-bottom: 4px;
         }
 
         .consent-pis h3 {
             font-size: 1rem;
             margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            color: var(--text-primary, #1a1a1a);
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 600;
         }
 
         .consent-pis p {
-            margin: 0.5rem 0;
+            font-size: 0.95rem;
             line-height: 1.6;
-            color: var(--text-secondary, #333);
+            color: #5a6c7d;
+            margin-bottom: 1rem;
         }
 
         .consent-pis ul {
             margin: 0.5rem 0;
             padding-left: 1.5rem;
-            color: var(--text-secondary, #333);
+            color: #5a6c7d;
         }
 
         .consent-pis li {
             margin-bottom: 0.5rem;
             line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         .consent-checkbox {
@@ -146,6 +160,11 @@
             align-items: center;
             margin-bottom: 2rem;
             gap: 0.75rem;
+            justify-content: center;
+            background: #f0f7ff;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #d0e8ff;
         }
 
         .consent-checkbox input[type="checkbox"] {
@@ -155,9 +174,10 @@
         }
 
         .consent-checkbox label {
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
             cursor: pointer;
-            color: var(--text-primary, #1a1a1a);
+            color: #4f6ef7;
         }
 
         .consent-actions {
@@ -167,38 +187,42 @@
             align-items: center;
         }
 
-        .consent-actions button {
+        .btn-accept {
+            background: #10b981;
+            color: white;
             padding: 0.75rem 2rem;
             font-size: 1rem;
+            font-weight: 600;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 200ms ease;
         }
 
-        .btn-accept {
-            background: var(--success, #28a745);
-            color: white;
-        }
-
         .btn-accept:disabled {
-            background: var(--disabled, #ccc);
+            background: #d1d5db;
             cursor: not-allowed;
         }
 
         .btn-accept:not(:disabled):hover {
-            background: var(--success-dark, #218838);
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
         .btn-decline {
             background: transparent;
-            color: var(--error, #d32f2f);
-            text-decoration: underline;
-            padding: 0;
+            color: #7f8fa3;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-decline:hover {
-            color: var(--error-dark, #b71c1c);
+            color: #ef4444;
+            text-decoration: underline;
         }
 
         /* ========== PHASE 2: ACTIVE SESSION ========== */
