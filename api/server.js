@@ -147,6 +147,63 @@ async function handle(req, res) {
             return send(res, 200, { ok: true, user: { id: user.id, username: user.username, role: user.role } });
         }
 
+        // ── GET /api/users ────────────────────────────────────────
+        if (pathname === '/api/users' && method === 'GET') {
+            const result = await pool.query('SELECT id, username, role, created_at FROM users ORDER BY username ASC');
+            return send(res, 200, { users: result.rows });
+        }
+
+        // ── POST /api/users ───────────────────────────────────────
+        if (pathname === '/api/users' && method === 'POST') {
+            const { username, password, role } = await parseBody(req);
+            if (!username || !password) return send(res, 400, { error: 'Username and password required' });
+            
+            const hashed = hashPassword(password);
+            try {
+                const result = await pool.query(
+                    'INSERT INTO users (username, password, role) VALUES ($1, $2, $3) RETURNING id, username, role',
+                    [username, hashed, role || 'Researcher']
+                );
+                return send(res, 201, { ok: true, user: result.rows[0] });
+            } catch (e) {
+                if (e.code === '23505') return send(res, 409, { error: 'Username already exists' });
+                throw e;
+            }
+        }
+
+        // ── PUT /api/users/:id ────────────────────────────────────
+        const userMatch = pathname.match(/^\/api\/users\/(\d+)$/);
+        if (userMatch && method === 'PUT') {
+            const userId = userMatch[1];
+            const { username, password, role } = await parseBody(req);
+            
+            let query, params;
+            if (password) {
+                query = 'UPDATE users SET username = $1, role = $2, password = $3 WHERE id = $4';
+                params = [username, role, hashPassword(password), userId];
+            } else {
+                query = 'UPDATE users SET username = $1, role = $2 WHERE id = $3';
+                params = [username, role, userId];
+            }
+            
+            await pool.query(query, params);
+            return send(res, 200, { ok: true });
+        }
+
+        // ── DELETE /api/users/:id ─────────────────────────────────
+        if (userMatch && method === 'DELETE') {
+            const userId = userMatch[1];
+            // Prevent deleting the primary admin from environment
+            const adminUser = process.env.ADMIN_USER || 'admin';
+            const check = await pool.query('SELECT username FROM users WHERE id = $1', [userId]);
+            if (check.rows[0] && check.rows[0].username === adminUser) {
+                return send(res, 403, { error: 'Cannot delete primary system admin' });
+            }
+            
+            await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+            return send(res, 200, { ok: true });
+        }
+
         // ── GET /api/mock-data ────────────────────────────────────
         if (pathname === '/api/mock-data' && method === 'GET') {
             const mockData = JSON.parse(fs.readFileSync(path.join(__dirname, 'mock-data.json'), 'utf8'));

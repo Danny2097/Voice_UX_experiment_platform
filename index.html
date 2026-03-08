@@ -1130,6 +1130,7 @@
         <div class="header-right">
             <div id="currentUserDisplay"></div>
             <div class="save-indicator" id="saveIndicator"></div>
+            <button class="btn btn-ghost btn-sm" id="btnUserSettings" onclick="openUserManagement()" title="Manage Researcher Accounts" style="margin-left:0.5rem; display: none;">⚙️</button>
             <button class="btn btn-ghost btn-sm" id="lockBtn" onclick="signOut()" title="Sign out of experiment manager" style="margin-left:0.5rem;">Logout</button>
         </div>
     </div>
@@ -1166,6 +1167,66 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="closePisModalBtn">Close Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER MANAGEMENT MODAL -->
+    <div class="modal" id="userModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <div class="modal-title">Researcher Accounts</div>
+                <button class="modal-close" onclick="closeUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <p class="text-muted">Manage system access for researchers.</p>
+                    <button class="btn btn-primary btn-sm" onclick="showAddUserForm()">+ Add Researcher</button>
+                </div>
+
+                <!-- User Form -->
+                <div id="userFormContainer" style="display: none; background: #f8f9fb; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #e2e6ed;">
+                    <h4 id="userFormTitle" style="margin-bottom: 1rem; font-size: 14px;">Add New Researcher</h4>
+                    <input type="hidden" id="editUserId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userUsername">Username</label>
+                            <input type="text" id="userUsername" placeholder="e.g., jsmith">
+                        </div>
+                        <div class="form-group">
+                            <label for="userRole">Role</label>
+                            <select id="userRole">
+                                <option value="Researcher">Researcher</option>
+                                <option value="Admin">Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label for="userPassword" id="labelUserPassword">Password</label>
+                        <input type="password" id="userPassword" placeholder="••••••••">
+                        <p class="form-hint" id="hintUserPassword" style="display: none; margin-top: 4px; font-size: 11px; color: #7f8fa3;">Leave blank to keep current password.</p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem; justify-content: flex-end;">
+                        <button class="btn btn-secondary btn-sm" onclick="hideUserForm()">Cancel</button>
+                        <button class="btn btn-primary btn-sm" id="btnSaveUser" onclick="saveUser()">Save Account</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -2623,6 +2684,10 @@
                                                 </div>
                                             `;
                                         }
+                                        const settingsBtn = document.getElementById('btnUserSettings');
+                                        if (settingsBtn) {
+                                            settingsBtn.style.display = user.role === 'Admin' ? 'inline-flex' : 'none';
+                                        }
                                     }
                                     renderExperimentsList();            renderDetailPanel();
         }
@@ -2877,6 +2942,101 @@
         }
 
         // ============================================================
+        // USER MANAGEMENT
+        // ============================================================
+        async function openUserManagement() {
+            document.getElementById('userModal').classList.add('active');
+            hideUserForm();
+            await refreshUsersList();
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        async function refreshUsersList() {
+            const data = await dbRequest('/api/users');
+            if (!data) return;
+
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = data.users.map(user => `
+                <tr>
+                    <td><strong>${escapeHtml(user.username)}</strong></td>
+                    <td><span class="status-badge ${user.role === 'Admin' ? 'active' : 'complete'}">${user.role}</span></td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-sm" onclick='showEditUserForm(${JSON.stringify(user).replace(/'/g, "&#39;")})'>Edit</button>
+                            <button class="btn btn-secondary btn-sm" style="border-color: #ef4444; color: #ef4444;" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showAddUserForm() {
+            document.getElementById('userFormTitle').textContent = 'Add New Researcher';
+            document.getElementById('editUserId').value = '';
+            document.getElementById('userUsername').value = '';
+            document.getElementById('userUsername').disabled = false;
+            document.getElementById('userRole').value = 'Researcher';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('labelUserPassword').textContent = 'Password';
+            document.getElementById('hintUserPassword').style.display = 'none';
+            document.getElementById('userFormContainer').style.display = 'block';
+        }
+
+        function showEditUserForm(user) {
+            document.getElementById('userFormTitle').textContent = 'Edit Researcher Account';
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('userUsername').value = user.username;
+            document.getElementById('userUsername').disabled = false;
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userPassword').value = '';
+            document.getElementById('labelUserPassword').textContent = 'New Password';
+            document.getElementById('hintUserPassword').style.display = 'block';
+            document.getElementById('userFormContainer').style.display = 'block';
+        }
+
+        function hideUserForm() {
+            document.getElementById('userFormContainer').style.display = 'none';
+        }
+
+        async function saveUser() {
+            const id = document.getElementById('editUserId').value;
+            const username = document.getElementById('userUsername').value.trim();
+            const role = document.getElementById('userRole').value;
+            const password = document.getElementById('userPassword').value;
+
+            if (!username) return showToast('Username is required', 'error');
+            if (!id && !password) return showToast('Password is required for new accounts', 'error');
+
+            const method = id ? 'PUT' : 'POST';
+            const endpoint = id ? `/api/users/${id}` : '/api/users';
+            
+            const result = await dbRequest(endpoint, {
+                method,
+                body: JSON.stringify({ username, role, password })
+            });
+
+            if (result && result.ok) {
+                showToast(id ? 'Account updated' : 'Account created', 'success');
+                hideUserForm();
+                await refreshUsersList();
+            }
+        }
+
+        async function deleteUser(id, username) {
+            if (confirm(`Are you sure you want to delete the account for "${username}"?`)) {
+                const result = await dbRequest(`/api/users/${id}`, { method: 'DELETE' });
+                if (result && result.ok) {
+                    showToast('Account deleted', 'success');
+                    await refreshUsersList();
+                }
+            }
+        }
+
+        // ============================================================
         // UTILITY
         // ============================================================
         function escapeHtml(text) {
@@ -2921,6 +3081,12 @@
             document.getElementById('pisModal').addEventListener('click', (e) => {
                 if (e.target.id === 'pisModal') {
                     document.getElementById('pisModal').classList.remove('active');
+                }
+            });
+
+            document.getElementById('userModal').addEventListener('click', (e) => {
+                if (e.target.id === 'userModal') {
+                    closeUserModal();
                 }
             });
         });
