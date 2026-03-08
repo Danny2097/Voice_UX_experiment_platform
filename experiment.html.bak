@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Voice Control Research Platform — modular user research tool">
+    <title>Voice Control Research - Experiment Runner</title>
+    <link rel="stylesheet" href="./css/base.css">
+    <style>
+        /* ========== EXPERIMENT-SPECIFIC STYLES ========== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: var(--bg-primary, #ffffff);
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        /* Error State */
+        .error-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .error-screen h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--error, #d32f2f);
+        }
+
+        .error-screen p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: var(--text-secondary, #666);
+            max-width: 600px;
+        }
+
+        .error-screen a {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary, #007bff);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 200ms ease;
+        }
+
+        .error-screen a:hover {
+            background: var(--primary-dark, #0056b3);
+        }
+
+        /* ========== PHASE 1: CONSENT SCREEN ========== */
+
+        .consent-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary, #ffffff);
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .consent-screen.active {
+            display: block;
+        }
+
+        .consent-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .consent-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .consent-header h1 {
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        .consent-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary, #666);
+            margin: 0;
+        }
+
+        .consent-pis {
+            background: var(--bg-secondary, #f5f5f5);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary, #007bff);
+        }
+
+        .consent-pis h2 {
+            font-size: 1.3rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        .consent-pis h3 {
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        .consent-pis p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+            color: var(--text-secondary, #333);
+        }
+
+        .consent-pis ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            color: var(--text-secondary, #333);
+        }
+
+        .consent-pis li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .consent-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 0.75rem;
+        }
+
+        .consent-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .consent-checkbox label {
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        .consent-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .consent-actions button {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+
+        .btn-accept {
+            background: var(--success, #28a745);
+            color: white;
+        }
+
+        .btn-accept:disabled {
+            background: var(--disabled, #ccc);
+            cursor: not-allowed;
+        }
+
+        .btn-accept:not(:disabled):hover {
+            background: var(--success-dark, #218838);
+        }
+
+        .btn-decline {
+            background: transparent;
+            color: var(--error, #d32f2f);
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .btn-decline:hover {
+            color: var(--error-dark, #b71c1c);
+        }
+
+        /* ========== PHASE 2: ACTIVE SESSION ========== */
+
+        .session-wrapper {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary, #ffffff);
+            z-index: 100;
+            flex-direction: column;
+        }
+
+        .session-wrapper.active {
+            display: flex;
+        }
+
+        /* Header Bar */
+        .session-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: var(--bg-secondary, #f5f5f5);
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+            gap: 2rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 0 0 auto;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text-primary, #1a1a1a);
+            transition: color 200ms ease;
+        }
+
+        .back-btn:hover {
+            color: var(--primary, #007bff);
+        }
+
+        .experiment-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .recording-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary, #666);
+            font-weight: 600;
+        }
+
+        .recording-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-secondary, #666);
+        }
+
+        .recording-dot.active {
+            background: var(--error, #d32f2f);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 10px rgba(211, 47, 47, 0);
+            }
+        }
+
+        .recording-timer {
+            font-family: 'Monaco', 'Courier New', monospace;
+            min-width: 70px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 0 0 auto;
+        }
+
+        .participant-badge {
+            background: var(--primary, #007bff);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .end-session-btn {
+            padding: 0.5rem 1.25rem;
+            background: var(--error, #d32f2f);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 200ms ease;
+        }
+
+        .end-session-btn:hover {
+            background: var(--error-dark, #b71c1c);
+        }
+
+        /* Main Content Area */
+        .session-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Researcher Panel */
+        .researcher-panel {
+            width: 320px;
+            flex-shrink: 0;
+            background: white;
+            border-right: 1px solid var(--border-color, #e0e0e0);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: width 250ms ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 200;
+        }
+
+        .researcher-panel.collapsed {
+            width: 48px;
+        }
+
+        .researcher-panel.collapsed .panel-label,
+        .researcher-panel.collapsed .panel-content {
+            display: none;
+        }
+
+        .panel-toggle {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+        }
+
+        .researcher-panel.collapsed .panel-toggle {
+            justify-content: center;
+        }
+
+        .panel-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text-secondary, #666);
+            transition: color 200ms ease;
+        }
+
+        .panel-toggle-btn:hover {
+            color: var(--primary, #007bff);
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .panel-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 4px;
+            transition: background 200ms ease;
+            user-select: none;
+        }
+
+        .panel-section-header:hover {
+            background: var(--bg-secondary, #f5f5f5);
+        }
+
+        .panel-section-header .icon {
+            font-size: 1.25rem;
+        }
+
+        .panel-label {
+            font-weight: 600;
+            color: var(--text-primary, #1a1a1a);
+            flex: 1;
+        }
+
+        .panel-section-toggle {
+            font-size: 1rem;
+            transition: transform 200ms ease;
+            color: var(--text-secondary, #666);
+        }
+
+        .panel-section-toggle.expanded {
+            transform: rotate(90deg);
+        }
+
+        .panel-section-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 200ms ease;
+        }
+
+        .panel-section-body.expanded {
+            max-height: 1000px;
+        }
+
+        .panel-section-body > * {
+            margin-bottom: 0.75rem;
+        }
+
+        /* Microphone Section */
+        .mic-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary, #f5f5f5);
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .mic-toggle input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .waveform-container {
+            display: none;
+            height: 40px;
+            padding: 0.75rem;
+            background: var(--bg-secondary, #f5f5f5);
+            border-radius: 4px;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 3px;
+        }
+
+        .waveform-container.active {
+            display: flex;
+        }
+
+        .waveform-bar {
+            flex: 1;
+            background: var(--primary, #007bff);
+            border-radius: 2px;
+            height: 10%;
+        }
+
+        .waveform-container.active .waveform-bar {
+            animation: wave 0.6s ease-in-out infinite;
+        }
+
+        .waveform-bar:nth-child(1) { animation-delay: 0s; }
+        .waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+        .waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+        .waveform-bar:nth-child(4) { animation-delay: 0.3s; }
+        .waveform-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { height: 10%; }
+            50% { height: 100%; }
+        }
+
+        .transcript-interim {
+            font-size: 0.9rem;
+            color: var(--text-secondary, #999);
+            font-style: italic;
+            padding: 0.5rem;
+            background: var(--bg-secondary, #f5f5f5);
+            border-radius: 4px;
+            word-wrap: break-word;
+        }
+
+        .transcript-final {
+            font-size: 0.9rem;
+            color: var(--text-primary, #1a1a1a);
+            font-weight: 600;
+            padding: 0.5rem;
+            background: var(--bg-secondary, #f5f5f5);
+            border-radius: 4px;
+            word-wrap: break-word;
+        }
+
+        .volume-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #666);
+            margin-bottom: 0.25rem;
+        }
+
+        .volume-meter {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color, #e0e0e0);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .volume-bar {
+            height: 100%;
+            background: var(--primary, #007bff);
+            width: 0%;
+            transition: width 100ms linear;
+            border-radius: 3px;
+        }
+
+        .slider-container {
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #666);
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color, #e0e0e0);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary, #007bff);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary, #007bff);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Recording Section */
+        .recording-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary, #f5f5f5);
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .recording-toggle input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .recording-info {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #666);
+            padding: 0.5rem;
+        }
+
+        .log-level-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #666);
+            margin-bottom: 0.25rem;
+        }
+
+        .log-level-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background: white;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        /* Debug Section */
+        .debug-terminal {
+            display: none;
+            background: #0f1117;
+            color: #c9d1d9;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.8rem;
+            height: 300px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+
+        .debug-terminal.expanded {
+            display: flex;
+        }
+
+        .debug-logs {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .debug-log-entry {
+            margin-bottom: 0.25rem;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .debug-log-entry.info { color: #79c0ff; }
+        .debug-log-entry.warn { color: #d29922; }
+        .debug-log-entry.error { color: #f85149; }
+        .debug-log-entry.event { color: #3fb950; }
+        .debug-log-entry.api { color: #bc8ef8; }
+
+        .debug-controls {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #161b22;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .debug-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #444c56;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 150ms ease;
+        }
+
+        .debug-btn:hover {
+            background: #444c56;
+        }
+
+        .debug-filter {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            padding: 0.5rem;
+            background: #161b22;
+            border-top: 1px solid #30363d;
+        }
+
+        .debug-chip {
+            padding: 0.25rem 0.75rem;
+            background: #30363d;
+            color: #c9d1d9;
+            border: 1px solid #444c56;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 150ms ease;
+        }
+
+        .debug-chip.active {
+            background: var(--primary, #007bff);
+            border-color: var(--primary, #007bff);
+            color: white;
+        }
+
+        /* Configuration Section */
+        .config-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary, #f5f5f5);
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .config-toggle input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .textarea-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .textarea-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #666);
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        /* Grid Area */
+        .grid-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .task-banner {
+            display: none;
+            background: #fff3cd;
+            border-bottom: 1px solid #ffc107;
+            padding: 1rem 2rem;
+            color: #856404;
+            font-size: 0.95rem;
+        }
+
+        .task-banner.active {
+            display: block;
+        }
+
+        .task-banner strong {
+            font-weight: 700;
+        }
+
+        .grid-controls {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+            gap: 1rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .search-btn {
+            padding: 0.75rem 1rem;
+            background: var(--primary, #007bff);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 200ms ease;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark, #0056b3);
+        }
+
+        .grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            auto-rows: max-content;
+        }
+
+        .grid-container.cols-1 { grid-template-columns: repeat(1, 1fr); }
+        .grid-container.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-container.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-container.cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-container.cols-5 { grid-template-columns: repeat(5, 1fr); }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 250ms ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary, #007bff);
+            transform: translateY(-2px);
+        }
+
+        .card.inactive:hover {
+            box-shadow: none;
+            border-color: var(--border-color, #e0e0e0);
+            transform: none;
+        }
+
+        .card.short { height: 160px; }
+        .card.medium { height: 220px; }
+        .card.tall { height: 280px; }
+
+        .card-image {
+            width: 100%;
+            height: 40%;
+            object-fit: cover;
+            background: var(--bg-secondary, #f5f5f5);
+        }
+
+        .card-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--text-secondary, #ccc);
+        }
+
+        .card-content {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary, #1a1a1a);
+            margin: 0 0 0.25rem 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary, #666);
+            margin: 0 0 0.5rem 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-tags {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            background: var(--bg-secondary, #f5f5f5);
+            color: var(--text-secondary, #666);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        .card-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #666);
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Skeleton Loading */
+        .card.skeleton {
+            cursor: default;
+        }
+
+        .card.skeleton:hover {
+            box-shadow: none;
+            border-color: var(--border-color, #e0e0e0);
+            transform: none;
+        }
+
+        .skeleton-image {
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-title {
+            height: 0.9rem;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin: 0.75rem 0 0.5rem 0;
+            border-radius: 3px;
+        }
+
+        .skeleton-text {
+            height: 0.7rem;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin-bottom: 0.5rem;
+            border-radius: 3px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary, #1a1a1a);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-subtext {
+            color: var(--text-secondary, #666);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Error State Card */
+        .error-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        .error-card-icon {
+            font-size: 3rem;
+            color: var(--error, #d32f2f);
+            margin-bottom: 1rem;
+        }
+
+        .error-card-text {
+            font-size: 1rem;
+            color: var(--text-secondary, #666);
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+        }
+
+        .error-card-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary, #007bff);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 200ms ease;
+        }
+
+        .error-card-btn:hover {
+            background: var(--primary-dark, #0056b3);
+        }
+
+        /* Pagination */
+        .pagination {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            border-top: 1px solid var(--border-color, #e0e0e0);
+            background: var(--bg-secondary, #f5f5f5);
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary, #007bff);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 200ms ease;
+        }
+
+        .pagination-btn:disabled {
+            background: var(--disabled, #ccc);
+            cursor: not-allowed;
+        }
+
+        .pagination-btn:not(:disabled):hover {
+            background: var(--primary-dark, #0056b3);
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary, #666);
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .load-more-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary, #007bff);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 200ms ease;
+            grid-column: 1 / -1;
+        }
+
+        .load-more-btn:hover {
+            background: var(--primary-dark, #0056b3);
+        }
+
+        .load-more-btn:disabled {
+            background: var(--disabled, #ccc);
+            cursor: not-allowed;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-primary, #1a1a1a);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            z-index: 10000;
+            animation: slideIn 300ms ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.error {
+            background: var(--error, #d32f2f);
+        }
+
+        .toast.success {
+            background: var(--success, #28a745);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10001;
+            flex-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        .modal-text {
+            color: var(--text-secondary, #666);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 200ms ease;
+        }
+
+        .modal-btn-confirm {
+            background: var(--error, #d32f2f);
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background: var(--error-dark, #b71c1c);
+        }
+
+        .modal-btn-cancel {
+            background: var(--bg-secondary, #f5f5f5);
+            color: var(--text-primary, #1a1a1a);
+            border: 1px solid var(--border-color, #e0e0e0);
+        }
+
+        .modal-btn-cancel:hover {
+            background: var(--border-color, #e0e0e0);
+        }
+
+        /* ========== PHASE 3: SESSION END ========== */
+
+        .session-end-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary, #ffffff);
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .session-end-screen.active {
+            display: block;
+        }
+
+        .session-end-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .session-end-header {
+            margin-bottom: 2rem;
+        }
+
+        .session-end-header h1 {
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--success, #28a745);
+        }
+
+        .session-end-header p {
+            font-size: 1rem;
+            color: var(--text-secondary, #666);
+            margin: 0;
+        }
+
+        .summary-card {
+            background: var(--bg-secondary, #f5f5f5);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: var(--text-primary, #1a1a1a);
+        }
+
+        .summary-value {
+            color: var(--text-secondary, #666);
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .session-end-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .download-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary, #007bff);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 200ms ease;
+        }
+
+        .download-btn:hover {
+            background: var(--primary-dark, #0056b3);
+        }
+
+        .return-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--success, #28a745);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 200ms ease;
+        }
+
+        .return-btn:hover {
+            background: var(--success-dark, #218838);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Error Screen (shown if session data missing) -->
+
+<div class="error-screen" id="errorScreen">
+    <h1>Data Missing</h1>
+    <p>Unable to load the experiment. The session data could not be found. Please return to the experiment manager and try again.</p>
+    <a href="./index.html">Return to Experiment Manager</a>
+</div>
+
+<!-- Phase 1: Consent Screen -->
+<div class="consent-screen" id="consentScreen">
+    <div class="consent-container">
+        <div class="consent-header">
+            <h1 id="consentTitle">Research Study</h1>
+            <p id="consentInstitution">Institution</p>
+        </div>
+
+        <div class="consent-pis" id="consent-pis">
+            <!-- Populated by JavaScript -->
+        </div>
+
+        <div class="consent-checkbox">
+            <input type="checkbox" id="consentCheckbox">
+            <label for="consentCheckbox">I have read and understood the information above</label>
+        </div>
+
+        <div class="consent-actions">
+            <button class="btn-accept" id="consentAccept" disabled>Accept & Begin Session</button>
+            <button class="btn-decline" id="consentDecline">Decline</button>
+        </div>
+    </div>
+</div>
+
+<!-- Phase 2: Active Session -->
+<div class="session-wrapper" id="sessionWrapper">
+    <!-- Header -->
+    <div class="session-header">
+        <div class="header-left">
+            <button class="back-btn" id="backBtn" title="End session">←</button>
+            <div class="experiment-name" id="experimentName"></div>
+        </div>
+
+        <div class="header-center">
+            <div class="recording-indicator">
+                <span class="recording-dot" id="recordingDot"></span>
+                <span id="recordingStatus">Session active — not recording</span>
+                <span class="recording-timer" id="recordingTimer"></span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="participant-badge" id="participantBadge"></div>
+            <button class="end-session-btn" id="endSessionBtn">End Session</button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="session-content">
+        <!-- Researcher Panel -->
+        <div class="researcher-panel" id="researcherPanel">
+            <div class="panel-toggle">
+                <button class="panel-toggle-btn" id="panelToggleBtn" title="Toggle panel">◀</button>
+            </div>
+
+            <div class="panel-content">
+                <!-- Microphone Section -->
+                <div class="panel-section">
+                    <div class="panel-section-header" onclick="togglePanelSection(this)">
+                        <span class="icon">🎙️</span>
+                        <span class="panel-label">Microphone</span>
+                        <span class="panel-section-toggle">▶</span>
+                    </div>
+                    <div class="panel-section-body">
+                        <label class="mic-toggle">
+                            <input type="checkbox" id="micToggle">
+                            <span class="panel-label">Enable Microphone</span>
+                        </label>
+
+                        <div class="waveform-container" id="waveformContainer">
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                        </div>
+
+                        <div id="transcriptContainer" style="margin-bottom: 1rem;">
+                            <div id="interimTranscript" class="transcript-interim"></div>
+                            <div id="finalTranscript" class="transcript-final"></div>
+                        </div>
+
+                        <div class="volume-label">Volume</div>
+                        <div class="volume-meter">
+                            <div class="volume-bar" id="volumeBar"></div>
+                        </div>
+
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Sensitivity</span>
+                                <span id="sensitivityValue">0.5</span>
+                            </div>
+                            <input type="range" id="sensitivitySlider" min="0" max="1" step="0.1" value="0.5">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recording Section -->
+                <div class="panel-section">
+                    <div class="panel-section-header" onclick="togglePanelSection(this)">
+                        <span class="icon">⏺</span>
+                        <span class="panel-label">Recording</span>
+                        <span class="panel-section-toggle">▶</span>
+                    </div>
+                    <div class="panel-section-body">
+                        <label class="recording-toggle">
+                            <input type="checkbox" id="recordingToggle">
+                            <span class="panel-label">Start Recording</span>
+                        </label>
+
+                        <div class="recording-info">
+                            <div id="recordingTime"></div>
+                            <div id="recordingSize"></div>
+                        </div>
+
+                        <div class="log-level-label">Log Level</div>
+                        <select class="log-level-select" id="logLevelSelect">
+                            <option value="minimal">Minimal</option>
+                            <option value="standard" selected>Standard</option>
+                            <option value="verbose">Verbose</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Debug Section -->
+                <div class="panel-section">
+                    <div class="panel-section-header" onclick="togglePanelSection(this)">
+                        <span class="icon">🔧</span>
+                        <span class="panel-label">Debug</span>
+                        <span class="panel-section-toggle">▶</span>
+                    </div>
+                    <div class="panel-section-body">
+                        <div class="debug-terminal" id="debugTerminal">
+                            <div class="debug-logs" id="debugLogs"></div>
+                            <div class="debug-filter" id="debugFilter">
+                                <span class="debug-chip active" data-level="all" onclick="toggleDebugFilter(this)">All</span>
+                                <span class="debug-chip" data-level="info" onclick="toggleDebugFilter(this)">Info</span>
+                                <span class="debug-chip" data-level="warn" onclick="toggleDebugFilter(this)">Warn</span>
+                                <span class="debug-chip" data-level="error" onclick="toggleDebugFilter(this)">Error</span>
+                                <span class="debug-chip" data-level="event" onclick="toggleDebugFilter(this)">Event</span>
+                                <span class="debug-chip" data-level="api" onclick="toggleDebugFilter(this)">API</span>
+                            </div>
+                            <div class="debug-controls">
+                                <button class="debug-btn" onclick="clearDebugLog()">Clear</button>
+                                <button class="debug-btn" onclick="copyDebugLog()">Copy all</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Section -->
+                <div class="panel-section">
+                    <div class="panel-section-header" onclick="togglePanelSection(this)">
+                        <span class="icon">⚙️</span>
+                        <span class="panel-label">Configuration</span>
+                        <span class="panel-section-toggle">▶</span>
+                    </div>
+                    <div class="panel-section-body">
+                        <label class="config-toggle">
+                            <input type="checkbox" id="gridOverlayToggle">
+                            <span class="panel-label">Grid overlay</span>
+                        </label>
+
+                        <label class="config-toggle" style="margin-top: 0.75rem;">
+                            <input type="checkbox" id="gridHoverToggle" checked>
+                            <span class="panel-label">Highlight on hover</span>
+                        </label>
+
+                        <label class="textarea-label" style="margin-top: 1rem;">📋 Task Prompt</label>
+                        <textarea class="textarea-field" id="taskPromptField" placeholder="Enter task for participant..."></textarea>
+
+                        <label class="textarea-label" style="margin-top: 1rem;">📝 Notes</label>
+                        <textarea class="textarea-field" id="notesField" placeholder="Private researcher notes..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid Area -->
+        <div class="grid-area">
+            <div class="task-banner" id="taskBanner"></div>
+
+            <div class="grid-controls">
+                <div class="search-bar" id="searchBar" style="display: none;">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search...">
+                    <button class="search-btn" onclick="performSearch()">Search</button>
+                </div>
+            </div>
+
+            <div class="grid-container" id="gridContainer"></div>
+
+            <div class="pagination" id="pagination" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Phase 3: Session End -->
+<div class="session-end-screen" id="sessionEndScreen">
+    <div class="session-end-container">
+        <div class="session-end-header">
+            <h1>Session Complete</h1>
+            <p>Thank you for your participation.</p>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-item">
+                <span class="summary-label">Participant ID</span>
+                <span class="summary-value" id="endParticipantId"></span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Session Duration</span>
+                <span class="summary-value" id="endDuration"></span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Events Recorded</span>
+                <span class="summary-value" id="endEventCount"></span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Queries Made</span>
+                <span class="summary-value" id="endQueryCount"></span>
+            </div>
+        </div>
+
+        <div class="session-end-actions">
+            <button class="download-btn" onclick="downloadSessionData()">Download Session Data (JSON)</button>
+            <button class="download-btn" onclick="downloadTranscript()">Download Transcript (TXT)</button>
+            <button class="download-btn" id="downloadAudioBtn" onclick="downloadAudio()" style="display: none;">Download Audio (WEBM)</button>
+            <button class="return-btn" onclick="window.location.href='./index.html'">Return to Experiment Manager</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="confirmModal">
+    <div class="modal-content">
+        <div class="modal-title">End Session?</div>
+        <div class="modal-text">Are you sure you want to end this session? You can still download the data on the next screen.</div>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-confirm" onclick="confirmEndSession()">End Session</button>
+            <button class="modal-btn modal-btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<script src="./js/api-adapter.js"></script>
+<script>
+    // ========== URL PARAMS & STATE ==========
+
+    const params = new URLSearchParams(window.location.search);
+    const expId = params.get('expId');
+    const participantId = params.get('participantId');
+    const API_BASE = '/proxy';
+
+    let currentPhase = 'consent'; // consent, session, end
+    let sessionData = {
+        sessionId: generateUUID(),
+        experimentId: expId,
+        participantId: participantId,
+        consentGiven: false,
+        consentTimestamp: null,
+        sessionStart: null,
+        sessionEnd: null,
+        events: [],
+        transcript: [],
+        notes: '',
+        taskPrompt: '',
+        audioBlob: null
+    };
+
+    // API Helpers
+    async function apiRequest(endpoint, options = {}) {
+        try {
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (err) {
+            console.error(`API Error (${endpoint}):`, err);
+            return null;
+        }
+    }
+
+    let experimentConfig = null;
+    let participantRecord = null;
+    let isRecording = false;
+    let recordingStartTime = null;
+    let sessionStartTime = null;
+
+    // Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let micEnabled = false;
+    let currentTranscript = '';
+
+    // Audio Recording
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioBlob = null;
+    let audioUrl = null;
+
+    // API State
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentItems = [];
+    let isLoading = false;
+    let apiError = null;
+
+    // Debug Log
+    let debugLogs = [];
+    let debugFilterLevel = 'all';
+
+    // ========== INITIALIZATION ==========
+
+    window.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+    });
+
+    async function initializeApp() {
+        // 1. Try to load from API
+        experimentConfig = await apiRequest(`/api/experiments/${expId}`);
+        
+        if (experimentConfig && experimentConfig.participants) {
+            participantRecord = experimentConfig.participants.find(p => p.id === participantId);
+        }
+
+        // Check if data exists
+        if (!experimentConfig || !participantRecord) {
+            showErrorScreen();
+            return;
+        }
+
+        // Initialize speech recognition if available
+        if (SpeechRecognition) {
+            try {
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-GB'; // Default to UK English
+                recognition.onstart = onSpeechStart;
+                recognition.onresult = onSpeechResult;
+                recognition.onerror = onSpeechError;
+                recognition.onend = onSpeechEnd;
+                logDebug('SPEECH', 'info', 'Speech recognition initialized');
+            } catch (e) {
+                console.error('Failed to initialize SpeechRecognition:', e);
+                logDebug('SPEECH', 'error', `Initialization failed: ${e.message}`);
+            }
+        } else {
+            console.warn('SpeechRecognition not supported in this browser');
+            logDebug('SPEECH', 'warn', 'Not supported in this browser');
+        }
+
+        // Show consent screen
+        showPhase('consent');
+        populateConsentScreen();
+        setupEventListeners();
+
+        logDebug('APP', 'info', `Experiment initialized: ${expId}`);
+    }
+
+    function showErrorScreen() {
+        document.getElementById('errorScreen').style.display = 'flex';
+        document.getElementById('consentScreen').style.display = 'none';
+        document.getElementById('sessionWrapper').style.display = 'none';
+        document.getElementById('sessionEndScreen').style.display = 'none';
+    }
+
+    function setupEventListeners() {
+        // Consent screen
+        document.getElementById('consentCheckbox').addEventListener('change', function() {
+            document.getElementById('consentAccept').disabled = !this.checked;
+        });
+
+        document.getElementById('consentAccept').addEventListener('click', acceptConsent);
+        document.getElementById('consentDecline').addEventListener('click', declineConsent);
+
+        // Session controls
+        document.getElementById('backBtn').addEventListener('click', promptEndSession);
+        document.getElementById('endSessionBtn').addEventListener('click', promptEndSession);
+
+        // Microphone
+        document.getElementById('micToggle').addEventListener('change', toggleMicrophone);
+        document.getElementById('sensitivitySlider').addEventListener('input', updateSensitivity);
+
+        // Recording
+        document.getElementById('recordingToggle').addEventListener('change', toggleRecording);
+        document.getElementById('logLevelSelect').addEventListener('change', function() {
+            logDebug('CONFIG', 'info', `Log level changed to: ${this.value}`);
+        });
+
+        // Panel
+        document.getElementById('panelToggleBtn').addEventListener('click', toggleResearcherPanel);
+
+        // Configuration
+        document.getElementById('gridOverlayToggle').addEventListener('change', toggleGridOverlay);
+        document.getElementById('gridHoverToggle').addEventListener('change', toggleGridHover);
+        document.getElementById('taskPromptField').addEventListener('change', updateTaskPrompt);
+        document.getElementById('notesField').addEventListener('change', updateNotes);
+    }
+
+    // ========== PHASE MANAGEMENT ==========
+
+    function showPhase(phase) {
+        currentPhase = phase;
+
+        document.getElementById('consentScreen').classList.toggle('active', phase === 'consent');
+        document.getElementById('sessionWrapper').classList.toggle('active', phase === 'session');
+        document.getElementById('sessionEndScreen').classList.toggle('active', phase === 'end');
+    }
+
+    // ========== CONSENT SCREEN ==========
+
+    function populateConsentScreen() {
+        document.getElementById('consentTitle').textContent = experimentConfig.pis.studyTitle || 'Research Study';
+        document.getElementById('consentInstitution').textContent = experimentConfig.pis.institution || 'Research Institution';
+
+        const pisContainer = document.getElementById('consent-pis');
+        pisContainer.innerHTML = '<h2>Participant Information Sheet</h2>';
+
+        const pisFields = [
+            { title: 'Purpose of the Study', key: 'purpose' },
+            { title: 'What Participation Involves', key: 'involvement' },
+            { title: 'Data Handling', key: 'dataHandling' },
+            { title: 'Your Right to Withdraw', key: 'withdrawal' }
+        ];
+
+        pisFields.forEach(field => {
+            const content = experimentConfig.pis[field.key] || '';
+            if (content) {
+                const section = document.createElement('div');
+                const heading = document.createElement('h3');
+                heading.textContent = field.title;
+                const paragraph = document.createElement('p');
+                paragraph.textContent = content;
+                section.appendChild(heading);
+                section.appendChild(paragraph);
+                pisContainer.appendChild(section);
+            }
+        });
+    }
+
+    function acceptConsent() {
+        sessionData.consentGiven = true;
+        sessionData.consentTimestamp = new Date().toISOString();
+        sessionStartTime = new Date();
+        sessionData.sessionStart = sessionStartTime.toISOString();
+
+        logEvent('session_start', {});
+
+        showPhase('session');
+        loadExperimentData();
+
+        // Update header
+        document.getElementById('experimentName').textContent = experimentConfig.name || 'Experiment';
+        document.getElementById('participantBadge').textContent = participantId;
+
+        logDebug('CONSENT', 'info', `Consent accepted by ${participantId}`);
+    }
+
+    function declineConsent() {
+        window.location.href = './index.html';
+    }
+
+    // ========== SESSION INIT ==========
+
+    function loadExperimentData() {
+        // Initialize grid
+        const gridColumns = experimentConfig.grid.columns || 3;
+        const gridClass = `cols-${gridColumns}`;
+        document.getElementById('gridContainer').className = `grid-container ${gridClass}`;
+
+        // Show search if API configured for search (only in action mode)
+        const isActionMode = !experimentConfig.mode || experimentConfig.mode === 'action_transcript';
+        
+        if (isActionMode && experimentConfig.api && experimentConfig.api.endpoint) {
+            document.getElementById('searchBar').style.display = 'flex';
+        }
+
+        // Load initial data
+        fetchGridData();
+    }
+
+    // ========== MICROPHONE & SPEECH ==========
+
+    async function toggleMicrophone() {
+        micEnabled = document.getElementById('micToggle').checked;
+
+        if (micEnabled) {
+            logDebug('MIC', 'info', 'Starting microphone services...');
+            
+            // 1. Check for secure context
+            if (!window.isSecureContext) {
+                showToast('Microphone requires a secure context (HTTPS or localhost)', 'error');
+                logDebug('MIC', 'error', 'Not a secure context');
+                document.getElementById('micToggle').checked = false;
+                micEnabled = false;
+                return;
+            }
+
+            // 2. Start Speech Recognition
+            if (recognition) {
+                try {
+                    recognition.start();
+                    logDebug('SPEECH', 'info', 'Recognition started');
+                } catch (e) {
+                    console.warn('Speech recognition already started or error:', e);
+                }
+            } else {
+                logDebug('SPEECH', 'warn', 'Speech recognition unavailable');
+            }
+
+            // 3. Start Audio Recording
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Detect supported mime types
+                const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
+                    ? 'audio/webm' 
+                    : (MediaRecorder.isTypeSupported('audio/ogg') ? 'audio/ogg' : 'audio/mp4');
+                
+                logDebug('MIC', 'info', `Using mime-type: ${mimeType}`);
+                
+                mediaRecorder = new MediaRecorder(stream, { mimeType });
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    audioBlob = new Blob(audioChunks, { type: mimeType });
+                    audioUrl = URL.createObjectURL(audioBlob);
+                    sessionData.audioBlob = audioBlob; 
+                    logDebug('MIC', 'info', `Audio recording stored (${(audioBlob.size / 1024).toFixed(1)} KB)`);
+                };
+
+                mediaRecorder.start(1000); // Collect data every second
+                document.getElementById('waveformContainer').style.display = 'flex';
+                document.getElementById('waveformContainer').classList.add('active');
+                
+                logEvent('mic_on', {});
+                logDebug('MIC', 'info', 'Microphone and recording active');
+            } catch (err) {
+                console.error('Failed to start audio recording:', err);
+                const msg = err.name === 'NotAllowedError' ? 'Permission denied' : err.message;
+                showToast(`Microphone error: ${msg}`, 'error');
+                logDebug('MIC', 'error', `Failed: ${msg}`);
+                document.getElementById('micToggle').checked = false;
+                micEnabled = false;
+                
+                if (recognition) try { recognition.stop(); } catch(e) {}
+            }
+        } else {
+            logDebug('MIC', 'info', 'Stopping microphone services...');
+            
+            // Stop Speech Recognition
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (e) {}
+            }
+
+            // Stop Audio Recording
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+
+            document.getElementById('waveformContainer').style.display = 'none';
+            document.getElementById('waveformContainer').classList.remove('active');
+            
+            logEvent('mic_off', {});
+            logDebug('MIC', 'info', 'Services stopped');
+        }
+    }
+
+    function updateSensitivity() {
+        const value = document.getElementById('sensitivitySlider').value;
+        document.getElementById('sensitivityValue').textContent = value;
+    }
+
+    function onSpeechStart() {
+        logDebug('SPEECH', 'info', 'Speech recognition started');
+    }
+
+    function onSpeechResult(event) {
+        let interim = '';
+        let final = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+
+            if (event.results[i].isFinal) {
+                final += transcript + ' ';
+            } else {
+                interim += transcript;
+            }
+        }
+
+        // Update UI
+        const interimEl = document.getElementById('interimTranscript');
+        const finalEl = document.getElementById('finalTranscript');
+
+        if (interimEl) interimEl.textContent = interim;
+        if (finalEl && final) {
+            finalEl.textContent = final.trim();
+            currentTranscript = final.trim();
+            sessionData.transcript.push({
+                text: final.trim(),
+                timestamp: new Date().toISOString()
+            });
+            logEvent('voice_query', { query: final.trim() });
+            logDebug('SPEECH', 'event', `Final transcript: ${final.trim()}`);
+
+            // Trigger voice search (only in action_transcript mode)
+            const isActionMode = !experimentConfig.mode || experimentConfig.mode === 'action_transcript';
+            
+            if (isActionMode && experimentConfig.api && experimentConfig.api.voiceParamKey) {
+                fetchGridData({ voiceQuery: final.trim() });
+                showToast(`Voice search: ${final.trim()}`, 'info');
+            } else if (!isActionMode) {
+                logDebug('SPEECH', 'info', 'Action suppressed (Transcript Only mode)');
+            }
+        }
+    }
+
+    function onSpeechError(event) {
+        logDebug('SPEECH', 'error', `Service error: ${event.error}`);
+        
+        if (event.error === 'not-allowed') {
+            showToast('Speech recognition permission denied', 'error');
+            micEnabled = false;
+            document.getElementById('micToggle').checked = false;
+        }
+        
+        if (event.error === 'no-speech' && micEnabled) {
+            // This is common, onSpeechEnd will restart it
+            return;
+        }
+    }
+
+    function onSpeechEnd() {
+        logDebug('SPEECH', 'info', 'Service disconnected');
+        
+        // Restart if mic is still supposed to be on (handles auto-timeout)
+        if (micEnabled && recognition) {
+            try {
+                recognition.start();
+                logDebug('SPEECH', 'info', 'Service restarted');
+            } catch (e) {
+                // If it's already starting/started, this will throw, which we ignore
+            }
+        }
+    }
+
+    // ========== RECORDING CONTROL ==========
+
+    function toggleRecording() {
+        isRecording = document.getElementById('recordingToggle').checked;
+
+        if (isRecording) {
+            recordingStartTime = new Date();
+            document.getElementById('recordingDot').classList.add('active');
+            document.getElementById('recordingStatus').textContent = '● REC';
+            logEvent('recording_on', {});
+            logDebug('REC', 'info', 'Recording started');
+            updateRecordingTimer();
+        } else {
+            document.getElementById('recordingDot').classList.remove('active');
+            document.getElementById('recordingStatus').textContent = 'Session active — not recording';
+            document.getElementById('recordingTimer').textContent = '';
+            logEvent('recording_off', {});
+            logDebug('REC', 'info', 'Recording stopped');
+        }
+    }
+
+    function updateRecordingTimer() {
+        if (!isRecording) return;
+
+        const now = new Date();
+        const elapsed = Math.floor((now - recordingStartTime) / 1000);
+        const hours = Math.floor(elapsed / 3600);
+        const minutes = Math.floor((elapsed % 3600) / 60);
+        const seconds = elapsed % 60;
+
+        const timeStr = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        document.getElementById('recordingTimer').textContent = timeStr;
+
+        const sizeEstimate = (elapsed * 128 / 8).toFixed(2); // Rough estimate for 128 kbps
+        document.getElementById('recordingTime').textContent = `Elapsed: ${timeStr}`;
+        document.getElementById('recordingSize').textContent = `Size: ~${sizeEstimate} KB`;
+
+        setTimeout(updateRecordingTimer, 1000);
+    }
+
+    function pad(num) {
+        return (num < 10 ? '0' : '') + num;
+    }
+
+    // ========== PANEL COLLAPSE/EXPAND ==========
+
+    function toggleResearcherPanel() {
+        const panel = document.getElementById('researcherPanel');
+        panel.classList.toggle('collapsed');
+        const btn = document.getElementById('panelToggleBtn');
+        btn.textContent = panel.classList.contains('collapsed') ? '▶' : '◀';
+    }
+
+    function togglePanelSection(header) {
+        const body = header.nextElementSibling;
+        const toggle = header.querySelector('.panel-section-toggle');
+        body.classList.toggle('expanded');
+        toggle.classList.toggle('expanded');
+    }
+
+    // ========== API FETCH & DISPLAY ==========
+
+    async function fetchGridData(options = {}) {
+        isLoading = true;
+        apiError = null;
+        showLoadingState();
+
+        try {
+            const api = experimentConfig.api;
+            if (!api || !api.endpoint) {
+                throw new Error('No API configured');
+            }
+
+            let url = api.endpoint;
+
+            // Add default params
+            if (api.defaultParams) {
+                try {
+                    const defaults = JSON.parse(api.defaultParams);
+                    const params = new URLSearchParams(defaults);
+                    url += (url.includes('?') ? '&' : '?') + params.toString();
+                } catch (e) {
+                    console.warn('Failed to parse defaultParams:', e);
+                }
+            }
+
+            // Add voice query if provided
+            if (options.voiceQuery && api.voiceParamKey) {
+                const params = new URLSearchParams();
+                params.append(api.voiceParamKey, options.voiceQuery);
+                url += (url.includes('?') ? '&' : '?') + params.toString();
+            }
+
+            const fetchStart = new Date();
+            logDebug('API', 'api', `Fetching: ${url}`);
+
+            const headers = {};
+            if (api.authType === 'bearer' && api.authValue) {
+                headers['Authorization'] = `Bearer ${api.authValue}`;
+            } else if (api.authType === 'apikey' && api.authValue) {
+                headers['X-API-Key'] = api.authValue;
+            }
+
+            const response = await fetch(url, { headers });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            const fetchEnd = new Date();
+            const duration = fetchEnd - fetchStart;
+
+            logDebug('API', 'api', `Response received in ${duration}ms`);
+
+            // Extract items using itemsPath from mapping
+            let items = data;
+            const mapping = api.mapping || {};
+            if (mapping.itemsPath) {
+                items = getNestedValue(data, mapping.itemsPath);
+            }
+
+            if (!Array.isArray(items)) {
+                // Handle case where response IS the array
+                if (Array.isArray(data)) {
+                    items = data;
+                } else {
+                    throw new Error('Invalid response format: items array not found');
+                }
+            }
+
+            currentItems = items;
+            displayGridCards(items);
+
+            logEvent('api_response', { itemCount: items.length, duration });
+
+        } catch (error) {
+            logDebug('API', 'error', `Fetch failed: ${error.message}`);
+            apiError = error.message;
+            showErrorState();
+            logEvent('api_error', { error: error.message });
+        }
+
+        isLoading = false;
+    }
+
+    function displayGridCards(items) {
+        const container = document.getElementById('gridContainer');
+        container.innerHTML = '';
+
+        if (items.length === 0) {
+            showEmptyState();
+            return;
+        }
+
+        items.forEach(item => {
+            const card = createCard(item);
+            container.appendChild(card);
+        });
+    }
+
+    function createCard(item) {
+        const card = document.createElement('div');
+        const grid = experimentConfig.grid || {};
+        const mapping = experimentConfig.api.mapping || {};
+        
+        const cardHeight = grid.cardHeight || 'medium';
+        card.className = `card ${cardHeight}`;
+
+        // Image
+        if (grid.showImage) {
+            const imageUrl = getNestedValue(item, mapping.imageUrl);
+            if (imageUrl) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.className = 'card-image';
+                img.onerror = () => {
+                    img.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'card-placeholder';
+                    placeholder.textContent = '🖼️';
+                    card.insertBefore(placeholder, card.firstChild);
+                };
+                card.appendChild(img);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'card-placeholder';
+                placeholder.textContent = '🖼️';
+                card.appendChild(placeholder);
+            }
+        }
+
+        // Content
+        const content = document.createElement('div');
+        content.className = 'card-content';
+
+        if (grid.showTitle) {
+            const title = document.createElement('h3');
+            title.className = 'card-title';
+            title.textContent = getNestedValue(item, mapping.title) || 'Untitled';
+            content.appendChild(title);
+        }
+
+        if (grid.showSubtitle) {
+            const subtitle = document.createElement('p');
+            subtitle.className = 'card-subtitle';
+            subtitle.textContent = getNestedValue(item, mapping.subtitle) || '';
+            content.appendChild(subtitle);
+        }
+
+        if (grid.showTags) {
+            const tags = getNestedValue(item, mapping.tags);
+            if (tags) {
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'card-tags';
+                (Array.isArray(tags) ? tags : [tags]).forEach(tag => {
+                    const tagEl = document.createElement('span');
+                    tagEl.className = 'card-tag';
+                    tagEl.textContent = tag;
+                    tagsContainer.appendChild(tagEl);
+                });
+                content.appendChild(tagsContainer);
+            }
+        }
+
+        if (grid.showDescription) {
+            const desc = document.createElement('p');
+            desc.className = 'card-description';
+            desc.textContent = getNestedValue(item, mapping.description) || '';
+            content.appendChild(desc);
+        }
+
+        card.appendChild(content);
+
+        // Click handler (only in action mode)
+        const isActionMode = !experimentConfig.mode || experimentConfig.mode === 'action_transcript';
+        
+        if (isActionMode) {
+            card.addEventListener('click', () => {
+                logEvent('card_click', {
+                    itemId: getNestedValue(item, mapping.id) || 'unknown',
+                    durationSinceStart: new Date() - sessionStartTime
+                });
+                logDebug('INTERACTION', 'event', `Card clicked: ${getNestedValue(item, mapping.id) || 'unknown'}`);
+            });
+        } else {
+            card.classList.add('inactive');
+            card.style.cursor = 'default';
+        }
+
+        return card;
+    }
+
+    function showLoadingState() {
+        const container = document.getElementById('gridContainer');
+        container.innerHTML = '';
+
+        for (let i = 0; i < 6; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'card skeleton medium';
+            skeleton.innerHTML = `
+                <div class="skeleton-image"></div>
+                <div class="card-content">
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text" style="width: 80%;"></div>
+                </div>
+            `;
+            container.appendChild(skeleton);
+        }
+    }
+
+    function showEmptyState() {
+        const container = document.getElementById('gridContainer');
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <div class="empty-state-text">No results found</div>
+                <div class="empty-state-subtext">Try adjusting your search or filters</div>
+            </div>
+        `;
+    }
+
+    function showErrorState() {
+        const container = document.getElementById('gridContainer');
+        container.innerHTML = `
+            <div class="error-card">
+                <div class="error-card-icon">⚠️</div>
+                <div class="error-card-text">${apiError || 'Failed to load data. Please check the API configuration.'}</div>
+                <button class="error-card-btn" onclick="fetchGridData()">Retry</button>
+            </div>
+        `;
+    }
+
+    function displayPagination() {
+        const paginationEl = document.getElementById('pagination');
+        // Simple pagination for now if we can detect total results
+        paginationEl.style.display = 'none';
+    }
+
+    function nextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchGridData();
+        }
+    }
+
+    function previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchGridData();
+        }
+    }
+
+    function performSearch() {
+        currentPage = 1;
+        const query = document.getElementById('searchInput').value;
+        logEvent('search', { query });
+        logDebug('SEARCH', 'event', `Search performed: ${query}`);
+        fetchGridData({ voiceQuery: query });
+    }
+
+    function getNestedValue(obj, path) {
+        if (!path) return obj;
+        return path.split('.').reduce((acc, part) => {
+            if (acc && typeof acc === 'object') {
+                return acc[part];
+            }
+            return undefined;
+        }, obj);
+    }
+
+    // ========== EVENT LOGGING ==========
+
+    function logEvent(type, data = {}) {
+        const event = {
+            type,
+            timestamp: new Date().toISOString(),
+            data
+        };
+        sessionData.events.push(event);
+    }
+
+    // ========== DEBUG PANEL ==========
+
+    function logDebug(category, level, message) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const millis = now.getMilliseconds().toString().padStart(3, '0');
+
+        const entry = {
+            timestamp: `${timeStr}.${millis}`,
+            level,
+            category,
+            message
+        };
+
+        debugLogs.push(entry);
+
+        // Check log level
+        const logLevel = document.getElementById('logLevelSelect')?.value || 'standard';
+        if (logLevel === 'minimal' && level !== 'error') return;
+        if (logLevel === 'standard' && level === 'verbose') return;
+
+        const debugLogsEl = document.getElementById('debugLogs');
+        if (debugLogsEl) {
+            const entryEl = document.createElement('div');
+            entryEl.className = `debug-log-entry ${level}`;
+            entryEl.dataset.level = level;
+            entryEl.textContent = `[${entry.timestamp}] [${level.toUpperCase()}] [${category}] ${message}`;
+
+            // Apply filter
+            if (debugFilterLevel !== 'all' && debugFilterLevel !== level) {
+                entryEl.style.display = 'none';
+            }
+
+            debugLogsEl.appendChild(entryEl);
+            debugLogsEl.parentElement.scrollTop = debugLogsEl.parentElement.scrollHeight;
+        }
+    }
+
+    function toggleDebugFilter(chip) {
+        document.querySelectorAll('.debug-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        debugFilterLevel = chip.dataset.level;
+
+        // Update visibility
+        document.querySelectorAll('.debug-log-entry').forEach(entry => {
+            if (debugFilterLevel === 'all' || entry.dataset.level === debugFilterLevel) {
+                entry.style.display = 'block';
+            } else {
+                entry.style.display = 'none';
+            }
+        });
+    }
+
+    function clearDebugLog() {
+        document.getElementById('debugLogs').innerHTML = '';
+        debugLogs = [];
+    }
+
+    function copyDebugLog() {
+        const text = debugLogs.map(entry => `[${entry.timestamp}] [${entry.level.toUpperCase()}] [${entry.category}] ${entry.message}`).join('\n');
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Debug log copied', 'success');
+        });
+    }
+
+    // ========== GRID RENDERING ==========
+
+    function toggleGridOverlay() {
+        const enabled = document.getElementById('gridOverlayToggle').checked;
+        const grid = document.getElementById('gridContainer');
+        grid.style.backgroundImage = enabled ? 'linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)' : 'none';
+        grid.style.backgroundSize = enabled ? '1.5rem 1.5rem' : 'auto';
+    }
+
+    function toggleGridHover() {
+        const enabled = document.getElementById('gridHoverToggle').checked;
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.boxShadow = enabled ? '' : 'none';
+        });
+    }
+
+    // ========== CONFIGURATION ==========
+
+    function updateTaskPrompt() {
+        const prompt = document.getElementById('taskPromptField').value;
+        sessionData.taskPrompt = prompt;
+
+        const banner = document.getElementById('taskBanner');
+        if (prompt) {
+            banner.innerHTML = `📋 <strong>Task:</strong> ${prompt}`;
+            banner.classList.add('active');
+        } else {
+            banner.classList.remove('active');
+        }
+
+        logDebug('CONFIG', 'info', `Task prompt updated`);
+    }
+
+    function updateNotes() {
+        const notes = document.getElementById('notesField').value;
+        sessionData.notes = notes;
+        logDebug('CONFIG', 'info', `Notes updated`);
+    }
+
+    // ========== SESSION END ==========
+
+    function promptEndSession() {
+        document.getElementById('confirmModal').classList.add('active');
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('active');
+    }
+
+    async function confirmEndSession() {
+        closeConfirmModal();
+
+        // Stop recording and mic
+        if (isRecording) {
+            document.getElementById('recordingToggle').checked = false;
+            toggleRecording();
+        }
+        if (micEnabled) {
+            document.getElementById('micToggle').checked = false;
+            await toggleMicrophone();
+        }
+
+        // Record session end
+        sessionData.sessionEnd = new Date().toISOString();
+        logEvent('session_end', {});
+
+        // 1. Update participant record on server
+        if (participantRecord) {
+            participantRecord.endedAt = sessionData.sessionEnd;
+            await apiRequest('/api/participants', {
+                method: 'POST',
+                body: JSON.stringify(participantRecord)
+            });
+        }
+
+        // 2. Prepare session data for server (including audio)
+        const exportData = { ...sessionData };
+        
+        if (sessionData.audioBlob) {
+            // Convert blob to base64 for JSON transmission
+            const reader = new FileReader();
+            const base64Promise = new Promise(resolve => {
+                reader.onloadend = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+            });
+            reader.readAsDataURL(sessionData.audioBlob);
+            exportData.audioData = await base64Promise;
+        }
+        
+        // Remove the actual blob object before stringifying
+        delete exportData.audioBlob;
+
+        // 3. Save session to server
+        await apiRequest('/api/sessions', {
+            method: 'POST',
+            body: JSON.stringify(exportData)
+        });
+
+        // Show end screen
+        populateSessionEndScreen();
+        showPhase('end');
+
+        logDebug('SESSION', 'info', 'Session ended and saved to database');
+    }
+
+    function populateSessionEndScreen() {
+        const duration = sessionData.sessionEnd
+            ? Math.floor((new Date(sessionData.sessionEnd) - new Date(sessionData.sessionStart)) / 1000)
+            : 0;
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor((duration % 3600) / 60);
+        const seconds = duration % 60;
+
+        const queries = sessionData.events.filter(e => e.type === 'voice_query' || e.type === 'search').length;
+
+        document.getElementById('endParticipantId').textContent = participantId;
+        document.getElementById('endDuration').textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        document.getElementById('endEventCount').textContent = sessionData.events.length;
+        document.getElementById('endQueryCount').textContent = queries;
+
+        // Show audio download if we have a recording
+        if (sessionData.audioBlob) {
+            document.getElementById('downloadAudioBtn').style.display = 'block';
+        }
+    }
+
+    function downloadSessionData() {
+        // Create a copy without the blob for JSON storage/download
+        const exportData = { ...sessionData };
+        delete exportData.audioBlob; // Blobs can't be stringified
+
+        const json = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `session_${participantId}_${Date.now()}.json`;
+        a.click();
+        logDebug('EXPORT', 'info', 'Session data downloaded');
+    }
+
+    function downloadTranscript() {
+        const text = sessionData.transcript.map(t => `[${t.timestamp}] ${t.text}`).join('\n\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `transcript_${participantId}_${Date.now()}.txt`;
+        a.click();
+        logDebug('EXPORT', 'info', 'Transcript downloaded');
+    }
+
+    function downloadAudio() {
+        if (!sessionData.audioBlob) return;
+        const url = URL.createObjectURL(sessionData.audioBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `audio_${participantId}_${Date.now()}.webm`;
+        a.click();
+        logDebug('EXPORT', 'info', 'Audio recording downloaded');
+    }
+
+    // ========== UTILITY ==========
+
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>

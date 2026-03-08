@@ -1,0 +1,205 @@
+{
+  "count": 20,
+  "items": [
+    {
+      "id": "MOCK-001",
+      "title": "The Rosetta Stone",
+      "maker": "Unknown",
+      "date": "196 BC",
+      "category": "Ancient Egypt",
+      "description": "A granodiorite stele inscribed with three versions of a decree issued in Memphis, Egypt. It was the key to deciphering Egyptian hieroglyphs.",
+      "image": "https://images.unsplash.com/photo-1608155617481-856a827162cd?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Stone", "Inscription", "Egypt"]
+    },
+    {
+      "id": "MOCK-002",
+      "title": "Mona Lisa",
+      "maker": "Leonardo da Vinci",
+      "date": "1503",
+      "category": "Renaissance Art",
+      "description": "A half-length portrait painting by Italian artist Leonardo da Vinci. Considered an archetypal masterpiece of the Italian Renaissance.",
+      "image": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Painting", "Portrait", "Leonardo"]
+    },
+    {
+      "id": "MOCK-003",
+      "title": "The Great Wave off Kanagawa",
+      "maker": "Katsushika Hokusai",
+      "date": "1831",
+      "category": "Japanese Art",
+      "description": "A woodblock print by the Japanese ukiyo-e artist Hokusai. It is Hokusai's most famous work and is one of the most recognizable works of Japanese art in the world.",
+      "image": "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Print", "Japan", "Hokusai"]
+    },
+    {
+      "id": "MOCK-004",
+      "title": "Bust of Nefertiti",
+      "maker": "Thutmose",
+      "date": "1345 BC",
+      "category": "Ancient Egypt",
+      "description": "A painted stucco-coated limestone bust of Nefertiti, the Great Royal Wife of Egyptian Pharaoh Akhenaten. It is one of the most copied works of ancient Egypt.",
+      "image": "https://images.unsplash.com/photo-1599110906885-b024499edbed?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Sculpture", "Egypt", "Ancient"]
+    },
+    {
+      "id": "MOCK-005",
+      "title": "Girl with a Pearl Earring",
+      "maker": "Johannes Vermeer",
+      "date": "1665",
+      "category": "Dutch Golden Age",
+      "description": "An oil painting by Dutch Golden Age painter Johannes Vermeer. It is a tronie of a girl with a headscarf and a pearl earring.",
+      "image": "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Painting", "Vermeer", "Dutch"]
+    },
+    {
+      "id": "MOCK-006",
+      "title": "Terracotta Army Chariot",
+      "maker": "Unknown",
+      "date": "210 BC",
+      "category": "Ancient China",
+      "description": "A collection of terracotta sculptures depicting the armies of Qin Shi Huang, the first Emperor of China. It is a form of funerary art buried with the emperor.",
+      "image": "https://images.unsplash.com/photo-1599110364762-8c492367f039?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Sculpture", "China", "Ancient"]
+    },
+    {
+      "id": "MOCK-007",
+      "title": "Starry Night",
+      "maker": "Vincent van Gogh",
+      "date": "1889",
+      "category": "Post-Impressionism",
+      "description": "An oil-on-canvas painting by the Dutch Post-Impressionist painter Vincent van Gogh. Painted in June 1889, it depicts the view from the east-facing window of his asylum room at Saint-Rémy-de-Provence.",
+      "image": "https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Painting", "Van Gogh", "Post-Impressionism"]
+    },
+    {
+      "id": "MOCK-008",
+      "title": "The Thinker",
+      "maker": "Auguste Rodin",
+      "date": "1904",
+      "category": "Modern Sculpture",
+      "description": "A bronze sculpture by Auguste Rodin, usually placed on a stone pedestal. The work depicts a nude male figure of over life-size sitting on a rock with his chin resting on one hand.",
+      "image": "https://images.unsplash.com/photo-1549887534-1541e9326642?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Sculpture", "Bronze", "Rodin"]
+    },
+    {
+      "id": "MOCK-009",
+      "title": "Gutenberg Bible",
+      "maker": "Johannes Gutenberg",
+      "date": "1455",
+      "category": "Renaissance",
+      "description": "The first major book printed in Europe using mass-produced movable metal type. It marked the start of the 'Gutenberg Revolution' and the age of printed books in the West.",
+      "image": "https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Book", "History", "Renaissance"]
+    },
+    {
+      "id": "MOCK-010",
+      "title": "Mechanical Planetary Clock",
+      "maker": "Unknown",
+      "date": "1750",
+      "category": "Scientific Instruments",
+      "description": "A complex mechanical clock designed to show the positions of the planets in the solar system as well as the time.",
+      "image": "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Scientific", "Mechanism", "Clock"]
+    },
+    {
+      "id": "MOCK-011",
+      "title": "Viking Helmet",
+      "maker": "Norse Blacksmith",
+      "date": "900 AD",
+      "category": "Medieval History",
+      "description": "A rare iron helmet from the Viking Age, found in Norway. It features a distinctive eye-guard and was a status symbol for warriors.",
+      "image": "https://images.unsplash.com/photo-1599110283115-24a6a037aa28?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Iron", "Warfare", "Viking"]
+    },
+    {
+      "id": "MOCK-012",
+      "title": "Japanese Samurai Armor",
+      "maker": "Myochin School",
+      "date": "1650",
+      "category": "Japanese Art",
+      "description": "A complete suit of Samurai armor (Yoroi) featuring detailed lacquered metal plates and silk cord bindings.",
+      "image": "https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Armor", "Samurai", "Japan"]
+    },
+    {
+      "id": "MOCK-013",
+      "title": "The Astronomer's Globe",
+      "maker": "Gerardus Mercator",
+      "date": "1541",
+      "category": "Scientific Instruments",
+      "description": "A terrestrial globe showing the latest geographical discoveries of the 16th century, crafted by the famous cartographer Gerardus Mercator.",
+      "image": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Map", "Globe", "Exploration"]
+    },
+    {
+      "id": "MOCK-014",
+      "title": "Ancient Greek Amphora",
+      "maker": "The Berlin Painter",
+      "date": "490 BC",
+      "category": "Ancient Greece",
+      "description": "A black-figure pottery vessel used for storing wine, depicting scenes from the Iliad. A masterpiece of Attic pottery.",
+      "image": "https://images.unsplash.com/photo-1614705827065-64c6354a933d?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Pottery", "Vase", "Greece"]
+    },
+    {
+      "id": "MOCK-015",
+      "title": "Aztec Sun Stone",
+      "maker": "Unknown",
+      "date": "1502",
+      "category": "Pre-Columbian Art",
+      "description": "A massive basalt sculpture representing the Aztec view of the cosmos and the cyclical nature of time.",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Stone", "Aztec", "Cosmology"]
+    },
+    {
+      "id": "MOCK-016",
+      "title": "Medieval Manuscript",
+      "maker": "Monastic Scribes",
+      "date": "1250",
+      "category": "Medieval Art",
+      "description": "An illuminated manuscript featuring gold leaf and vibrant pigments, containing prayers and botanical illustrations.",
+      "image": "https://images.unsplash.com/photo-1580130281216-1e3c1c21bc35?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Book", "Gold", "Illumination"]
+    },
+    {
+      "id": "MOCK-017",
+      "title": "The Marble Faun",
+      "maker": "Praxiteles School",
+      "date": "300 BC",
+      "category": "Ancient Greece",
+      "description": "A graceful marble sculpture of a resting satyr, a testament to the skill of Hellenistic sculptors.",
+      "image": "https://images.unsplash.com/photo-1549887552-cb1071d3e5ca?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Sculpture", "Marble", "Greece"]
+    },
+    {
+      "id": "MOCK-018",
+      "title": "Antique Telescope",
+      "maker": "Jesse Ramsden",
+      "date": "1785",
+      "category": "Scientific Instruments",
+      "description": "A brass achromatic refractor telescope used by early modern astronomers to chart the stars.",
+      "image": "https://images.unsplash.com/photo-1516331138075-f3ad1e8457cb?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Science", "Optics", "Stars"]
+    },
+    {
+      "id": "MOCK-019",
+      "title": "Renaissance Lute",
+      "maker": "Unknown",
+      "date": "1580",
+      "category": "Musical Instruments",
+      "description": "A stringed musical instrument with a vaulted body, widely used in the courtly music of the 16th century.",
+      "image": "https://images.unsplash.com/photo-1516280440614-37939bbdd4f1?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Music", "Wood", "Renaissance"]
+    },
+    {
+      "id": "MOCK-020",
+      "title": "Art Nouveau Stained Glass",
+      "maker": "Louis Comfort Tiffany",
+      "date": "1905",
+      "category": "Modern Design",
+      "description": "An intricate glass panel featuring organic floral motifs, exemplifying the elegance of the Art Nouveau movement.",
+      "image": "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&q=80&w=800",
+      "tags": ["Glass", "Tiffany", "Art Nouveau"]
+    }
+  ]
+}

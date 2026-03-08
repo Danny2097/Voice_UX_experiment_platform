@@ -1,0 +1,3227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Voice Control Research Platform — modular user research tool">
+    <title>Experiment Manager - Voice Research Platform</title>
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f8f9fb;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e6ed;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 48px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4f6ef7;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #4f6ef7 0%, #7c8ffe 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #5a6c7d;
+            padding-right: 8px;
+            border-right: 1px solid #e2e6ed;
+            height: 32px;
+        }
+
+        .user-icon {
+            width: 20px;
+            height: 20px;
+            background: #eef0fe;
+            color: #4f6ef7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .header-right .btn {
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+        }
+
+        .save-indicator {
+            font-size: 12px;
+            color: #7fb3f5;
+            opacity: 0;
+            transition: opacity 0.3s;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .save-indicator.visible {
+            opacity: 1;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 48px);
+            gap: 0;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-right: 1px solid #e2e6ed;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #e2e6ed;
+        }
+
+        .btn-new-experiment {
+            width: 100%;
+            padding: 10px 16px;
+            background: #4f6ef7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-new-experiment:hover {
+            background: #3d53c7;
+        }
+
+        .experiments-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .experiment-card {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fb;
+            border: 1px solid #e2e6ed;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            border-left: 3px solid transparent;
+        }
+
+        .experiment-card:hover {
+            background: white;
+            border-color: #d0d8e8;
+        }
+
+        .experiment-card.active {
+            background: white;
+            border-left-color: #4f6ef7;
+            color: #4f6ef7;
+        }
+
+        .experiment-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .experiment-card-name {
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 3px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+        .status-badge.draft {
+            background: #fef3cd;
+            color: #856404;
+        }
+
+        .status-badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.complete {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .experiment-card-meta {
+            font-size: 12px;
+            color: #7f8fa3;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .btn-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .experiment-card:hover .btn-delete {
+            opacity: 1;
+        }
+
+        .btn-delete:hover {
+            background: #fee;
+            border-radius: 3px;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+            color: #7f8fa3;
+            margin-bottom: 24px;
+        }
+
+        .btn-create-first {
+            padding: 10px 24px;
+            background: #4f6ef7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-create-first:hover {
+            background: #3d53c7;
+        }
+
+        /* ===== CONTENT PANEL ===== */
+        .content-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f8f9fb;
+        }
+
+        .detail-header {
+            background: white;
+            border-bottom: 1px solid #e2e6ed;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e2e6ed;
+            padding-bottom: 0;
+        }
+
+        .tab-button {
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #7f8fa3;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .tab-button:hover {
+            color: #4f6ef7;
+        }
+
+        .tab-button.active {
+            color: #4f6ef7;
+            border-bottom-color: #4f6ef7;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== FORM STYLES ===== */
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #95a3b3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e6ed;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #2c3e50;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e6ed;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #2c3e50;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #4f6ef7;
+            box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.1);
+        }
+
+        input[type="text"]:disabled,
+        input[type="email"]:disabled,
+        input[type="number"]:disabled,
+        textarea:disabled,
+        select:disabled {
+            background: #f8f9fb;
+            color: #95a3b3;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-row-full {
+            grid-column: 1 / -1;
+        }
+
+        /* ===== READONLY FIELDS ===== */
+        .readonly-field {
+            padding: 10px 12px;
+            background: #f8f9fb;
+            border: 1px solid #e2e6ed;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #7f8fa3;
+            font-family: 'Monaco', monospace;
+            word-break: break-all;
+        }
+
+        /* ===== TOGGLE SWITCH ===== */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #e2e6ed;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle.active {
+            background: #4f6ef7;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.2s;
+        }
+
+        .toggle.active .toggle-thumb {
+            left: 22px;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        /* ===== SLIDER ===== */
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e6ed;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f6ef7;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f6ef7;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: #4f6ef7;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4f6ef7;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3d53c7;
+        }
+
+        .btn-primary:disabled {
+            background: #d0d8e8;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4f6ef7;
+            border: 1px solid #4f6ef7;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fb;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        /* Standardized Participant Action Buttons */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 75px;
+            height: 28px;
+            padding: 0 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+        .btn-action.continue { background: #10b981; }
+        .btn-action.json { background: #4f6ef7; }
+        .btn-action.audio { background: #8b5cf6; }
+        .btn-action.delete { background: #ef4444; }
+
+        .btn-large {
+            padding: 14px 24px;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        .btn-run-experiment {
+            background: #4f6ef7;
+            color: white;
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 16px;
+            margin-top: 24px;
+        }
+
+        .btn-run-experiment:hover {
+            background: #3d53c7;
+        }
+
+        /* ===== SELECT DROPDOWN ===== */
+        .select-group {
+            margin-bottom: 20px;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #e2e6ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: #7f8fa3;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #2c3e50;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e2e6ed;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* ===== PIS PREVIEW ===== */
+        .pis-preview {
+            background: #f8f9fb;
+            padding: 40px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .pis-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #e2e6ed;
+        }
+
+        .pis-institution {
+            font-size: 12px;
+            color: #7f8fa3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .pis-study-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+
+        .pis-contact {
+            font-size: 13px;
+            color: #7f8fa3;
+        }
+
+        .pis-section {
+            margin-bottom: 24px;
+        }
+
+        .pis-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .pis-section-content {
+            color: #5a6c7d;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* ===== TEST CONNECTION RESULT ===== */
+        .test-result {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #e2e6ed;
+            background: #f8f9fb;
+            font-size: 13px;
+            font-family: 'Monaco', monospace;
+            color: #5a6c7d;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .test-result.success {
+            border-left-color: #27ae60;
+            background: #eafaf1;
+            color: #155724;
+        }
+
+        .test-result.error {
+            border-left-color: #e74c3c;
+            background: #fadbd8;
+            color: #a93226;
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #f8f9fb;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: #7f8fa3;
+            border-bottom: 1px solid #e2e6ed;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e6ed;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fb;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: white;
+            border: 1px solid #e2e6ed;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-color: #27ae60;
+            color: #155724;
+        }
+
+        .toast.success::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .toast.error {
+            border-color: #e74c3c;
+            color: #a93226;
+        }
+
+        .toast.error::before {
+            content: '✕';
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* ===== UTILITY ===== */
+        .hidden {
+            display: none;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gap-small {
+            gap: 8px;
+        }
+
+        .gap-medium {
+            gap: 16px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #7f8fa3;
+            font-size: 13px;
+        }
+
+        .code-block {
+            background: #f8f9fb;
+            border: 1px solid #e2e6ed;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            color: #5a6c7d;
+            overflow-x: auto;
+            word-break: break-all;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
+
+            .content-panel {
+                flex: 1;
+            }
+
+            .detail-content {
+                padding: 16px;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+        }
+
+        /* ===== ADAPTER CARD STYLES ===== */
+        .adapter-card {
+            padding: 0.75rem;
+            border: 1px solid #e2e6ed;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #fff;
+            transition: all 150ms ease;
+            font-size: 0.8rem;
+        }
+
+        .adapter-card:hover {
+            border-color: #4f6ef7;
+            background: #eef0fe;
+        }
+
+        .adapter-card.selected {
+            border-color: #4f6ef7;
+            background: #eef0fe;
+        }
+
+        .adapter-card-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .adapter-card-category {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+        }
+
+        .adapter-card-key-warning {
+            font-size: 0.7rem;
+            color: #d97706;
+            margin-top: 0.25rem;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #2c3e50;
+            display: block;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: #7f8fa3;
+            margin: 0;
+        }
+
+
+/* ════ Lock Screen ════ */
+#lockScreen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--colour-bg, #f8f9fb);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+#lockScreen.visible { display: flex; }
+
+.lock-card {
+    background: #fff;
+    border: 1px solid var(--colour-border, #e2e6ed);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.lock-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+.lock-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--colour-text-primary, #111827);
+    margin-bottom: 0.4rem;
+}
+.lock-subtitle {
+    font-size: 0.85rem;
+    color: var(--colour-text-secondary, #6b7280);
+    margin-bottom: 1.75rem;
+}
+.lock-form { text-align: left; display: flex; flex-direction: column; gap: 1rem; }
+.lock-error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #dc2626;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    display: none;
+}
+.lock-error.visible { display: block; }
+.lock-submit {
+    width: 100%;
+    padding: 0.65rem;
+    background: var(--colour-accent, #4f6ef7);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 150ms ease;
+}
+.lock-submit:hover { background: var(--colour-accent-hover, #3b57e8); }
+.lock-branding {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--colour-text-muted, #9ca3af);
+}
+
+    </style>
+</head>
+<body>
+    
+<!-- ════ Lock Screen ════ -->
+<div id="lockScreen">
+    <div class="lock-card">
+        <div class="logo-icon" style="margin: 0 auto 1rem; width: 48px; height: 48px; font-size: 20px;">VRP</div>
+        <div class="lock-title">Researcher Sign In</div>
+        <div class="lock-subtitle">
+            Welcome to the Voice Control Research Platform.<br>
+            Please sign in to manage experiments and view data.
+        </div>
+        <div class="lock-form">
+            <div class="form-group">
+                <label class="form-label" for="lockUser">Username</label>
+                <input class="form-input" id="lockUser" type="text" autocomplete="username" placeholder="Admin">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="lockPass">Password</label>
+                <input class="form-input" id="lockPass" type="password" autocomplete="current-password" placeholder="••••••••">
+            </div>
+            <div class="lock-error" id="lockError">Incorrect username or password.</div>
+            <button class="lock-submit" id="lockSubmit" onclick="attemptUnlock()">Sign In</button>
+        </div>
+        <div class="lock-branding">Voice Control Research Platform</div>
+    </div>
+</div>
+    
+<!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-icon">VRP</div>
+            <div class="logo">Experiment Manager</div>
+        </div>
+        <div class="header-right">
+            <div id="currentUserDisplay"></div>
+            <div class="save-indicator" id="saveIndicator"></div>
+            <button class="btn btn-ghost btn-sm" id="lockBtn" onclick="signOut()" title="Sign out of experiment manager" style="margin-left:0.5rem;">Logout</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="btn-new-experiment" id="btnNewExperiment">+ New Experiment</button>
+            </div>
+            <div class="experiments-list" id="experimentsList">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+
+        <!-- CONTENT PANEL -->
+        <div class="content-panel" id="contentPanel">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+
+    <!-- PIS PREVIEW MODAL -->
+    <div class="modal" id="pisModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Participant Information Sheet</div>
+                <button class="modal-close" id="closePisModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="pis-preview" id="pisPreviewContent">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="closePisModalBtn">Close Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SCRIPTS -->
+    <!-- config.js is generated at container start by start.sh from ADMIN_USER / ADMIN_PASSWORD env vars.
+         When running locally (not in Docker) this file won't exist, so the lock screen falls back
+         to the hardcoded default hashes (Admin / Password). The onerror handler prevents a 404
+         from breaking the rest of the page. -->
+    <script src="./config.js" onerror="/* config.js not present — using defaults */"></script>
+    <script src="./js/api-adapter.js"></script>
+    <script>
+        // ============================================================
+        // STATE & STORAGE
+        // ============================================================
+        // ════════════════════════════════════════════════════════════
+        // LOCK SCREEN & AUTH
+        // ════════════════════════════════════════════════════════════
+
+        // Check whether the manager should be locked:
+        function shouldLock() {
+            return sessionStorage.getItem('vrp_unlocked') !== 'true';
+        }
+
+        async function attemptUnlock() {
+            const username = (document.getElementById('lockUser').value || '').trim();
+            const password = (document.getElementById('lockPass').value || '');
+            const errorEl = document.getElementById('lockError');
+            const submitBtn = document.getElementById('lockSubmit');
+
+            if (!username || !password) {
+                errorEl.textContent = 'Please enter both username and password.';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            submitBtn.textContent = 'Signing In…';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionStorage.setItem('vrp_unlocked', 'true');
+                    sessionStorage.setItem('vrp_user', JSON.stringify(data.user));
+                    document.getElementById('lockScreen').classList.remove('visible');
+                    errorEl.classList.remove('visible');
+                    // Load state after login
+                    loadState();
+                } else {
+                    const data = await response.json();
+                    errorEl.textContent = data.error || 'Incorrect username or password.';
+                    errorEl.classList.add('visible');
+                    // Clear password field on failure
+                    document.getElementById('lockPass').value = '';
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                errorEl.textContent = 'Server error. Please try again.';
+                errorEl.classList.add('visible');
+            } finally {
+                submitBtn.textContent = 'Sign In';
+                submitBtn.disabled = false;
+            }
+        }
+
+        function checkLock() {
+            if (shouldLock()) {
+                document.getElementById('lockScreen').classList.add('visible');
+                // Focus username field
+                setTimeout(() => {
+                    const u = document.getElementById('lockUser');
+                    if (u) u.focus();
+                }, 100);
+            }
+        }
+
+        // Allow Enter key in lock form
+        function initLockKeyHandlers() {
+            ['lockUser', 'lockPass'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); });
+            });
+        }
+
+        function signOut() {
+            sessionStorage.removeItem('vrp_unlocked');
+            sessionStorage.removeItem('vrp_user');
+            window.location.reload();
+        }
+
+                const SAVE_DEBOUNCE_MS = 600;
+        const API_BASE = ''; // Endpoints already start with /api or /proxy
+        const GRID_PRESETS = [
+            { id: 'standard', name: 'Standard Mosaic', category: 'Balanced', description: '3 columns, 20 items. Classic grid with moderate detail.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'modern', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
+            { id: 'masonry', name: 'Featured Entry', category: 'Dynamic', description: '3 columns. First item spans 2x2. Great for landing pages.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'elevated', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'featured-first' } },
+            { id: 'gallery', name: 'Image Gallery', category: 'Visual', description: '4 columns, 40 items. Large images, elevated floating style.', config: { columns: 4, cardHeight: 'tall', cardStyle: 'elevated', maxItems: 40, showImage: true, showTitle: false, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
+            { id: 'compact', name: 'Compact Grid', category: 'Dense', description: '6 columns, 60 items. High density scanning with small cards.', config: { columns: 6, cardHeight: 'short', cardStyle: 'minimal', maxItems: 60, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
+            { id: 'highlight', name: 'Highlight Grid', category: 'Dynamic', description: '4 columns. Every 5th item spans 2 columns.', config: { columns: 4, cardHeight: 'medium', cardStyle: 'modern', maxItems: 40, showImage: true, showTitle: true, showSubtitle: false, showTags: true, showDescription: false, spanPattern: 'every-fifth' } },
+            { id: 'neumorphic', name: 'Soft UI', category: 'Modern', description: '3 columns, 20 items. Neumorphic soft extrusion style.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'neumorphic', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
+            { id: 'brutalist', name: 'Brutalist Grid', category: 'High Contrast', description: '3 columns, 20 items. Bold borders and hard shadows.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'brutalist', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'alternating' } },
+            { id: 'list', name: 'Detailed List', category: 'Informative', description: '1 column, 10 items. Full-width rows with all metadata.', config: { columns: 1, cardHeight: 'medium', cardStyle: 'modern', maxItems: 10, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
+            { id: 'horizontal', name: 'List Feed', category: 'Informative', description: '1 column, 15 items. Wide horizontal cards with side images.', config: { columns: 1, cardHeight: 'short', cardStyle: 'horizontal', maxItems: 15, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
+            { id: 'polaroid', name: 'Photo Deck', category: 'Visual', description: '4 columns, 24 items. Instant camera photo style.', config: { columns: 4, cardHeight: 'tall', cardStyle: 'polaroid', maxItems: 24, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
+            { id: 'archive', name: 'Text Archive', category: 'Minimal', description: '2 columns, 30 items. Strict text view with descriptions.', config: { columns: 2, cardHeight: 'short', cardStyle: 'classic', maxItems: 30, showImage: false, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
+            { id: 'dark', name: 'Night Mode', category: 'Minimal', description: '3 columns, 20 items. Dark background cards for low light.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'dark', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } }
+        ];
+
+        let state = {
+            experiments: [],
+            customGridPresets: [],
+            selectedExperimentId: null,
+            currentTab: 'overview',
+            saveTimeout: null
+        };
+
+        // API Helpers
+        async function apiRequest(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (err) {
+                console.error(`API Error (${endpoint}):`, err);
+                showToast(`Server error: ${err.message}`, 'error');
+                return null;
+            }
+        }
+
+        // ── Database API helpers ──────────────────────────────────
+        async function dbRequest(endpoint, options = {}) {
+            try {
+                const res = await fetch(endpoint, {
+                    ...options,
+                    headers: { 'Content-Type': 'application/json', ...options.headers }
+                });
+                if (res.status === 401) {
+                    signOut();
+                    return null;
+                }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (err) {
+                console.error(`DB API error (${endpoint}):`, err);
+                showToast(`Database error: ${err.message}`, 'error');
+                return null;
+            }
+        }
+
+        // Load state from database
+        async function loadState() {
+            if (shouldLock()) return;
+
+            const [expData, presetData] = await Promise.all([
+                dbRequest('/api/experiments'),
+                dbRequest('/api/grid-presets')
+            ]);
+
+            state.experiments = (expData && expData.experiments) || [];
+            state.customGridPresets = (presetData && presetData.presets) || [];
+
+            if (!state.selectedExperimentId && state.experiments.length > 0) {
+                state.selectedExperimentId = state.experiments[0].id;
+            }
+            renderUI();
+        }
+
+        // Save experiment(s) to database
+        async function saveState(experimentId = null) {
+            const toSave = experimentId
+                ? state.experiments.filter(e => e.id === experimentId)
+                : state.experiments;
+            try {
+                await Promise.all(
+                    toSave.map(exp => dbRequest('/api/experiments', {
+                        method: 'POST',
+                        body: JSON.stringify(exp)
+                    }))
+                );
+                showSaveIndicator();
+            } catch (err) {
+                console.error('Save failed:', err);
+            }
+        }
+
+        // Debounced save
+        function saveStateSoon(experimentId = null) {
+            clearTimeout(state.saveTimeout);
+            state.saveTimeout = setTimeout(() => {
+                saveState(experimentId);
+            }, SAVE_DEBOUNCE_MS);
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.textContent = 'Saved';
+            indicator.classList.add('visible');
+            setTimeout(() => {
+                indicator.classList.remove('visible');
+            }, 1500);
+        }
+
+        // ============================================================
+        // EXPERIMENT CRUD
+        // ============================================================
+        function generateId() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return `EXP-${result}`;
+        }
+
+        function generateParticipantId() {
+            const date = new Date();
+            const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let rand = '';
+            for (let i = 0; i < 4; i++) {
+                rand += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return `P-${dateStr}-${rand}`;
+        }
+
+        function createExperiment() {
+            const newExp = {
+                id: generateId(),
+                name: 'Untitled Experiment',
+                description: '',
+                status: 'Draft',
+                duration: 30,
+                mode: 'action_transcript',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                pis: {
+                    studyTitle: '',
+                    researcher: '',
+                    institution: '',
+                    contact: '',
+                    purpose: '',
+                    involvement: '',
+                    dataHandling: '',
+                    withdrawal: ''
+                },
+                grid: {
+                    columns: 3,
+                    cardHeight: 'medium',
+                    cardStyle: 'modern',
+                    showSearch: true,
+                    showNav: false,
+                    showFooter: false,
+                    gridOverlayStyle: 'lines',
+                    showImage: true,
+                    showTitle: true,
+                    showSubtitle: true,
+                    showTags: true,
+                    showDescription: false,
+                    maxItems: 20
+                },
+                api: {
+                    endpoint: '',
+                    authType: 'none',
+                    authValue: '',
+                    defaultParams: '{}',
+                    voiceParamKey: 'q',
+                    mapping: {
+                        itemsPath: 'records',
+                        id: 'systemNumber',
+                        title: '_primaryTitle',
+                        subtitle: '_primaryMaker.name',
+                        description: '_primaryDescription.value',
+                        imageUrl: '_images._primary_thumbnail',
+                        tags: '_objectType'
+                    }
+                },
+                participants: []
+            };
+            state.experiments.push(newExp);
+            state.selectedExperimentId = newExp.id;
+            saveState();
+            return newExp;
+        }
+
+        function getExperiment(id) {
+            return state.experiments.find(exp => exp.id === id);
+        }
+
+        function updateExperiment(id, updates) {
+            const exp = getExperiment(id);
+            if (exp) {
+                Object.assign(exp, updates, { updatedAt: new Date().toISOString() });
+                saveStateSoon();
+            }
+        }
+
+        async function deleteExperiment(id) {
+            state.experiments = state.experiments.filter(exp => exp.id !== id);
+            if (state.selectedExperimentId === id) {
+                state.selectedExperimentId = state.experiments.length > 0 ? state.experiments[0].id : null;
+            }
+            await dbRequest(`/api/experiments/${id}`, { method: 'DELETE' });
+        }
+
+        // ============================================================
+        // UI RENDERING
+        // ============================================================
+        function renderExperimentsList() {
+            const list = document.getElementById('experimentsList');
+            
+            if (state.experiments.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="2"/>
+                            <path d="M32 20v24M20 32h24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <div class="empty-state-title">No experiments yet</div>
+                        <div class="empty-state-text">Create your first experiment to get started</div>
+                        <button class="btn-create-first" id="btnCreateFirstExp">Create your first experiment</button>
+                    </div>
+                `;
+                document.getElementById('btnCreateFirstExp').addEventListener('click', () => {
+                    createExperiment();
+                    renderUI();
+                });
+            } else {
+                list.innerHTML = state.experiments.map(exp => {
+                    const isActive = exp.id === state.selectedExperimentId;
+                    const lastModified = new Date(exp.updatedAt).toLocaleDateString();
+                    const participantCount = exp.participants.length;
+                    
+                    return `
+                        <div class="experiment-card ${isActive ? 'active' : ''}" data-id="${exp.id}">
+                            <div class="experiment-card-header">
+                                <div class="experiment-card-name">${escapeHtml(exp.name)}</div>
+                                <span class="status-badge ${exp.status.toLowerCase()}">${exp.status}</span>
+                            </div>
+                            <div class="experiment-card-meta">
+                                <div>${participantCount} participant${participantCount !== 1 ? 's' : ''}</div>
+                                <div>Modified: ${lastModified}</div>
+                            </div>
+                            <button class="btn-delete" data-id="${exp.id}">&times;</button>
+                        </div>
+                    `;
+                }).join('');
+
+                // Add event listeners
+                document.querySelectorAll('.experiment-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('btn-delete')) {
+                            const id = card.dataset.id;
+                            state.selectedExperimentId = id;
+                            state.currentTab = 'overview';
+                            renderUI();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = btn.dataset.id;
+                        if (confirm('Delete this experiment? This cannot be undone.')) {
+                            deleteExperiment(id);
+                            renderUI();
+                            showToast('Experiment deleted', 'success');
+                        }
+                    });
+                });
+            }
+        }
+
+        function renderDetailPanel() {
+            const panel = document.getElementById('contentPanel');
+            const exp = getExperiment(state.selectedExperimentId);
+            
+            if (!exp) {
+                panel.innerHTML = '';
+                return;
+            }
+
+            // Calculate Statistics
+            const totalSessions = exp.participants.length;
+            const completedSessions = exp.participants.filter(p => p.endedAt).length;
+            let totalDurationMs = 0;
+            let totalInteractions = 0;
+            
+            exp.participants.forEach(p => {
+                if (p.startedAt && p.endedAt) {
+                    totalDurationMs += (new Date(p.endedAt) - new Date(p.startedAt));
+                }
+                totalInteractions += (p.events || []).length;
+            });
+            
+            const avgDurationMin = completedSessions > 0 
+                ? Math.round((totalDurationMs / completedSessions) / 60000) 
+                : 0;
+
+            panel.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-title">${escapeHtml(exp.name)}</div>
+                </div>
+                <div class="detail-content">
+                    <div class="tabs" id="tabs">
+                        <button class="tab-button ${state.currentTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
+                        <button class="tab-button ${state.currentTab === 'pis' ? 'active' : ''}" data-tab="pis">PIS</button>
+                        <button class="tab-button ${state.currentTab === 'grid-layout' ? 'active' : ''}" data-tab="grid-layout">Grid Layout</button>
+                        <button class="tab-button ${state.currentTab === 'api' ? 'active' : ''}" data-tab="api">API Source</button>
+                        <button class="tab-button ${state.currentTab === 'participants' ? 'active' : ''}" data-tab="participants">Participants</button>
+                        <button class="tab-button ${state.currentTab === 'export' ? 'active' : ''}" data-tab="export">Export</button>
+                        <button class="tab-button ${state.currentTab === 'run' ? 'active' : ''}" data-tab="run">Run</button>
+                    </div>
+
+                    <!-- TAB: OVERVIEW -->
+                    <div class="tab-content ${state.currentTab === 'overview' ? 'active' : ''}" id="tab-overview">
+                        
+                        <div class="form-section">
+                            <div class="form-section-title">Basic Information</div>
+                            <div class="form-group">
+                                <label for="expName">Experiment Name</label>
+                                <input type="text" id="expName" value="${escapeHtml(exp.name)}" placeholder="e.g., Museum Collection Browsing Study">
+                            </div>
+                            <div class="form-group">
+                                <label for="expDesc">Description</label>
+                                <textarea id="expDesc" placeholder="Describe the purpose and context of this experiment...">${escapeHtml(exp.description)}</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expStatus">Status</label>
+                                    <select id="expStatus">
+                                        <option value="Draft" ${exp.status === 'Draft' ? 'selected' : ''}>Draft</option>
+                                        <option value="Active" ${exp.status === 'Active' ? 'selected' : ''}>Active</option>
+                                        <option value="Complete" ${exp.status === 'Complete' ? 'selected' : ''}>Complete</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="expDuration">Estimated Duration (minutes)</label>
+                                    <input type="number" id="expDuration" value="${exp.duration}" min="1" max="480">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">System Information</div>
+                            <div class="form-group">
+                                <label>Experiment ID</label>
+                                <div class="readonly-field">${escapeHtml(exp.id)}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Created</label>
+                                <div class="readonly-field">${new Date(exp.createdAt).toLocaleString()}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Modified</label>
+                                <div class="readonly-field">${new Date(exp.updatedAt).toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: PIS -->
+                    <div class="tab-content ${state.currentTab === 'pis' ? 'active' : ''}" id="tab-pis">
+                        <div class="form-section">
+                            <div class="form-section-title">Participant Information Sheet</div>
+                            <div class="form-group">
+                                <label for="pisStudyTitle">Study Title</label>
+                                <input type="text" id="pisStudyTitle" value="${escapeHtml(exp.pis.studyTitle)}" placeholder="e.g., Voice-Controlled Museum Search">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="pisResearcher">Lead Researcher Name</label>
+                                    <input type="text" id="pisResearcher" value="${escapeHtml(exp.pis.researcher)}" placeholder="e.g., Dr. Jane Smith">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pisInstitution">Institution</label>
+                                    <input type="text" id="pisInstitution" value="${escapeHtml(exp.pis.institution)}" placeholder="e.g., University of Oxford">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisContact">Contact Email</label>
+                                <input type="email" id="pisContact" value="${escapeHtml(exp.pis.contact)}" placeholder="researcher@institution.ac.uk">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Consent Information</div>
+                            <div class="form-group">
+                                <label for="pisPurpose">Study Purpose</label>
+                                <textarea id="pisPurpose" placeholder="Describe the main purpose of the study...">${escapeHtml(exp.pis.purpose)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisInvolvement">What Participation Involves</label>
+                                <textarea id="pisInvolvement" placeholder="Detail what participants will be asked to do...">${escapeHtml(exp.pis.involvement)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisDataHandling">Data Handling</label>
+                                <textarea id="pisDataHandling" placeholder="Explain how data will be stored, processed, and protected...">${escapeHtml(exp.pis.dataHandling)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisWithdrawal">Withdrawal Rights</label>
+                                <textarea id="pisWithdrawal" placeholder="Explain participants' right to withdraw...">${escapeHtml(exp.pis.withdrawal)}</textarea>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" id="btnPreviewPis">Preview PIS</button>
+                    </div>
+
+                    <!-- TAB: GRID LAYOUT -->
+                    <div class="tab-content ${state.currentTab === 'grid-layout' ? 'active' : ''}" id="tab-grid-layout">
+                        <!-- Grid Layout Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">Grid Layout</div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label class="form-label">Quick Grid Presets</label>
+                                <p class="form-hint">Instantly configure columns and display options.</p>
+                                <div id="gridPresetPickerGrid" style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                                    gap: 0.5rem;
+                                    margin-top: 0.5rem;
+                                ">
+                                    <!-- Cards injected by JS -->
+                                </div>
+                            </div>
+                            
+                            <div class="slider-group">
+                                <div class="slider-label">
+                                    <label>Columns</label>
+                                    <span class="slider-value" id="columnsValue">${exp.grid.columns}</span>
+                                </div>
+                                <input type="range" id="gridColumns" min="1" max="6" value="${exp.grid.columns}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardHeight">Card Height</label>
+                                <select id="cardHeight">
+                                    <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short</option>
+                                    <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium</option>
+                                    <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardStyle">Visual Style</label>
+                                <select id="cardStyle">
+                                    <option value="modern" ${exp.grid.cardStyle === 'modern' ? 'selected' : ''}>Modern (Rounded, subtle shadow)</option>
+                                    <option value="classic" ${exp.grid.cardStyle === 'classic' ? 'selected' : ''}>Classic (Sharp borders, flat)</option>
+                                    <option value="minimal" ${exp.grid.cardStyle === 'minimal' ? 'selected' : ''}>Minimal (No border, very light)</option>
+                                    <option value="glass" ${exp.grid.cardStyle === 'glass' ? 'selected' : ''}>Glassmorphism (Frosted glass)</option>
+                                    <option value="elevated" ${exp.grid.cardStyle === 'elevated' ? 'selected' : ''}>Elevated (Deep shadow, floating)</option>
+                                    <option value="neumorphic" ${exp.grid.cardStyle === 'neumorphic' ? 'selected' : ''}>Neumorphic (Soft extrusion)</option>
+                                    <option value="brutalist" ${exp.grid.cardStyle === 'brutalist' ? 'selected' : ''}>Brutalist (Bold, hard shadows)</option>
+                                    <option value="polaroid" ${exp.grid.cardStyle === 'polaroid' ? 'selected' : ''}>Polaroid (Instant photo style)</option>
+                                    <option value="dark" ${exp.grid.cardStyle === 'dark' ? 'selected' : ''}>Dark Mode (High contrast dark)</option>
+                                    <option value="horizontal" ${exp.grid.cardStyle === 'horizontal' ? 'selected' : ''}>Horizontal (Image on left)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxItems">Max Items Per Page</label>
+                                <input type="number" id="maxItems" value="${exp.grid.maxItems}" min="1" max="100">
+                            </div>
+
+                            <div class="form-section-title" style="margin-top: 24px;">Display Options</div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showSearch ? 'active' : ''}" id="toggleSearch">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Search Bar</div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="gridOverlayStyle">Overlay Style</label>
+                                <select id="gridOverlayStyle">
+                                    <option value="lines" ${exp.grid.gridOverlayStyle === 'lines' ? 'selected' : ''}>Subtle Lines (Light)</option>
+                                    <option value="lines-dark" ${exp.grid.gridOverlayStyle === 'lines-dark' ? 'selected' : ''}>Bold Lines (Dark)</option>
+                                    <option value="dots" ${exp.grid.gridOverlayStyle === 'dots' ? 'selected' : ''}>Polka Dots (Light)</option>
+                                    <option value="dots-dark" ${exp.grid.gridOverlayStyle === 'dots-dark' ? 'selected' : ''}>Polka Dots (Dark)</option>
+                                    <option value="blueprint" ${exp.grid.gridOverlayStyle === 'blueprint' ? 'selected' : ''}>Classic Blueprint</option>
+                                    <option value="blueprint-dark" ${exp.grid.gridOverlayStyle === 'blueprint-dark' ? 'selected' : ''}>Night Blueprint</option>
+                                    <option value="crosshairs" ${exp.grid.gridOverlayStyle === 'crosshairs' ? 'selected' : ''}>Technical Crosshairs</option>
+                                    <option value="terminal" ${exp.grid.gridOverlayStyle === 'terminal' ? 'selected' : ''}>Matrix Green</option>
+                                    <option value="warning" ${exp.grid.gridOverlayStyle === 'warning' ? 'selected' : ''}>Hazard Orange</option>
+                                    <option value="hot-pink" ${exp.grid.gridOverlayStyle === 'hot-pink' ? 'selected' : ''}>Cyberpunk Pink</option>
+                                    <option value="thirds" ${exp.grid.gridOverlayStyle === 'thirds' ? 'selected' : ''}>Rule of Thirds</option>
+                                    <option value="scanlines" ${exp.grid.gridOverlayStyle === 'scanlines' ? 'selected' : ''}>Retro Scanlines</option>
+                                    <option value="golden" ${exp.grid.gridOverlayStyle === 'golden' ? 'selected' : ''}>Golden Ratio</option>
+                                    <option value="isometric" ${exp.grid.gridOverlayStyle === 'isometric' ? 'selected' : ''}>Isometric Grid</option>
+                                </select>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showNav ? 'active' : ''}" id="toggleNav">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Navigation Bar</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showFooter ? 'active' : ''}" id="toggleFooter">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Footer</div>
+                            </div>
+                            
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showImage ? 'active' : ''}" id="toggleImage">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Image</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showTitle ? 'active' : ''}" id="toggleTitle">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Title</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showSubtitle ? 'active' : ''}" id="toggleSubtitle">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Subtitle</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showTags ? 'active' : ''}" id="toggleTags">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Tags</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showDescription ? 'active' : ''}" id="toggleDescription">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Description</div>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e6ed;">
+                                <button class="btn btn-secondary btn-sm" id="btnSaveGridPreset">
+                                    💾 Save current config as Preset
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Experiment Mode Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">Experiment Mode</div>
+                            <div class="form-group">
+                                <label for="experimentMode">Interaction Type</label>
+                                <select id="experimentMode">
+                                    <option value="action_transcript" ${exp.mode === 'action_transcript' ? 'selected' : ''}>Action and Transcript (Full interactive)</option>
+                                    <option value="transcript_only" ${exp.mode === 'transcript_only' ? 'selected' : ''}>Transcript Only (No voice-driven actions)</option>
+                                </select>
+                                <div class="text-muted" style="margin-top: 6px;">
+                                    <strong>Action and Transcript:</strong> Voice queries trigger API searches.<br>
+                                    <strong>Transcript Only:</strong> Voice is recorded and transcribed, but the interface does not react.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: API SOURCE -->
+                    <div class="tab-content ${state.currentTab === 'api' ? 'active' : ''}" id="tab-api">
+                        <!-- API Configuration Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">API Source</div>
+                            
+                            <!-- API Preset Picker -->
+                            <div class="form-group" style="margin-bottom: 1.25rem;">
+                                <label class="form-label">Load from Preset</label>
+                                <p class="form-hint">Select a pre-configured API to auto-fill all settings below.</p>
+                                <div id="adapterPickerGrid" style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                                    gap: 0.5rem;
+                                    margin-top: 0.5rem;
+                                ">
+                                    <!-- Cards injected by JS -->
+                                </div>
+                            </div>
+                            <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid #e2e6ed;">
+
+                                                        <div class="form-group">
+                                <label for="apiEndpoint">API Endpoint URL</label>
+                                <input type="text" id="apiEndpoint" value="${escapeHtml(exp.api.endpoint)}" placeholder="https://api.example.com/v2/objects/search">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="authType">Authentication Type</label>
+                                <select id="authType">
+                                    <option value="none" ${exp.api.authType === 'none' ? 'selected' : ''}>None</option>
+                                    <option value="bearer" ${exp.api.authType === 'bearer' ? 'selected' : ''}>Bearer Token</option>
+                                    <option value="apikey" ${exp.api.authType === 'apikey' ? 'selected' : ''}>API Key</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group ${exp.api.authType === 'none' ? 'hidden' : ''}" id="authValueGroup">
+                                <label for="authValue">${exp.api.authType === 'bearer' ? 'Bearer Token' : 'API Key'}</label>
+                                <input type="text" id="authValue" value="${escapeHtml(exp.api.authValue)}" placeholder="Enter your authentication token">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="defaultParams">Request Parameters (JSON)</label>
+                                <textarea id="defaultParams" placeholder='{"limit": 20, "lang": "en"}'>${exp.api.defaultParams}</textarea>
+                                <div class="text-muted" style="margin-top: 6px;">Default query parameters to append to requests</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="voiceParamKey">Voice Query Parameter Key</label>
+                                <input type="text" id="voiceParamKey" value="${escapeHtml(exp.api.voiceParamKey)}" placeholder="e.g., q">
+                                <div class="text-muted" style="margin-top: 6px;">The URL parameter name that receives voice/search queries</div>
+                            </div>
+                        </div>
+
+                        <!-- Response Field Mapping -->
+                        <div class="form-section">
+                            <div class="form-section-title">Response Field Mapping</div>
+                            
+                            <div class="form-group">
+                                <label for="mappingItemsPath">Items Array Path (dot notation)</label>
+                                <input type="text" id="mappingItemsPath" value="${escapeHtml(exp.api.mapping.itemsPath)}" placeholder="e.g., records or data.items">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingId">ID Field</label>
+                                <input type="text" id="mappingId" value="${escapeHtml(exp.api.mapping.id)}" placeholder="e.g., systemNumber">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingTitle">Title Field</label>
+                                <input type="text" id="mappingTitle" value="${escapeHtml(exp.api.mapping.title)}" placeholder="e.g., _primaryTitle">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingSubtitle">Subtitle Field</label>
+                                <input type="text" id="mappingSubtitle" value="${escapeHtml(exp.api.mapping.subtitle)}" placeholder="e.g., _primaryMaker.name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingDescription">Description Field</label>
+                                <input type="text" id="mappingDescription" value="${escapeHtml(exp.api.mapping.description)}" placeholder="e.g., _primaryDescription.value">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingImageUrl">Image URL Field</label>
+                                <input type="text" id="mappingImageUrl" value="${escapeHtml(exp.api.mapping.imageUrl)}" placeholder="e.g., _images._primary_thumbnail">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingTags">Tags Field</label>
+                                <input type="text" id="mappingTags" value="${escapeHtml(exp.api.mapping.tags)}" placeholder="e.g., _objectType">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary btn-sm" id="btnTestConnection">Test Connection</button>
+                        <div id="testResult"></div>
+                    </div>
+
+                    <!-- TAB: RUN -->
+                    <div class="tab-content ${state.currentTab === 'run' ? 'active' : ''}" id="tab-run">
+                        <div class="form-section">
+                            <div class="form-section-title">Study Execution</div>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                                <div style="background: #f0f7ff; border: 1px solid #d0e8ff; padding: 1rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 0.75rem; color: #4f6ef7; font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">Total Sessions</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #111827;">${totalSessions}</div>
+                                </div>
+                                <div style="background: #f0fff4; border: 1px solid #dcfce7; padding: 1rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 0.75rem; color: #10b981; font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">Avg. Duration</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #111827;">${avgDurationMin}m</div>
+                                </div>
+                                <div style="background: #fff9f0; border: 1px solid #ffedd5; padding: 1rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 0.75rem; color: #f59e0b; font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">Interactions</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #111827;">${totalInteractions}</div>
+                                </div>
+                            </div>
+                            
+                            ${(!exp.api.endpoint || !exp.pis.studyTitle) ? `
+                                <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; gap: 0.75rem; align-items: flex-start;">
+                                    <span style="font-size: 1.25rem;">⚠️</span>
+                                    <div style="font-size: 0.85rem; color: #92400e;">
+                                        <strong>Configuration Required:</strong> Before running the experiment, please ensure you have:
+                                        <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                            ${!exp.pis.studyTitle ? '<li>Added a Study Title in the PIS tab</li>' : ''}
+                                            ${!exp.api.endpoint ? '<li>Configured an API Source in the API Source tab</li>' : ''}
+                                        </ul>
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            <button class="btn btn-run-experiment" id="btnRunExperiment" style="margin-top: 0;" ${(!exp.api.endpoint || !exp.pis.studyTitle) ? 'disabled' : ''}>
+                                🚀 Run Experiment Session
+                            </button>
+                            <p class="form-hint" style="margin-top: 0.75rem;">Launch the participant-facing experiment runner for this study.</p>
+                        </div>
+                    </div>
+
+                    <!-- TAB: EXPORT -->
+                    <div class="tab-content ${state.currentTab === 'export' ? 'active' : ''}" id="tab-export">
+                        <div class="form-section">
+                            <div class="form-section-title">Data Export & Management</div>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                                    <button class="btn btn-secondary btn-sm" id="btnExportAllJSON">
+                                        📥 Download All Sessions (JSON)
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" id="btnExportAllCSV">
+                                        📄 Download Summary (CSV)
+                                    </button>
+                                </div>
+                                <p class="form-hint">Bulk export includes all participant transcripts, interaction logs, and metadata for this experiment.</p>
+                                
+                                <div style="margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid #fee2e2;">
+                                    <label class="form-label" style="color: #ef4444;">Danger Zone</label>
+                                    <button class="btn btn-secondary btn-sm" id="btnDeleteExperimentDeep" style="border-color: #ef4444; color: #ef4444;">
+                                        Delete Experiment & All Associated Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: PIS -->
+                    <div class="tab-content ${state.currentTab === 'pis' ? 'active' : ''}" id="tab-pis">
+                        <div class="form-section">
+                            <div class="form-section-title">Participant Information Sheet</div>
+                            <div class="form-group">
+                                <label for="pisStudyTitle">Study Title</label>
+                                <input type="text" id="pisStudyTitle" value="${escapeHtml(exp.pis.studyTitle)}" placeholder="e.g., Voice-Controlled Museum Search">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="pisResearcher">Lead Researcher Name</label>
+                                    <input type="text" id="pisResearcher" value="${escapeHtml(exp.pis.researcher)}" placeholder="e.g., Dr. Jane Smith">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pisInstitution">Institution</label>
+                                    <input type="text" id="pisInstitution" value="${escapeHtml(exp.pis.institution)}" placeholder="e.g., University of Oxford">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisContact">Contact Email</label>
+                                <input type="email" id="pisContact" value="${escapeHtml(exp.pis.contact)}" placeholder="researcher@institution.ac.uk">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Consent Information</div>
+                            <div class="form-group">
+                                <label for="pisPurpose">Study Purpose</label>
+                                <textarea id="pisPurpose" placeholder="Describe the main purpose of the study...">${escapeHtml(exp.pis.purpose)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisInvolvement">What Participation Involves</label>
+                                <textarea id="pisInvolvement" placeholder="Detail what participants will be asked to do...">${escapeHtml(exp.pis.involvement)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisDataHandling">Data Handling</label>
+                                <textarea id="pisDataHandling" placeholder="Explain how data will be stored, processed, and protected...">${escapeHtml(exp.pis.dataHandling)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pisWithdrawal">Withdrawal Rights</label>
+                                <textarea id="pisWithdrawal" placeholder="Explain participants' right to withdraw...">${escapeHtml(exp.pis.withdrawal)}</textarea>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" id="btnPreviewPis">Preview PIS</button>
+                    </div>
+
+                    <!-- TAB: GRID & API -->
+                    <div class="tab-content ${state.currentTab === 'grid' ? 'active' : ''}" id="tab-grid">
+                        <!-- Grid Layout Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">Grid Layout</div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label class="form-label">Quick Grid Presets</label>
+                                <p class="form-hint">Instantly configure columns and display options.</p>
+                                <div id="gridPresetPickerGrid" style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                                    gap: 0.5rem;
+                                    margin-top: 0.5rem;
+                                ">
+                                    <!-- Cards injected by JS -->
+                                </div>
+                            </div>
+                            
+                            <div class="slider-group">
+                                <div class="slider-label">
+                                    <label>Columns</label>
+                                    <span class="slider-value" id="columnsValue">${exp.grid.columns}</span>
+                                </div>
+                                <input type="range" id="gridColumns" min="1" max="6" value="${exp.grid.columns}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardHeight">Card Height</label>
+                                <select id="cardHeight">
+                                    <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short</option>
+                                    <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium</option>
+                                    <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardStyle">Visual Style</label>
+                                <select id="cardStyle">
+                                    <option value="modern" ${exp.grid.cardStyle === 'modern' ? 'selected' : ''}>Modern (Rounded, subtle shadow)</option>
+                                    <option value="classic" ${exp.grid.cardStyle === 'classic' ? 'selected' : ''}>Classic (Sharp borders, flat)</option>
+                                    <option value="minimal" ${exp.grid.cardStyle === 'minimal' ? 'selected' : ''}>Minimal (No border, very light)</option>
+                                    <option value="glass" ${exp.grid.cardStyle === 'glass' ? 'selected' : ''}>Glassmorphism (Frosted glass)</option>
+                                    <option value="elevated" ${exp.grid.cardStyle === 'elevated' ? 'selected' : ''}>Elevated (Deep shadow, floating)</option>
+                                    <option value="neumorphic" ${exp.grid.cardStyle === 'neumorphic' ? 'selected' : ''}>Neumorphic (Soft extrusion)</option>
+                                    <option value="brutalist" ${exp.grid.cardStyle === 'brutalist' ? 'selected' : ''}>Brutalist (Bold, hard shadows)</option>
+                                    <option value="polaroid" ${exp.grid.cardStyle === 'polaroid' ? 'selected' : ''}>Polaroid (Instant photo style)</option>
+                                    <option value="dark" ${exp.grid.cardStyle === 'dark' ? 'selected' : ''}>Dark Mode (High contrast dark)</option>
+                                    <option value="horizontal" ${exp.grid.cardStyle === 'horizontal' ? 'selected' : ''}>Horizontal (Image on left)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxItems">Max Items Per Page</label>
+                                <input type="number" id="maxItems" value="${exp.grid.maxItems}" min="1" max="100">
+                            </div>
+
+                            <div class="form-section-title" style="margin-top: 24px;">Display Options</div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showSearch ? 'active' : ''}" id="toggleSearch">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Search Bar</div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="gridOverlayStyle">Overlay Style</label>
+                                <select id="gridOverlayStyle">
+                                    <option value="lines" ${exp.grid.gridOverlayStyle === 'lines' ? 'selected' : ''}>Subtle Lines (Light)</option>
+                                    <option value="lines-dark" ${exp.grid.gridOverlayStyle === 'lines-dark' ? 'selected' : ''}>Bold Lines (Dark)</option>
+                                    <option value="dots" ${exp.grid.gridOverlayStyle === 'dots' ? 'selected' : ''}>Polka Dots (Light)</option>
+                                    <option value="dots-dark" ${exp.grid.gridOverlayStyle === 'dots-dark' ? 'selected' : ''}>Polka Dots (Dark)</option>
+                                    <option value="blueprint" ${exp.grid.gridOverlayStyle === 'blueprint' ? 'selected' : ''}>Classic Blueprint</option>
+                                    <option value="blueprint-dark" ${exp.grid.gridOverlayStyle === 'blueprint-dark' ? 'selected' : ''}>Night Blueprint</option>
+                                    <option value="crosshairs" ${exp.grid.gridOverlayStyle === 'crosshairs' ? 'selected' : ''}>Technical Crosshairs</option>
+                                    <option value="terminal" ${exp.grid.gridOverlayStyle === 'terminal' ? 'selected' : ''}>Matrix Green</option>
+                                    <option value="warning" ${exp.grid.gridOverlayStyle === 'warning' ? 'selected' : ''}>Hazard Orange</option>
+                                    <option value="hot-pink" ${exp.grid.gridOverlayStyle === 'hot-pink' ? 'selected' : ''}>Cyberpunk Pink</option>
+                                    <option value="thirds" ${exp.grid.gridOverlayStyle === 'thirds' ? 'selected' : ''}>Rule of Thirds</option>
+                                    <option value="scanlines" ${exp.grid.gridOverlayStyle === 'scanlines' ? 'selected' : ''}>Retro Scanlines</option>
+                                    <option value="golden" ${exp.grid.gridOverlayStyle === 'golden' ? 'selected' : ''}>Golden Ratio</option>
+                                    <option value="isometric" ${exp.grid.gridOverlayStyle === 'isometric' ? 'selected' : ''}>Isometric Grid</option>
+                                </select>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showNav ? 'active' : ''}" id="toggleNav">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Navigation Bar</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showFooter ? 'active' : ''}" id="toggleFooter">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Footer</div>
+                            </div>
+                            
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showImage ? 'active' : ''}" id="toggleImage">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Image</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showTitle ? 'active' : ''}" id="toggleTitle">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Title</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showSubtitle ? 'active' : ''}" id="toggleSubtitle">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Subtitle</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showTags ? 'active' : ''}" id="toggleTags">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Tags</div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showDescription ? 'active' : ''}" id="toggleDescription">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Show Description</div>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e6ed;">
+                                <button class="btn btn-secondary btn-sm" id="btnSaveGridPreset">
+                                    💾 Save current config as Preset
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Experiment Mode Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">Experiment Mode</div>
+                            <div class="form-group">
+                                <label for="experimentMode">Interaction Type</label>
+                                <select id="experimentMode">
+                                    <option value="action_transcript" ${exp.mode === 'action_transcript' ? 'selected' : ''}>Action and Transcript (Full interactive)</option>
+                                    <option value="transcript_only" ${exp.mode === 'transcript_only' ? 'selected' : ''}>Transcript Only (No voice-driven actions)</option>
+                                </select>
+                                <div class="text-muted" style="margin-top: 6px;">
+                                    <strong>Action and Transcript:</strong> Voice queries trigger API searches.<br>
+                                    <strong>Transcript Only:</strong> Voice is recorded and transcribed, but the interface does not react.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- API Configuration Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">API Source</div>
+                            
+                            <!-- API Preset Picker -->
+                            <div class="form-group" style="margin-bottom: 1.25rem;">
+                                <label class="form-label">Load from Preset</label>
+                                <p class="form-hint">Select a pre-configured API to auto-fill all settings below.</p>
+                                <div id="adapterPickerGrid" style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                                    gap: 0.5rem;
+                                    margin-top: 0.5rem;
+                                ">
+                                    <!-- Cards injected by JS -->
+                                </div>
+                            </div>
+                            <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid #e2e6ed;">
+
+                                                        <div class="form-group">
+                                <label for="apiEndpoint">API Endpoint URL</label>
+                                <input type="text" id="apiEndpoint" value="${escapeHtml(exp.api.endpoint)}" placeholder="https://api.example.com/v2/objects/search">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="authType">Authentication Type</label>
+                                <select id="authType">
+                                    <option value="none" ${exp.api.authType === 'none' ? 'selected' : ''}>None</option>
+                                    <option value="bearer" ${exp.api.authType === 'bearer' ? 'selected' : ''}>Bearer Token</option>
+                                    <option value="apikey" ${exp.api.authType === 'apikey' ? 'selected' : ''}>API Key</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group ${exp.api.authType === 'none' ? 'hidden' : ''}" id="authValueGroup">
+                                <label for="authValue">${exp.api.authType === 'bearer' ? 'Bearer Token' : 'API Key'}</label>
+                                <input type="text" id="authValue" value="${escapeHtml(exp.api.authValue)}" placeholder="Enter your authentication token">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="defaultParams">Request Parameters (JSON)</label>
+                                <textarea id="defaultParams" placeholder='{"limit": 20, "lang": "en"}'>${exp.api.defaultParams}</textarea>
+                                <div class="text-muted" style="margin-top: 6px;">Default query parameters to append to requests</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="voiceParamKey">Voice Query Parameter Key</label>
+                                <input type="text" id="voiceParamKey" value="${escapeHtml(exp.api.voiceParamKey)}" placeholder="e.g., q">
+                                <div class="text-muted" style="margin-top: 6px;">The URL parameter name that receives voice/search queries</div>
+                            </div>
+                        </div>
+
+                        <!-- Response Field Mapping -->
+                        <div class="form-section">
+                            <div class="form-section-title">Response Field Mapping</div>
+                            
+                            <div class="form-group">
+                                <label for="mappingItemsPath">Items Array Path (dot notation)</label>
+                                <input type="text" id="mappingItemsPath" value="${escapeHtml(exp.api.mapping.itemsPath)}" placeholder="e.g., records or data.items">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingId">ID Field</label>
+                                <input type="text" id="mappingId" value="${escapeHtml(exp.api.mapping.id)}" placeholder="e.g., systemNumber">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingTitle">Title Field</label>
+                                <input type="text" id="mappingTitle" value="${escapeHtml(exp.api.mapping.title)}" placeholder="e.g., _primaryTitle">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingSubtitle">Subtitle Field</label>
+                                <input type="text" id="mappingSubtitle" value="${escapeHtml(exp.api.mapping.subtitle)}" placeholder="e.g., _primaryMaker.name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingDescription">Description Field</label>
+                                <input type="text" id="mappingDescription" value="${escapeHtml(exp.api.mapping.description)}" placeholder="e.g., _primaryDescription.value">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingImageUrl">Image URL Field</label>
+                                <input type="text" id="mappingImageUrl" value="${escapeHtml(exp.api.mapping.imageUrl)}" placeholder="e.g., _images._primary_thumbnail">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mappingTags">Tags Field</label>
+                                <input type="text" id="mappingTags" value="${escapeHtml(exp.api.mapping.tags)}" placeholder="e.g., _objectType">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary btn-sm" id="btnTestConnection">Test Connection</button>
+                        <div id="testResult"></div>
+                    </div>
+
+                    <!-- TAB: PARTICIPANTS -->
+                    <div class="tab-content ${state.currentTab === 'participants' ? 'active' : ''}" id="tab-participants">
+                        <div class="form-section">
+                            <div class="form-section-title">Session Data</div>
+                            
+                            ${exp.participants.length > 0 ? `
+                                <div class="table-wrapper">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Participant ID</th>
+                                                <th>Session Started</th>
+                                                <th>Session Ended</th>
+                                                <th>Duration (min)</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${exp.participants.map(p => {
+                                                const started = new Date(p.startedAt).toLocaleString();
+                                                const ended = p.endedAt ? new Date(p.endedAt).toLocaleString() : 'In progress';
+                                                const duration = p.endedAt 
+                                                    ? Math.round((new Date(p.endedAt) - new Date(p.startedAt)) / 60000)
+                                                    : '-';
+                                                return `
+                                                    <tr>
+                                                        <td><strong>${escapeHtml(p.id)}</strong></td>
+                                                        <td>${started}</td>
+                                                        <td>${ended}</td>
+                                                        <td>${duration}</td>
+                                                        <td style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                                                            <button class="btn-action continue btn-continue-participant" data-participant-id="${p.id}" title="Resume session">
+                                                                Continue
+                                                            </button>
+                                                            <button class="btn-action json btn-download-session" data-participant-id="${p.id}" title="Download session JSON">
+                                                                ↓ JSON
+                                                            </button>
+                                                            ${p.endedAt ? `
+                                                            <a href="/api/audio/${exp.id}/${p.id}" download
+                                                               class="btn-action audio"
+                                                               title="Download audio recording">
+                                                                ↓ Audio
+                                                            </a>` : ''}
+                                                            <button class="btn-action delete btn-delete-participant" data-participant-id="${p.id}" title="Remove participant data">
+                                                                Delete
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                `;
+                                            }).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                                    <button class="btn btn-secondary btn-sm" id="btnExportJSON">Export as JSON</button>
+                                    <button class="btn btn-secondary btn-sm" id="btnExportCSV">Export as CSV</button>
+                                </div>
+                            ` : `
+                                <div class="text-muted">No participants yet. Start an experiment to create sessions.</div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add tab switch listeners
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.currentTab = btn.dataset.tab;
+                    renderDetailPanel();
+                });
+            });
+
+            // Run tab listeners
+            if (state.currentTab === 'run') {
+                document.getElementById('btnRunExperiment').addEventListener('click', async () => {
+                    const participantId = generateParticipantId();
+                    const participant = {
+                        id: participantId,
+                        experimentId: exp.id,
+                        startedAt: new Date().toISOString(),
+                        endedAt: null,
+                        exported: false
+                    };
+                    
+                    // Persist participant to database before navigating
+                    const result = await dbRequest('/api/participants', {
+                        method: 'POST',
+                        body: JSON.stringify(participant)
+                    });
+                    if (!result || !result.ok) {
+                        showToast('Failed to create participant record. Please try again.', 'error');
+                        return;
+                    }
+                    exp.participants.push(participant);
+
+                    window.location.href = `experiment.html?expId=${exp.id}&participantId=${participantId}`;
+                });
+            }
+
+            // Export tab listeners
+            if (state.currentTab === 'export') {
+                document.getElementById('btnExportAllJSON').addEventListener('click', async () => {
+                    await exportParticipantsJSON(exp);
+                });
+                document.getElementById('btnExportAllCSV').addEventListener('click', async () => {
+                    await exportParticipantsCSV(exp);
+                });
+                document.getElementById('btnDeleteExperimentDeep').addEventListener('click', async () => {
+                    if (confirm(`⚠️ DANGER: This will permanently delete the experiment "${exp.name}" AND all participant data, transcripts, and audio recordings. This cannot be undone. Proceed?`)) {
+                        await deleteExperiment(exp.id);
+                        renderUI();
+                        showToast('Experiment and all associated data deleted', 'success');
+                    }
+                });
+            }
+
+            // Overview tab listeners
+            if (state.currentTab === 'overview') {
+                document.getElementById('expName').addEventListener('input', (e) => {
+                    updateExperiment(exp.id, { name: e.target.value });
+                    document.querySelector('.detail-title').textContent = e.target.value;
+                    renderExperimentsList();
+                });
+                document.getElementById('expDesc').addEventListener('input', (e) => {
+                    updateExperiment(exp.id, { description: e.target.value });
+                });
+                document.getElementById('expStatus').addEventListener('change', (e) => {
+                    updateExperiment(exp.id, { status: e.target.value });
+                    renderExperimentsList();
+                });
+                document.getElementById('expDuration').addEventListener('input', (e) => {
+                    updateExperiment(exp.id, { duration: parseInt(e.target.value) });
+                });
+            }
+
+            // PIS tab listeners
+            if (state.currentTab === 'pis') {
+                const pisFields = [
+                    { id: 'pisStudyTitle', key: 'studyTitle' },
+                    { id: 'pisResearcher', key: 'researcher' },
+                    { id: 'pisInstitution', key: 'institution' },
+                    { id: 'pisContact', key: 'contact' },
+                    { id: 'pisPurpose', key: 'purpose' },
+                    { id: 'pisInvolvement', key: 'involvement' },
+                    { id: 'pisDataHandling', key: 'dataHandling' },
+                    { id: 'pisWithdrawal', key: 'withdrawal' }
+                ];
+
+                pisFields.forEach(field => {
+                    const el = document.getElementById(field.id);
+                    if (el) {
+                        el.addEventListener('input', (e) => {
+                            exp.pis[field.key] = e.target.value;
+                            saveStateSoon();
+                        });
+                    }
+                });
+
+                document.getElementById('btnPreviewPis').addEventListener('click', () => {
+                    showPisPreview(exp);
+                });
+            }
+
+            // Grid Layout tab listeners
+            if (state.currentTab === 'grid-layout') {
+                // Grid settings
+                document.getElementById('gridColumns').addEventListener('input', (e) => {
+                    exp.grid.columns = parseInt(e.target.value);
+                    document.getElementById('columnsValue').textContent = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('cardHeight').addEventListener('change', (e) => {
+                    exp.grid.cardHeight = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('cardStyle').addEventListener('change', (e) => {
+                    exp.grid.cardStyle = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('gridOverlayStyle').addEventListener('change', (e) => {
+                    exp.grid.gridOverlayStyle = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('experimentMode').addEventListener('change', (e) => {
+                    exp.mode = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('maxItems').addEventListener('input', (e) => {
+                    exp.grid.maxItems = parseInt(e.target.value);
+                    saveStateSoon();
+                });
+
+                document.getElementById('btnSaveGridPreset').addEventListener('click', async () => {
+                    const name = prompt('Enter a name for this grid preset:');
+                    if (name && name.trim()) {
+                        await createGridPreset(name, exp.grid);
+                    }
+                });
+
+                // Toggle switches
+                const toggles = [
+                    { id: 'toggleSearch', key: 'showSearch' },
+                    { id: 'toggleNav', key: 'showNav' },
+                    { id: 'toggleFooter', key: 'showFooter' },
+                    { id: 'toggleImage', key: 'showImage' },
+                    { id: 'toggleTitle', key: 'showTitle' },
+                    { id: 'toggleSubtitle', key: 'showSubtitle' },
+                    { id: 'toggleTags', key: 'showTags' },
+                    { id: 'toggleDescription', key: 'showDescription' }
+                ];
+
+                toggles.forEach(toggle => {
+                    const el = document.getElementById(toggle.id);
+                    if (el) {
+                        el.addEventListener('click', () => {
+                            el.classList.toggle('active');
+                            exp.grid[toggle.key] = el.classList.contains('active');
+                            saveStateSoon();
+                        });
+                    }
+                });
+
+                // Render preset picker
+                renderGridPresetPicker(exp.id);
+            }
+
+            // API Source tab listeners
+            if (state.currentTab === 'api') {
+                // API settings
+                document.getElementById('apiEndpoint').addEventListener('input', (e) => {
+                    exp.api.endpoint = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('authType').addEventListener('change', (e) => {
+                    exp.api.authType = e.target.value;
+                    const authGroup = document.getElementById('authValueGroup');
+                    if (e.target.value === 'none') {
+                        authGroup.classList.add('hidden');
+                    } else {
+                        authGroup.classList.remove('hidden');
+                        const label = authGroup.querySelector('label');
+                        label.textContent = e.target.value === 'bearer' ? 'Bearer Token' : 'API Key';
+                    }
+                    saveStateSoon();
+                });
+
+                document.getElementById('authValue').addEventListener('input', (e) => {
+                    exp.api.authValue = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('defaultParams').addEventListener('input', (e) => {
+                    exp.api.defaultParams = e.target.value;
+                    saveStateSoon();
+                });
+
+                document.getElementById('voiceParamKey').addEventListener('input', (e) => {
+                    exp.api.voiceParamKey = e.target.value;
+                    saveStateSoon();
+                });
+
+                // Field mapping
+                const mappingFields = [
+                    { id: 'mappingItemsPath', key: 'itemsPath' },
+                    { id: 'mappingId', key: 'id' },
+                    { id: 'mappingTitle', key: 'title' },
+                    { id: 'mappingSubtitle', key: 'subtitle' },
+                    { id: 'mappingDescription', key: 'description' },
+                    { id: 'mappingImageUrl', key: 'imageUrl' },
+                    { id: 'mappingTags', key: 'tags' }
+                ];
+
+                mappingFields.forEach(field => {
+                    const el = document.getElementById(field.id);
+                    if (el) {
+                        el.addEventListener('input', (e) => {
+                            exp.api.mapping[field.key] = e.target.value;
+                            saveStateSoon();
+                        });
+                    }
+                });
+
+                document.getElementById('btnTestConnection').addEventListener('click', () => {
+                    testApiConnection(exp);
+                });
+
+                // Render adapter picker
+                renderAdapterPicker(exp.id);
+            }
+
+            // Participants tab listeners
+            if (state.currentTab === 'participants' && exp.participants.length > 0) {
+                // Individual session downloads
+                document.querySelectorAll('.btn-download-session').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const pid = btn.dataset.participantId;
+                        await downloadParticipantSession(pid);
+                    });
+                });
+
+                // Continue session
+                document.querySelectorAll('.btn-continue-participant').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const pid = btn.dataset.participantId;
+                        window.location.href = `experiment.html?expId=${exp.id}&participantId=${pid}`;
+                    });
+                });
+
+                // Participant deletion
+                document.querySelectorAll('.btn-delete-participant').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const pid = btn.dataset.participantId;
+                        if (confirm(`Are you sure you want to permanently delete data for participant ${pid}? This cannot be undone.`)) {
+                            await deleteParticipant(exp.id, pid);
+                        }
+                    });
+                });
+
+                if (exp.participants.length > 0) {
+                    document.getElementById('btnExportJSON').addEventListener('click', async () => {
+                        await exportParticipantsJSON(exp);
+                    });
+
+                    document.getElementById('btnExportCSV').addEventListener('click', async () => {
+                        await exportParticipantsCSV(exp);
+                    });
+                }
+            }
+        }
+
+        function renderAdapterPicker(experimentId) {
+            const pickerGrid = document.getElementById('adapterPickerGrid');
+            if (!pickerGrid) {
+                return; // Picker not rendered on this tab
+            }
+
+            // Guard against missing apiAdapterRegistry
+            if (!window.apiAdapterRegistry) {
+                pickerGrid.innerHTML = '<div style="color: #7f8fa3; padding: 0.5rem;">API presets not loaded</div>';
+                return;
+            }
+
+            const exp = getExperiment(experimentId);
+            if (!exp) {
+                return;
+            }
+
+            // Get all adapters from registry
+            const adapters = window.apiAdapterRegistry.list();
+            
+            if (!adapters || adapters.length === 0) {
+                pickerGrid.innerHTML = '<div style="color: #7f8fa3; padding: 0.5rem;">No adapters available</div>';
+                return;
+            }
+
+            // Render each adapter as a card
+            pickerGrid.innerHTML = adapters.map(adapter => {
+                const descriptor = window.apiAdapterRegistry.get(adapter.id);
+                const isSelected = exp.api.endpoint && descriptor.config &&
+                    exp.api.endpoint === descriptor.config.endpoint;
+                
+                let keyWarning = '';
+                if (descriptor.requiresKey) {
+                    keyWarning = '<div class="adapter-card-key-warning">🔑 Key required</div>';
+                }
+
+                return `
+                    <div class="adapter-card ${isSelected ? 'selected' : ''}" data-adapter-id="${adapter.id}" style="cursor: pointer;">
+                        <div class="adapter-card-name">${escapeHtml(adapter.name)}</div>
+                        <div class="adapter-card-category">${escapeHtml(adapter.category || 'API')}</div>
+                        ${keyWarning}
+                    </div>
+                `;
+            }).join('');
+
+            // Add click handlers to cards
+            pickerGrid.querySelectorAll('.adapter-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const adapterId = card.dataset.adapterId;
+                    loadAdapterPreset(experimentId, adapterId);
+                });
+            });
+        }
+
+        function renderGridPresetPicker(experimentId) {
+            const pickerGrid = document.getElementById('gridPresetPickerGrid');
+            if (!pickerGrid) return;
+
+            const exp = getExperiment(experimentId);
+            if (!exp) return;
+
+            // Combine built-in and custom presets
+            const allPresets = [
+                ...GRID_PRESETS,
+                ...state.customGridPresets.map(p => ({
+                    id: `db-${p.id}`,
+                    dbId: p.id,
+                    name: p.name,
+                    category: p.category,
+                    description: p.description,
+                    config: p.config
+                }))
+            ];
+
+            pickerGrid.innerHTML = allPresets.map(preset => {
+                const isSelected = 
+                    exp.grid.columns === preset.config.columns && 
+                    exp.grid.cardHeight === preset.config.cardHeight &&
+                    exp.grid.cardStyle === preset.config.cardStyle &&
+                    exp.grid.showImage === preset.config.showImage;
+
+                // Visual dots to represent columns
+                const dots = Array(preset.config.columns).fill('●').join(' ');
+
+                return `
+                    <div class="adapter-card ${isSelected ? 'selected' : ''}" data-preset-id="${preset.id}" style="cursor: pointer; display: flex; flex-direction: column; min-height: 110px;">
+                        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:4px;">
+                            <div class="adapter-card-name">${escapeHtml(preset.name)}</div>
+                            <div style="font-size: 10px; color: #4f6ef7; background: #eef0fe; padding: 2px 6px; border-radius: 10px; font-weight: 700;">
+                                ${preset.config.columns} COL
+                            </div>
+                        </div>
+                        <div class="adapter-card-category" style="margin-bottom:8px;">${escapeHtml(preset.category)} ${preset.id.startsWith('db-') ? '👤' : ''}</div>
+                        
+                        <div style="font-size: 11px; color: #4b5563; line-height: 1.4; flex: 1;">
+                            ${escapeHtml(preset.description || '')}
+                        </div>
+
+                        <div style="margin-top: 8px; color: #d1d5db; letter-spacing: 2px; font-size: 8px;">
+                            ${dots}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            pickerGrid.querySelectorAll('.adapter-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const presetId = card.dataset.presetId;
+                    applyGridPreset(experimentId, presetId, allPresets);
+                });
+            });
+        }
+
+        async function createGridPreset(name, config) {
+            showToast('Saving preset...', 'info');
+            
+            // Generate a simple description
+            const desc = `${config.columns} col, ${config.maxItems} items. ${config.cardHeight} ${config.cardStyle} style.`;
+            
+            const preset = await dbRequest('/api/grid-presets', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name,
+                    category: 'Custom',
+                    description: desc,
+                    config
+                })
+            });
+
+            if (preset) {
+                state.customGridPresets.unshift(preset);
+                renderGridPresetPicker(state.selectedExperimentId);
+                showToast('Preset saved to database', 'success');
+            }
+        }
+
+        function applyGridPreset(experimentId, presetKey, availablePresets = null) {
+            const exp = getExperiment(experimentId);
+            if (!exp) return;
+
+            const allPresets = availablePresets || [
+                ...GRID_PRESETS,
+                ...state.customGridPresets.map(p => ({
+                    id: `db-${p.id}`,
+                    config: p.config,
+                    name: p.name
+                }))
+            ];
+
+            const preset = allPresets.find(p => p.id === presetKey);
+            if (!preset) return;
+
+            // Apply to experiment
+            exp.grid = { ...exp.grid, ...preset.config };
+            saveState();
+
+            // Refresh UI
+            renderDetailPanel();
+            showToast(`Applied ${preset.name} layout`, 'success');
+        }
+
+        function loadAdapterPreset(experimentId, adapterId) {
+            if (!window.apiAdapterRegistry) {
+                showToast('API adapter registry not available', 'error');
+                return;
+            }
+
+            const exp = getExperiment(experimentId);
+            if (!exp) {
+                return;
+            }
+
+            const descriptor = window.apiAdapterRegistry.get(adapterId);
+            if (!descriptor || !descriptor.config) {
+                showToast('Adapter not found or misconfigured', 'error');
+                return;
+            }
+
+            // Check if current API settings exist and warn if overwriting
+            if (exp.api.endpoint && exp.api.endpoint.trim() !== '') {
+                if (!confirm('This will overwrite your current API settings. Continue?')) {
+                    return;
+                }
+            }
+
+            // Update experiment's api config from adapter's config property
+            const cfg = descriptor.config;
+            exp.api.endpoint = cfg.endpoint || '';
+            exp.api.authType = cfg.authType || 'none';
+            exp.api.authValue = cfg.authValue || '';
+            exp.api.defaultParams = cfg.defaultParams || '{}';
+            exp.api.voiceParamKey = cfg.voiceParamKey || 'q';
+
+            // Update mapping if provided
+            if (cfg.mapping) {
+                exp.api.mapping = {
+                    ...exp.api.mapping,
+                    ...cfg.mapping
+                };
+            }
+
+            // Save to server
+            saveState();
+
+            // Update form fields to reflect new values
+            const apiEndpointEl = document.getElementById('apiEndpoint');
+            const authTypeEl = document.getElementById('authType');
+            const authValueEl = document.getElementById('authValue');
+            const authValueGroupEl = document.getElementById('authValueGroup');
+            const defaultParamsEl = document.getElementById('defaultParams');
+            const voiceParamKeyEl = document.getElementById('voiceParamKey');
+            const cardStyleEl = document.getElementById('cardStyle');
+
+            if (apiEndpointEl) apiEndpointEl.value = exp.api.endpoint;
+            if (cardStyleEl) cardStyleEl.value = exp.grid.cardStyle || 'modern';
+            if (authTypeEl) {
+                authTypeEl.value = exp.api.authType;
+                if (authValueGroupEl) {
+                    if (exp.api.authType === 'none') {
+                        authValueGroupEl.classList.add('hidden');
+                    } else {
+                        authValueGroupEl.classList.remove('hidden');
+                        const label = authValueGroupEl.querySelector('label');
+                        if (label) {
+                            label.textContent = exp.api.authType === 'bearer' ? 'Bearer Token' : 'API Key';
+                        }
+                    }
+                }
+            }
+            if (authValueEl) authValueEl.value = exp.api.authValue;
+            if (defaultParamsEl) defaultParamsEl.value = exp.api.defaultParams;
+            if (voiceParamKeyEl) voiceParamKeyEl.value = exp.api.voiceParamKey;
+
+            // Update mapping fields
+            const mappingFields = [
+                { id: 'mappingItemsPath', key: 'itemsPath' },
+                { id: 'mappingId', key: 'id' },
+                { id: 'mappingTitle', key: 'title' },
+                { id: 'mappingSubtitle', key: 'subtitle' },
+                { id: 'mappingDescription', key: 'description' },
+                { id: 'mappingImageUrl', key: 'imageUrl' },
+                { id: 'mappingTags', key: 'tags' }
+            ];
+
+            mappingFields.forEach(field => {
+                const el = document.getElementById(field.id);
+                if (el) {
+                    el.value = exp.api.mapping[field.key] || '';
+                }
+            });
+
+            // Re-render adapter picker to show selection
+            renderAdapterPicker(experimentId);
+
+            // Show toast notifications
+            showToast(`Loaded ${descriptor.name} preset — review and save settings`, 'success');
+            
+            if (descriptor.requiresKey) {
+                showToast('This API requires an API key. See the keyInstructions field.', 'info');
+            }
+        }
+
+
+                                function renderUI() {
+                                    const userJson = sessionStorage.getItem('vrp_user');
+                                    if (userJson) {
+                                        const user = JSON.parse(userJson);
+                                        const display = document.getElementById('currentUserDisplay');
+                                        if (display) {
+                                            display.innerHTML = `
+                                                <div class="user-badge">
+                                                    <div class="user-icon">👤</div>
+                                                    <span>${escapeHtml(user.username)}</span>
+                                                </div>
+                                            `;
+                                        }
+                                    }
+                                    renderExperimentsList();            renderDetailPanel();
+        }
+
+        // ============================================================
+        // TAB MANAGEMENT
+        // ============================================================
+        // (Handled inline in renderDetailPanel)
+
+        // ============================================================
+        // API TEST
+        // ============================================================
+        async function testApiConnection(exp) {
+            const resultDiv = document.getElementById('testResult');
+            
+            if (!exp.api.endpoint) {
+                resultDiv.innerHTML = '<div class="test-result error">Please enter an API endpoint URL</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="test-result">Testing connection...</div>';
+
+            try {
+                // Build request
+                let url = exp.api.endpoint;
+                const params = {};
+
+                // Add default params
+                try {
+                    const defaults = JSON.parse(exp.api.defaultParams || '{}');
+                    Object.assign(params, defaults);
+                } catch (e) {
+                    throw new Error('Invalid JSON in request parameters');
+                }
+
+                // Add voice param as test
+                params[exp.api.voiceParamKey || 'q'] = 'test';
+
+                const queryString = new URLSearchParams(params).toString();
+                if (queryString) {
+                    url += (url.includes('?') ? '&' : '?') + queryString;
+                }
+
+                // Make request
+                const headers = {
+                    'Accept': 'application/json'
+                };
+                if (exp.api.authType !== 'none' && exp.api.authValue) {
+                    headers['x-auth-value'] = exp.api.authValue;
+                }
+
+                const proxyUrl = `/proxy?url=${encodeURIComponent(url)}`;
+                const response = await fetch(proxyUrl, { headers });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+
+                // Try to map response
+                const itemsPath = exp.api.mapping.itemsPath || 'records';
+                const items = getNestedValue(data, itemsPath) || [];
+                const firstItem = Array.isArray(items) ? items[0] : null;
+
+                if (firstItem) {
+                    const mapped = {
+                        id: getNestedValue(firstItem, exp.api.mapping.id),
+                        title: getNestedValue(firstItem, exp.api.mapping.title),
+                        subtitle: getNestedValue(firstItem, exp.api.mapping.subtitle),
+                        description: getNestedValue(firstItem, exp.api.mapping.description),
+                        imageUrl: getNestedValue(firstItem, exp.api.mapping.imageUrl),
+                        tags: getNestedValue(firstItem, exp.api.mapping.tags)
+                    };
+
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            <strong>Success!</strong> Found ${Array.isArray(items) ? items.length : 1} items<br><br>
+                            <strong>First item (mapped):</strong><br>
+                            ${Object.entries(mapped).map(([k, v]) => `<strong>${k}:</strong> ${escapeHtml(String(v || '-'))}`).join('<br>')}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="test-result error">Could not find items in response. Check your items array path.</div>';
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="test-result error"><strong>Error:</strong> ${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        function getNestedValue(obj, path) {
+            if (!path) return obj;
+            let val = path.split('.').reduce((acc, part) => acc?.[part], obj);
+            
+            // V&A Special Case: Handle IIIF base URLs
+            if (typeof val === 'string' && (val.includes('images.vam.ac.uk/iiif/') || val.includes('framemark.vam.ac.uk/collections/'))) {
+                // Only append if it looks like a base URL
+                if (!val.includes('/full/') && !val.toLowerCase().endsWith('.jpg') && !val.toLowerCase().endsWith('.png')) {
+                    val = val.replace(/\/$/, '') + '/full/!400,400/0/default.jpg';
+                }
+            }
+            return val;
+        }
+                    // ============================================================
+        // EXPORT
+        // ============================================================
+        // ── Database session lookup helper ────────────────────────
+        async function getSessionByParticipant(participantId) {
+            const session = await dbRequest(`/api/sessions/by-participant/${participantId}`);
+            return session || null;
+        }
+
+        async function exportParticipantsJSON(exp) {
+            showToast('Fetching session data…', 'info');
+
+            const fullParticipants = await Promise.all(
+                exp.participants.map(async p => ({
+                    ...p,
+                    session: await getSessionByParticipant(p.id)
+                }))
+            );
+
+            const data = {
+                experimentId:   exp.id,
+                experimentName: exp.name,
+                exportedAt:     new Date().toISOString(),
+                participants:   fullParticipants
+            };
+            downloadFile(JSON.stringify(data, null, 2), `${exp.id}-full-export.json`, 'application/json');
+            showToast('Full JSON export ready', 'success');
+        }
+
+        async function exportParticipantsCSV(exp) {
+            showToast('Fetching session data…', 'info');
+            let csv = 'Participant ID,Session Started,Session Ended,Duration (min),Total Events,Total Queries\n';
+
+            for (const p of exp.participants) {
+                const session  = await getSessionByParticipant(p.id);
+                const started  = new Date(p.startedAt).toLocaleString();
+                const ended    = p.endedAt ? new Date(p.endedAt).toLocaleString() : 'In progress';
+                const duration = p.endedAt
+                    ? Math.round((new Date(p.endedAt) - new Date(p.startedAt)) / 60000) : '-';
+                const eventCount = session ? (session.events?.length || 0) : 0;
+                const queryCount = session ? (session.transcript?.length || 0) : 0;
+                csv += `"${p.id}","${started}","${ended}",${duration},${eventCount},${queryCount}\n`;
+            }
+
+            downloadFile(csv, `${exp.id}-summary.csv`, 'text/csv');
+            showToast('CSV export ready', 'success');
+        }
+
+        async function deleteParticipant(experimentId, participantId) {
+            if (!confirm(`Are you sure you want to permanently delete all data for participant ${participantId}? This cannot be undone.`)) return;
+            
+            showToast('Deleting participant data...', 'info');
+            const result = await dbRequest(`/api/participants/${participantId}`, {
+                method: 'DELETE'
+            });
+
+            if (result && result.ok) {
+                const exp = getExperiment(experimentId);
+                if (exp) {
+                    exp.participants = exp.participants.filter(p => p.id !== participantId);
+                }
+                renderDetailPanel();
+                showToast('Participant data removed', 'success');
+            } else {
+                showToast('Failed to delete participant data', 'error');
+            }
+        }
+
+        async function downloadParticipantSession(participantId) {
+            showToast('Fetching session…', 'info');
+            const session = await getSessionByParticipant(participantId);
+            if (session) {
+                downloadFile(JSON.stringify(session, null, 2), `session_${participantId}.json`, 'application/json');
+                showToast('Session downloaded', 'success');
+            } else {
+                showToast('No session data found for this participant', 'error');
+            }
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================================
+        // PIS PREVIEW
+        // ============================================================
+        function showPisPreview(exp) {
+            const previewHtml = `
+                <div class="pis-header">
+                    <div class="pis-institution">${escapeHtml(exp.pis.institution || 'Your Institution')}</div>
+                    <div class="pis-study-title">${escapeHtml(exp.pis.studyTitle || 'Study Title')}</div>
+                    <div class="pis-contact">
+                        Lead Researcher: ${escapeHtml(exp.pis.researcher || 'Researcher Name')}<br>
+                        ${escapeHtml(exp.pis.contact || 'contact@example.com')}
+                    </div>
+                </div>
+
+                ${exp.pis.purpose ? `
+                    <div class="pis-section">
+                        <div class="pis-section-title">Purpose of the Study</div>
+                        <div class="pis-section-content">${escapeHtml(exp.pis.purpose)}</div>
+                    </div>
+                ` : ''}
+
+                ${exp.pis.involvement ? `
+                    <div class="pis-section">
+                        <div class="pis-section-title">What Your Participation Involves</div>
+                        <div class="pis-section-content">${escapeHtml(exp.pis.involvement)}</div>
+                    </div>
+                ` : ''}
+
+                ${exp.pis.dataHandling ? `
+                    <div class="pis-section">
+                        <div class="pis-section-title">Data Handling and Confidentiality</div>
+                        <div class="pis-section-content">${escapeHtml(exp.pis.dataHandling)}</div>
+                    </div>
+                ` : ''}
+
+                ${exp.pis.withdrawal ? `
+                    <div class="pis-section">
+                        <div class="pis-section-title">Your Right to Withdraw</div>
+                        <div class="pis-section-content">${escapeHtml(exp.pis.withdrawal)}</div>
+                    </div>
+                ` : ''}
+            `;
+
+            document.getElementById('pisPreviewContent').innerHTML = previewHtml;
+            document.getElementById('pisModal').classList.add('active');
+        }
+
+        // ============================================================
+        // TOAST NOTIFICATIONS
+        // ============================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ============================================================
+        // UTILITY
+        // ============================================================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            checkLock();
+            initLockKeyHandlers();
+
+            await loadState();
+
+            // Select first experiment if none selected
+            if (!state.selectedExperimentId && state.experiments.length > 0) {
+                state.selectedExperimentId = state.experiments[0].id;
+            }
+
+            renderUI();
+
+            // New experiment button
+            document.getElementById('btnNewExperiment').addEventListener('click', () => {
+                createExperiment();
+                renderUI();
+                showToast('New experiment created', 'success');
+            });
+
+            // PIS modal close buttons
+            document.getElementById('closePisModal').addEventListener('click', () => {
+                document.getElementById('pisModal').classList.remove('active');
+            });
+
+            document.getElementById('closePisModalBtn').addEventListener('click', () => {
+                document.getElementById('pisModal').classList.remove('active');
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('pisModal').addEventListener('click', (e) => {
+                if (e.target.id === 'pisModal') {
+                    document.getElementById('pisModal').classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

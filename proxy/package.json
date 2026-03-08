@@ -1,0 +1,10 @@
+{
+  "name": "vrp-cors-proxy",
+  "version": "2.0.0",
+  "description": "Zero-dependency CORS proxy for external museum APIs",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {},
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}

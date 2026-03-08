@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Test proxy endpoint for Voice Control Research Platform">
+    <title>Proxy Test — VRP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8f9fb;
+            color: #2c3e50;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4f6ef7;
+            box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #4f6ef7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #3d55cc;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            background: #666;
+        }
+
+        button.secondary:hover {
+            background: #555;
+        }
+
+        .response-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e6ed;
+        }
+
+        .response-section h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        pre {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .status {
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .status.info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #1565c0;
+        }
+
+        .status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #c62828;
+        }
+
+        .status.loading {
+            background: #fff3e0;
+            color: #e65100;
+            border-left: 4px solid #e65100;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Proxy Test Tool</h1>
+        <p class="subtitle">Test the Voice Control Research Platform proxy endpoint</p>
+
+        <div class="form-group">
+            <label for="urlInput">API URL to test:</label>
+            <input 
+                type="text" 
+                id="urlInput" 
+                placeholder="https://api.example.com/endpoint?param=value"
+                value="https://api.vam.ac.uk/v2/objects/search?q=chair&page_size=3"
+            >
+        </div>
+
+        <div class="button-group">
+            <button id="testBtn" onclick="testProxy()">Test Proxy</button>
+            <button class="secondary" id="clearBtn" onclick="clearResponse()">Clear</button>
+        </div>
+
+        <div id="responseSection" class="response-section hidden">
+            <div id="statusMessage" class="status hidden"></div>
+            <h2>Response (Raw JSON)</h2>
+            <pre id="responseBody"></pre>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Test the proxy endpoint by sending a request
+         */
+        async function testProxy() {
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                showStatus('Please enter a URL', 'error');
+                return;
+            }
+
+            showStatus('Loading...', 'loading');
+            document.getElementById('testBtn').disabled = true;
+
+            try {
+                const proxyUrl = `/proxy/api?url=${encodeURIComponent(url)}`;
+                console.log('Fetching:', proxyUrl);
+
+                const response = await fetch(proxyUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                showResponse(data, 'success', 'Response received successfully');
+            } catch (error) {
+                console.error('Proxy test error:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+                document.getElementById('responseBody').textContent = error.message;
+                document.getElementById('responseSection').classList.remove('hidden');
+            } finally {
+                document.getElementById('testBtn').disabled = false;
+            }
+        }
+
+        /**
+         * Display response with status message
+         */
+        function showResponse(data, statusType, message) {
+            const responseBody = document.getElementById('responseBody');
+            responseBody.textContent = JSON.stringify(data, null, 2);
+            showStatus(message, statusType);
+            document.getElementById('responseSection').classList.remove('hidden');
+        }
+
+        /**
+         * Show status message
+         */
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.classList.remove('hidden');
+        }
+
+        /**
+         * Clear the response display
+         */
+        function clearResponse() {
+            document.getElementById('responseSection').classList.add('hidden');
+            document.getElementById('responseBody').textContent = '';
+            document.getElementById('statusMessage').textContent = '';
+            document.getElementById('urlInput').focus();
+        }
+
+        // Focus on input when page loads
+        window.addEventListener('load', () => {
+            document.getElementById('urlInput').focus();
+        });
+
+        // Allow testing with Enter key
+        document.getElementById('urlInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                testProxy();
+            }
+        });
+    </script>
+</body>
+</html>

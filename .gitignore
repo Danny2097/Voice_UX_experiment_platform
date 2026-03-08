@@ -1,0 +1,14 @@
+node_modules/
+*.log
+.DS_Store
+
+# Environment secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# Exported session data
+exports/
+
+# Build artefacts
+dist/
