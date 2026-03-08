@@ -3033,26 +3033,34 @@
             });
         }
 
-        // 2. Prepare session data for server (including audio)
+        // 2. Prepare session data for server
         const exportData = { ...sessionData };
         
+        // 3. Upload audio blob separately if it exists
         if (sessionData.audioBlob) {
-            // Convert blob to base64 for JSON transmission
-            const reader = new FileReader();
-            const base64Promise = new Promise(resolve => {
-                reader.onloadend = () => {
-                    const base64String = reader.result.split(',')[1];
-                    resolve(base64String);
-                };
-            });
-            reader.readAsDataURL(sessionData.audioBlob);
-            exportData.audioData = await base64Promise;
+            logDebug('SESSION', 'info', 'Uploading audio recording...');
+            try {
+                const audioResponse = await fetch(`/api/audio/${expId}/${participantId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'audio/webm' },
+                    body: sessionData.audioBlob
+                });
+                if (audioResponse.ok) {
+                    logDebug('SESSION', 'info', 'Audio upload successful');
+                } else {
+                    console.error('Audio upload failed');
+                    logDebug('SESSION', 'error', 'Audio upload failed');
+                }
+            } catch (err) {
+                console.error('Audio upload error:', err);
+                logDebug('SESSION', 'error', `Audio upload error: ${err.message}`);
+            }
         }
         
-        // Remove the actual blob object before stringifying
+        // Remove the blob object before stringifying session JSON
         delete exportData.audioBlob;
 
-        // 3. Save session to server
+        // 4. Save session to server
         await apiRequest('/api/sessions', {
             method: 'POST',
             body: JSON.stringify(exportData)
@@ -3083,6 +3091,11 @@
         // Show audio download if we have a recording
         if (sessionData.audioBlob) {
             document.getElementById('downloadAudioBtn').style.display = 'block';
+            const statusEl = document.getElementById('audioUploadStatus');
+            if (statusEl) {
+                statusEl.style.display = 'block';
+                statusEl.textContent = 'Audio recording saved successfully to server.';
+            }
         }
 
         // Context-aware UI: If experiment is NOT active (e.g. Complete or Draft), show researcher actions

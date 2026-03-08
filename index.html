@@ -2344,7 +2344,7 @@
                                                             <button class="btn-action json btn-download-session" data-participant-id="${p.id}" title="Download session JSON">
                                                                 ↓ JSON
                                                             </button>
-                                                            ${p.endedAt ? `
+                                                            ${p.hasAudio ? `
                                                             <a href="/api/audio/${exp.id}/${p.id}" download
                                                                class="btn-action audio"
                                                                title="Download audio recording">

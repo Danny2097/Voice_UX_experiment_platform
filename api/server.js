@@ -192,6 +192,7 @@ async function handle(req, res) {
                         startedAt:    p.started_at,
                         endedAt:      p.ended_at,
                         exported:     p.exported,
+                        hasAudio:     !!findAudioFile(exp.id, p.id),
                     })),
             }));
             return send(res, 200, { experiments });
@@ -261,6 +262,7 @@ async function handle(req, res) {
                     startedAt:    p.started_at,
                     endedAt:      p.ended_at,
                     exported:     p.exported,
+                    hasAudio:     !!findAudioFile(expId, p.id),
                 })),
             };
             return send(res, 200, experiment);
@@ -268,7 +270,13 @@ async function handle(req, res) {
 
         // ── DELETE /api/experiments/:id ───────────────────────────
         if (expMatch && method === 'DELETE') {
-            await pool.query('DELETE FROM experiments WHERE id = $1', [expMatch[1]]);
+            const expId = expMatch[1];
+            await pool.query('DELETE FROM experiments WHERE id = $1', [expId]);
+            // Delete audio folder for this experiment
+            const expDir = path.join(AUDIO_DIR, expId);
+            if (fs.existsSync(expDir)) {
+                try { fs.rmSync(expDir, { recursive: true, force: true }); } catch(e) {}
+            }
             return send(res, 200, { ok: true });
         }
 
