@@ -1744,6 +1744,43 @@
                                 <input type="number" id="maxItems" value="${exp.grid.maxItems}" min="1" max="100">
                             </div>
 
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showImage ? 'active' : ''}" id="toggleImage">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Show Image</div>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showTitle ? 'active' : ''}" id="toggleTitle">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Show Title</div>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showSubtitle ? 'active' : ''}" id="toggleSubtitle">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Show Subtitle</div>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showTags ? 'active' : ''}" id="toggleTags">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Show Tags</div>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showDescription ? 'active' : ''}" id="toggleDescription">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Show Description</div>
+                                </div>
+                            </div>
+
                             <div class="form-section-title" style="margin-top: 24px;">Display Options</div>
 
                             <div class="toggle-group">
@@ -1785,41 +1822,6 @@
                                     <div class="toggle-thumb"></div>
                                 </div>
                                 <div class="toggle-label">Include Footer</div>
-                            </div>
-                            
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showImage ? 'active' : ''}" id="toggleImage">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Image</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showTitle ? 'active' : ''}" id="toggleTitle">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Title</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showSubtitle ? 'active' : ''}" id="toggleSubtitle">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Subtitle</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showTags ? 'active' : ''}" id="toggleTags">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Tags</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showDescription ? 'active' : ''}" id="toggleDescription">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Description</div>
                             </div>
 
                             <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e6ed;">
@@ -2005,306 +2007,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- TAB: PIS -->
-                    <div class="tab-content ${state.currentTab === 'pis' ? 'active' : ''}" id="tab-pis">
-                        <div class="form-section">
-                            <div class="form-section-title">Participant Information Sheet</div>
-                            <div class="form-group">
-                                <label for="pisStudyTitle">Study Title</label>
-                                <input type="text" id="pisStudyTitle" value="${escapeHtml(exp.pis.studyTitle)}" placeholder="e.g., Voice-Controlled Museum Search">
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="pisResearcher">Lead Researcher Name</label>
-                                    <input type="text" id="pisResearcher" value="${escapeHtml(exp.pis.researcher)}" placeholder="e.g., Dr. Jane Smith">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pisInstitution">Institution</label>
-                                    <input type="text" id="pisInstitution" value="${escapeHtml(exp.pis.institution)}" placeholder="e.g., University of Oxford">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="pisContact">Contact Email</label>
-                                <input type="email" id="pisContact" value="${escapeHtml(exp.pis.contact)}" placeholder="researcher@institution.ac.uk">
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <div class="form-section-title">Consent Information</div>
-                            <div class="form-group">
-                                <label for="pisPurpose">Study Purpose</label>
-                                <textarea id="pisPurpose" placeholder="Describe the main purpose of the study...">${escapeHtml(exp.pis.purpose)}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="pisInvolvement">What Participation Involves</label>
-                                <textarea id="pisInvolvement" placeholder="Detail what participants will be asked to do...">${escapeHtml(exp.pis.involvement)}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="pisDataHandling">Data Handling</label>
-                                <textarea id="pisDataHandling" placeholder="Explain how data will be stored, processed, and protected...">${escapeHtml(exp.pis.dataHandling)}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="pisWithdrawal">Withdrawal Rights</label>
-                                <textarea id="pisWithdrawal" placeholder="Explain participants' right to withdraw...">${escapeHtml(exp.pis.withdrawal)}</textarea>
-                            </div>
-                        </div>
-
-                        <button class="btn btn-primary" id="btnPreviewPis">Preview PIS</button>
-                    </div>
-
-                    <!-- TAB: GRID & API -->
-                    <div class="tab-content ${state.currentTab === 'grid' ? 'active' : ''}" id="tab-grid">
-                        <!-- Grid Layout Section -->
-                        <div class="form-section">
-                            <div class="form-section-title">Grid Layout</div>
-
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
-                                <label class="form-label">Quick Grid Presets</label>
-                                <p class="form-hint">Instantly configure columns and display options.</p>
-                                <div id="gridPresetPickerGrid" style="
-                                    display: grid;
-                                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                                    gap: 0.5rem;
-                                    margin-top: 0.5rem;
-                                ">
-                                    <!-- Cards injected by JS -->
-                                </div>
-                            </div>
-                            
-                            <div class="slider-group">
-                                <div class="slider-label">
-                                    <label>Columns</label>
-                                    <span class="slider-value" id="columnsValue">${exp.grid.columns}</span>
-                                </div>
-                                <input type="range" id="gridColumns" min="1" max="6" value="${exp.grid.columns}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="cardHeight">Card Height</label>
-                                <select id="cardHeight">
-                                    <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short</option>
-                                    <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium</option>
-                                    <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="cardStyle">Visual Style</label>
-                                <select id="cardStyle">
-                                    <option value="modern" ${exp.grid.cardStyle === 'modern' ? 'selected' : ''}>Modern (Rounded, subtle shadow)</option>
-                                    <option value="classic" ${exp.grid.cardStyle === 'classic' ? 'selected' : ''}>Classic (Sharp borders, flat)</option>
-                                    <option value="minimal" ${exp.grid.cardStyle === 'minimal' ? 'selected' : ''}>Minimal (No border, very light)</option>
-                                    <option value="glass" ${exp.grid.cardStyle === 'glass' ? 'selected' : ''}>Glassmorphism (Frosted glass)</option>
-                                    <option value="elevated" ${exp.grid.cardStyle === 'elevated' ? 'selected' : ''}>Elevated (Deep shadow, floating)</option>
-                                    <option value="neumorphic" ${exp.grid.cardStyle === 'neumorphic' ? 'selected' : ''}>Neumorphic (Soft extrusion)</option>
-                                    <option value="brutalist" ${exp.grid.cardStyle === 'brutalist' ? 'selected' : ''}>Brutalist (Bold, hard shadows)</option>
-                                    <option value="polaroid" ${exp.grid.cardStyle === 'polaroid' ? 'selected' : ''}>Polaroid (Instant photo style)</option>
-                                    <option value="dark" ${exp.grid.cardStyle === 'dark' ? 'selected' : ''}>Dark Mode (High contrast dark)</option>
-                                    <option value="horizontal" ${exp.grid.cardStyle === 'horizontal' ? 'selected' : ''}>Horizontal (Image on left)</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="maxItems">Max Items Per Page</label>
-                                <input type="number" id="maxItems" value="${exp.grid.maxItems}" min="1" max="100">
-                            </div>
-
-                            <div class="form-section-title" style="margin-top: 24px;">Display Options</div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showSearch ? 'active' : ''}" id="toggleSearch">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Search Bar</div>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 1rem;">
-                                <label for="gridOverlayStyle">Overlay Style</label>
-                                <select id="gridOverlayStyle">
-                                    <option value="lines" ${exp.grid.gridOverlayStyle === 'lines' ? 'selected' : ''}>Subtle Lines (Light)</option>
-                                    <option value="lines-dark" ${exp.grid.gridOverlayStyle === 'lines-dark' ? 'selected' : ''}>Bold Lines (Dark)</option>
-                                    <option value="dots" ${exp.grid.gridOverlayStyle === 'dots' ? 'selected' : ''}>Polka Dots (Light)</option>
-                                    <option value="dots-dark" ${exp.grid.gridOverlayStyle === 'dots-dark' ? 'selected' : ''}>Polka Dots (Dark)</option>
-                                    <option value="blueprint" ${exp.grid.gridOverlayStyle === 'blueprint' ? 'selected' : ''}>Classic Blueprint</option>
-                                    <option value="blueprint-dark" ${exp.grid.gridOverlayStyle === 'blueprint-dark' ? 'selected' : ''}>Night Blueprint</option>
-                                    <option value="crosshairs" ${exp.grid.gridOverlayStyle === 'crosshairs' ? 'selected' : ''}>Technical Crosshairs</option>
-                                    <option value="terminal" ${exp.grid.gridOverlayStyle === 'terminal' ? 'selected' : ''}>Matrix Green</option>
-                                    <option value="warning" ${exp.grid.gridOverlayStyle === 'warning' ? 'selected' : ''}>Hazard Orange</option>
-                                    <option value="hot-pink" ${exp.grid.gridOverlayStyle === 'hot-pink' ? 'selected' : ''}>Cyberpunk Pink</option>
-                                    <option value="thirds" ${exp.grid.gridOverlayStyle === 'thirds' ? 'selected' : ''}>Rule of Thirds</option>
-                                    <option value="scanlines" ${exp.grid.gridOverlayStyle === 'scanlines' ? 'selected' : ''}>Retro Scanlines</option>
-                                    <option value="golden" ${exp.grid.gridOverlayStyle === 'golden' ? 'selected' : ''}>Golden Ratio</option>
-                                    <option value="isometric" ${exp.grid.gridOverlayStyle === 'isometric' ? 'selected' : ''}>Isometric Grid</option>
-                                </select>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showNav ? 'active' : ''}" id="toggleNav">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Navigation Bar</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showFooter ? 'active' : ''}" id="toggleFooter">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Footer</div>
-                            </div>
-                            
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showImage ? 'active' : ''}" id="toggleImage">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Image</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showTitle ? 'active' : ''}" id="toggleTitle">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Title</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showSubtitle ? 'active' : ''}" id="toggleSubtitle">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Subtitle</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showTags ? 'active' : ''}" id="toggleTags">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Tags</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showDescription ? 'active' : ''}" id="toggleDescription">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Show Description</div>
-                            </div>
-
-                            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e6ed;">
-                                <button class="btn btn-secondary btn-sm" id="btnSaveGridPreset">
-                                    💾 Save current config as Preset
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Experiment Mode Section -->
-                        <div class="form-section">
-                            <div class="form-section-title">Experiment Mode</div>
-                            <div class="form-group">
-                                <label for="experimentMode">Interaction Type</label>
-                                <select id="experimentMode">
-                                    <option value="action_transcript" ${exp.mode === 'action_transcript' ? 'selected' : ''}>Action and Transcript (Full interactive)</option>
-                                    <option value="transcript_only" ${exp.mode === 'transcript_only' ? 'selected' : ''}>Transcript Only (No voice-driven actions)</option>
-                                </select>
-                                <div class="text-muted" style="margin-top: 6px;">
-                                    <strong>Action and Transcript:</strong> Voice queries trigger API searches.<br>
-                                    <strong>Transcript Only:</strong> Voice is recorded and transcribed, but the interface does not react.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- API Configuration Section -->
-                        <div class="form-section">
-                            <div class="form-section-title">API Source</div>
-                            
-                            <!-- API Preset Picker -->
-                            <div class="form-group" style="margin-bottom: 1.25rem;">
-                                <label class="form-label">Load from Preset</label>
-                                <p class="form-hint">Select a pre-configured API to auto-fill all settings below.</p>
-                                <div id="adapterPickerGrid" style="
-                                    display: grid;
-                                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                                    gap: 0.5rem;
-                                    margin-top: 0.5rem;
-                                ">
-                                    <!-- Cards injected by JS -->
-                                </div>
-                            </div>
-                            <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid #e2e6ed;">
-
-                                                        <div class="form-group">
-                                <label for="apiEndpoint">API Endpoint URL</label>
-                                <input type="text" id="apiEndpoint" value="${escapeHtml(exp.api.endpoint)}" placeholder="https://api.example.com/v2/objects/search">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="authType">Authentication Type</label>
-                                <select id="authType">
-                                    <option value="none" ${exp.api.authType === 'none' ? 'selected' : ''}>None</option>
-                                    <option value="bearer" ${exp.api.authType === 'bearer' ? 'selected' : ''}>Bearer Token</option>
-                                    <option value="apikey" ${exp.api.authType === 'apikey' ? 'selected' : ''}>API Key</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group ${exp.api.authType === 'none' ? 'hidden' : ''}" id="authValueGroup">
-                                <label for="authValue">${exp.api.authType === 'bearer' ? 'Bearer Token' : 'API Key'}</label>
-                                <input type="text" id="authValue" value="${escapeHtml(exp.api.authValue)}" placeholder="Enter your authentication token">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="defaultParams">Request Parameters (JSON)</label>
-                                <textarea id="defaultParams" placeholder='{"limit": 20, "lang": "en"}'>${exp.api.defaultParams}</textarea>
-                                <div class="text-muted" style="margin-top: 6px;">Default query parameters to append to requests</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="voiceParamKey">Voice Query Parameter Key</label>
-                                <input type="text" id="voiceParamKey" value="${escapeHtml(exp.api.voiceParamKey)}" placeholder="e.g., q">
-                                <div class="text-muted" style="margin-top: 6px;">The URL parameter name that receives voice/search queries</div>
-                            </div>
-                        </div>
-
-                        <!-- Response Field Mapping -->
-                        <div class="form-section">
-                            <div class="form-section-title">Response Field Mapping</div>
-                            
-                            <div class="form-group">
-                                <label for="mappingItemsPath">Items Array Path (dot notation)</label>
-                                <input type="text" id="mappingItemsPath" value="${escapeHtml(exp.api.mapping.itemsPath)}" placeholder="e.g., records or data.items">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="mappingId">ID Field</label>
-                                <input type="text" id="mappingId" value="${escapeHtml(exp.api.mapping.id)}" placeholder="e.g., systemNumber">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="mappingTitle">Title Field</label>
-                                <input type="text" id="mappingTitle" value="${escapeHtml(exp.api.mapping.title)}" placeholder="e.g., _primaryTitle">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="mappingSubtitle">Subtitle Field</label>
-                                <input type="text" id="mappingSubtitle" value="${escapeHtml(exp.api.mapping.subtitle)}" placeholder="e.g., _primaryMaker.name">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="mappingDescription">Description Field</label>
-                                <input type="text" id="mappingDescription" value="${escapeHtml(exp.api.mapping.description)}" placeholder="e.g., _primaryDescription.value">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="mappingImageUrl">Image URL Field</label>
-                                <input type="text" id="mappingImageUrl" value="${escapeHtml(exp.api.mapping.imageUrl)}" placeholder="e.g., _images._primary_thumbnail">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="mappingTags">Tags Field</label>
-                                <input type="text" id="mappingTags" value="${escapeHtml(exp.api.mapping.tags)}" placeholder="e.g., _objectType">
-                            </div>
-                        </div>
-
-                        <button class="btn btn-secondary btn-sm" id="btnTestConnection">Test Connection</button>
-                        <div id="testResult"></div>
                     </div>
 
                     <!-- TAB: PARTICIPANTS -->
