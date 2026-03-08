@@ -475,25 +475,6 @@ async function handle(req, res) {
             return send(res, 200, { ok: true, bytes: body.length, file: `${partId}.${ext}` });
         }
 
-        // ── GET /api/audio/:experimentId/:participantId ───────────
-        //    Streams the audio file back with download headers
-        if (audioRwMatch && method === 'GET') {
-            const [, expId, partId] = audioRwMatch;
-            const found = findAudioFile(expId, partId);
-            if (!found) return send(res, 404, { error: 'Audio not found for this participant' });
-            const stat = fs.statSync(found.filePath);
-            const mime = Object.entries(MIME_TO_EXT).find(([, e]) => e === found.ext)?.[0] || 'audio/webm';
-            res.writeHead(200, {
-                'Content-Type':                mime,
-                'Content-Length':              stat.size,
-                'Content-Disposition':         `attachment; filename="${partId}.${found.ext}"`,
-                'Access-Control-Allow-Origin': '*',
-                'Cache-Control':               'no-store',
-            });
-            fs.createReadStream(found.filePath).pipe(res);
-            return;
-        }
-
         // ── GET /api/audio/:experimentId/export ──────────────────
         //    Bundles all audio files for an experiment into a .tar.gz
         const audioExportMatch = pathname.match(/^\/api\/audio\/([^/]+)\/export$/);
@@ -523,6 +504,25 @@ async function handle(req, res) {
             
             tar.stdout.pipe(res);
             tar.stderr.on('data', (data) => console.error(`[API] Tar error: ${data}`));
+            return;
+        }
+
+        // ── GET /api/audio/:experimentId/:participantId ───────────
+        //    Streams the audio file back with download headers
+        if (audioRwMatch && method === 'GET') {
+            const [, expId, partId] = audioRwMatch;
+            const found = findAudioFile(expId, partId);
+            if (!found) return send(res, 404, { error: 'Audio not found for this participant' });
+            const stat = fs.statSync(found.filePath);
+            const mime = Object.entries(MIME_TO_EXT).find(([, e]) => e === found.ext)?.[0] || 'audio/webm';
+            res.writeHead(200, {
+                'Content-Type':                mime,
+                'Content-Length':              stat.size,
+                'Content-Disposition':         `attachment; filename="${partId}.${found.ext}"`,
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control':               'no-store',
+            });
+            fs.createReadStream(found.filePath).pipe(res);
             return;
         }
 
