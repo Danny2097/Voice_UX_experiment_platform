@@ -414,6 +414,7 @@
             font-size: 14px;
             color: #2c3e50;
             transition: border 0.2s;
+            height: 40px;
         }
 
         input[type="text"]:focus,
@@ -441,6 +442,7 @@
         textarea {
             resize: vertical;
             min-height: 120px;
+            height: auto;
         }
 
         .form-row {
@@ -1077,7 +1079,7 @@
 .lock-error.visible { display: block; }
 .lock-submit {
     width: 100%;
-    padding: 0.65rem;
+    height: 40px;
     background: var(--colour-accent, #4f6ef7);
     color: #fff;
     border: none;
@@ -1087,6 +1089,9 @@
     cursor: pointer;
     margin-top: 0.5rem;
     transition: background 150ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .lock-submit:hover { background: var(--colour-accent-hover, #3b57e8); }
 .lock-branding {
@@ -1110,12 +1115,12 @@
         </div>
         <div class="lock-form">
             <div class="form-group">
-                <label class="form-label" for="lockUser">Username</label>
-                <input class="form-input" id="lockUser" type="text" autocomplete="username" placeholder="Admin">
+                <label for="lockUser">Username</label>
+                <input id="lockUser" type="text" autocomplete="username" placeholder="Admin">
             </div>
             <div class="form-group">
-                <label class="form-label" for="lockPass">Password</label>
-                <input class="form-input" id="lockPass" type="password" autocomplete="current-password" placeholder="••••••••">
+                <label for="lockPass">Password</label>
+                <input id="lockPass" type="password" autocomplete="current-password" placeholder="••••••••">
             </div>
             <div class="lock-error" id="lockError">Incorrect username or password.</div>
             <button class="lock-submit" id="lockSubmit" onclick="attemptUnlock()">Sign In</button>
@@ -1204,15 +1209,10 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-row" style="margin-top: 1rem;">
-                        <div class="form-group">
-                            <label for="userPassword" id="labelUserPassword">Password</label>
-                            <input type="password" id="userPassword" placeholder="••••••••">
-                            <p class="form-hint" id="hintUserPassword" style="display: none; margin-top: 4px; font-size: 11px; color: #7f8fa3;">Leave blank to keep current password.</p>
-                        </div>
-                        <div class="form-group">
-                            <!-- Spacer to align with row above -->
-                        </div>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label for="userPassword" id="labelUserPassword">Password</label>
+                        <input type="password" id="userPassword" placeholder="••••••••">
+                        <p class="form-hint" id="hintUserPassword" style="display: none; margin-top: 4px; font-size: 11px; color: #7f8fa3;">Leave blank to keep current password.</p>
                     </div>
                     <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem; justify-content: flex-end;">
                         <button class="btn btn-secondary btn-sm" onclick="hideUserForm()">Cancel</button>
