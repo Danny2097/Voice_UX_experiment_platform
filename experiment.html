@@ -314,6 +314,34 @@
             min-width: 70px;
         }
 
+        /* Mock Website Components */
+        .mock-nav {
+            display: none;
+            background: #fff;
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+            padding: 0.75rem 3rem;
+            align-items: center;
+            gap: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .mock-nav.active { display: flex; }
+        .mock-nav-item { color: #666; text-decoration: none; }
+        .mock-nav-item:hover { color: var(--primary, #007bff); }
+        .mock-nav-item.active { color: var(--primary, #007bff); font-weight: 700; }
+
+        .mock-footer {
+            display: none;
+            background: #f9fafb;
+            border-top: 1px solid var(--border-color, #e0e0e0);
+            padding: 2rem 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: auto;
+        }
+        .mock-footer.active { display: block; }
+
         .header-right {
             display: flex;
             align-items: center;
@@ -1849,6 +1877,15 @@
         </div>
     </div>
 
+    <!-- Mock Navigation -->
+    <nav class="mock-nav" id="mockNav">
+        <a href="#" class="mock-nav-item active">Collection</a>
+        <a href="#" class="mock-nav-item">Exhibitions</a>
+        <a href="#" class="mock-nav-item">Research</a>
+        <a href="#" class="mock-nav-item">About Us</a>
+        <div style="margin-left: auto; color: #9ca3af; font-size: 0.8rem;">Mock Website Interface</div>
+    </nav>
+
     <!-- Content -->
     <div class="session-content">
         <!-- Grid Area -->
@@ -1865,6 +1902,11 @@
             <div class="grid-container" id="gridContainer"></div>
 
             <div class="pagination" id="pagination" style="display: none;"></div>
+
+            <footer class="mock-footer" id="mockFooter">
+                <p>&copy; 2026 Museum Research Platform. All rights reserved.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.7rem;">This is a controlled research interface. Actions may be recorded for study purposes.</p>
+            </footer>
         </div>
     </div>
 </div>
@@ -2288,11 +2330,34 @@
         if (sEl) sEl.value = experimentConfig.grid.cardStyle || 'modern';
         if (oEl) oEl.value = experimentConfig.grid.gridOverlayStyle || 'lines';
 
-        // Show search if API configured for search (only in action mode)
+        // Show search if configured (respecting mode)
         const isActionMode = !experimentConfig.mode || experimentConfig.mode === 'action_transcript';
+        const showSearch = experimentConfig.grid.showSearch !== false; // Default true
         
-        if (isActionMode && experimentConfig.api && experimentConfig.api.endpoint) {
+        if (isActionMode && showSearch && experimentConfig.api && experimentConfig.api.endpoint) {
             document.getElementById('searchBar').style.display = 'flex';
+        } else {
+            document.getElementById('searchBar').style.display = 'none';
+        }
+
+        // Show mock navigation if configured
+        const nav = document.getElementById('mockNav');
+        if (nav) {
+            if (experimentConfig.grid.showNav) {
+                nav.classList.add('active');
+            } else {
+                nav.classList.remove('active');
+            }
+        }
+
+        // Show mock footer if configured
+        const footer = document.getElementById('mockFooter');
+        if (footer) {
+            if (experimentConfig.grid.showFooter) {
+                footer.classList.add('active');
+            } else {
+                footer.classList.remove('active');
+            }
         }
 
         // Load initial data
