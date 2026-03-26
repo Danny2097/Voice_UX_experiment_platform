@@ -1256,7 +1256,7 @@
         .preview-card.short { height: 140px; }
         .preview-card.medium { height: 180px; }
         .preview-card.tall { height: 240px; }
-        .preview-card.nike-height { height: 520px; }
+        .preview-card.nike-height { height: 468px; }
 
         /* Preview Card Styles - Simplified versions of experiment.html */
         .preview-card.modern { border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -1284,7 +1284,7 @@
         .preview-card.etsy .preview-card-title { background: #e2e6ed; width: 90%; }
         .preview-card.etsy .preview-card-subtitle { background: #f1f3f7; width: 40%; height: 8px; }
 
-        .preview-card.nike { background: #fff; border: 1px solid rgba(0,0,0,0.05); border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; }
+        .preview-card.nike { background: #fff; border: 1px solid #e0e0e0; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; }
         .preview-card.nike .preview-card-image { order: 1; height: 75%; background: #f6f6f6; border-radius: 0; }
         .preview-card.nike .preview-card-body { order: 2; background: #fff; padding: 12px 8px; height: 25%; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
         .preview-card.nike .preview-card-tag { order: 1; background: #9e3500; width: 30%; height: 4px; border-radius: 0; margin-bottom: 2px; flex-shrink: 0; }
@@ -1666,20 +1666,20 @@
                 const SAVE_DEBOUNCE_MS = 600;
         const API_BASE = ''; // Endpoints already start with /api or /proxy
         const GRID_PRESETS = [
-            { id: 'nike', name: 'Nike Athletic', category: 'Themed', description: 'Flat design, bold fonts, square images. Nike.com style.', config: { columns: 3, rows: 4, cardHeight: 'nike-height', cardStyle: 'nike', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
-            { id: 'standard', name: 'Standard Mosaic', category: 'Balanced', description: '3 columns, 4 rows (12 items). Classic grid.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'modern', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
-            { id: 'masonry', name: 'Featured Entry', category: 'Dynamic', description: '3 columns, 4 rows. First item spans 2x2.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'elevated', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'featured-first' } },
-            { id: 'gallery', name: 'Image Gallery', category: 'Visual', description: '4 columns, 5 rows (20 items). Large images.', config: { columns: 4, rows: 5, cardHeight: 'tall', cardStyle: 'elevated', maxItems: 20, showImage: true, showTitle: false, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
-            { id: 'compact', name: 'Compact Grid', category: 'Dense', description: '6 columns, 8 rows (48 items). High density.', config: { columns: 6, rows: 8, cardHeight: 'short', cardStyle: 'minimal', maxItems: 48, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
-            { id: 'highlight', name: 'Highlight Grid', category: 'Dynamic', description: '4 columns, 6 rows. Every 5th item spans 2 columns.', config: { columns: 4, rows: 6, cardHeight: 'medium', cardStyle: 'modern', maxItems: 24, showImage: true, showTitle: true, showSubtitle: false, showTags: true, showDescription: false, spanPattern: 'every-fifth' } },
-            { id: 'neumorphic', name: 'Soft UI', category: 'Modern', description: '3 columns, 4 rows (12 items). Neumorphic style.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'neumorphic', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
-            { id: 'brutalist', name: 'Brutalist Grid', category: 'High Contrast', description: '3 columns, 4 rows. Bold borders.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'brutalist', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'alternating' } },
-            { id: 'list', name: 'Detailed List', category: 'Informative', description: '1 column, 10 rows (10 items). Full-width rows.', config: { columns: 1, rows: 10, cardHeight: 'medium', cardStyle: 'modern', maxItems: 10, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
-            { id: 'horizontal', name: 'List Feed', category: 'Informative', description: '1 column, 12 rows. side images.', config: { columns: 1, rows: 12, cardHeight: 'short', cardStyle: 'horizontal', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
-            { id: 'polaroid', name: 'Photo Deck', category: 'Visual', description: '4 columns, 4 rows (16 items). Polaroid style.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'polaroid', maxItems: 16, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
-            { id: 'archive', name: 'Text Archive', category: 'Minimal', description: '2 columns, 10 rows (20 items). Text view.', config: { columns: 2, rows: 10, cardHeight: 'short', cardStyle: 'classic', maxItems: 20, showImage: false, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
-            { id: 'dark', name: 'Night Mode', category: 'Minimal', description: '3 columns, 4 rows. Dark background cards.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'dark', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
-            { id: 'clothing', name: 'Clothing Mosaic', category: 'Themed', description: 'Etsy-style marketplace layout. Optimized for fashion browsing.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'etsy', maxItems: 16, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, adapterId: 'clothing-local-api' } }
+            { id: 'nike', name: 'Nike Athletic', category: 'Themed', description: 'Flat design, bold fonts, square images. Nike.com style.', config: { columns: 3, rows: 4, cardHeight: 'nike-height', cardStyle: 'nike', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'standard', name: 'Standard Mosaic', category: 'Balanced', description: '3 columns, 4 rows (12 items). Classic grid.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'modern', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'masonry', name: 'Featured Entry', category: 'Dynamic', description: '3 columns, 4 rows. First item spans 2x2.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'elevated', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'featured-first', gridMaxWidth: 100 } },
+            { id: 'gallery', name: 'Image Gallery', category: 'Visual', description: '4 columns, 5 rows (20 items). Large images.', config: { columns: 4, rows: 5, cardHeight: 'tall', cardStyle: 'elevated', maxItems: 20, showImage: true, showTitle: false, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'compact', name: 'Compact Grid', category: 'Dense', description: '6 columns, 8 rows (48 items). High density.', config: { columns: 6, rows: 8, cardHeight: 'short', cardStyle: 'minimal', maxItems: 48, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'highlight', name: 'Highlight Grid', category: 'Dynamic', description: '4 columns, 6 rows. Every 5th item spans 2 columns.', config: { columns: 4, rows: 6, cardHeight: 'medium', cardStyle: 'modern', maxItems: 24, showImage: true, showTitle: true, showSubtitle: false, showTags: true, showDescription: false, spanPattern: 'every-fifth', gridMaxWidth: 100 } },
+            { id: 'neumorphic', name: 'Soft UI', category: 'Modern', description: '3 columns, 4 rows (12 items). Neumorphic style.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'neumorphic', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'brutalist', name: 'Brutalist Grid', category: 'High Contrast', description: '3 columns, 4 rows. Bold borders.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'brutalist', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'alternating', gridMaxWidth: 100 } },
+            { id: 'list', name: 'Detailed List', category: 'Informative', description: '1 column, 10 rows (10 items). Full-width rows.', config: { columns: 1, rows: 10, cardHeight: 'medium', cardStyle: 'modern', maxItems: 10, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'horizontal', name: 'List Feed', category: 'Informative', description: '1 column, 12 rows. side images.', config: { columns: 1, rows: 12, cardHeight: 'short', cardStyle: 'horizontal', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'polaroid', name: 'Photo Deck', category: 'Visual', description: '4 columns, 4 rows (16 items). Polaroid style.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'polaroid', maxItems: 16, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'archive', name: 'Text Archive', category: 'Minimal', description: '2 columns, 10 rows (20 items). Text view.', config: { columns: 2, rows: 10, cardHeight: 'short', cardStyle: 'classic', maxItems: 20, showImage: false, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'dark', name: 'Night Mode', category: 'Minimal', description: '3 columns, 4 rows. Dark background cards.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'dark', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
+            { id: 'clothing', name: 'Clothing Mosaic', category: 'Themed', description: 'Etsy-style marketplace layout. Optimized for fashion browsing.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'etsy', maxItems: 16, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, adapterId: 'clothing-local-api', gridMaxWidth: 100 } }
         ];
 
         let state = {
@@ -1782,8 +1782,47 @@
             const previewNav = document.getElementById('previewMockNav');
             const previewSearch = document.getElementById('previewMockSearch');
             const previewFooter = document.getElementById('previewMockFooter');
+            const previewDrawer = document.getElementById('previewDrawerContent');
 
             if (!previewGrid) return;
+
+            // Handle Filter Sidebar in preview
+            let previewFilters = document.getElementById('previewMockFilters');
+            if (grid.showFilters) {
+                if (!previewFilters) {
+                    previewFilters = document.createElement('div');
+                    previewFilters.id = 'previewMockFilters';
+                    previewFilters.style.cssText = 'width: 80px; border-right: 1px solid #e2e6ed; background: #fff; flex-shrink: 0; padding: 10px; display: flex; flex-direction: column; gap: 10px;';
+                    previewFilters.innerHTML = `
+                        <div style="height: 6px; width: 80%; background: #e2e6ed; margin-bottom: 5px;"></div>
+                        <div style="height: 4px; width: 60%; background: #f1f3f7;"></div>
+                        <div style="height: 4px; width: 70%; background: #f1f3f7;"></div>
+                        <div style="height: 4px; width: 50%; background: #f1f3f7;"></div>
+                        <div style="height: 6px; width: 80%; background: #e2e6ed; margin-top: 10px; margin-bottom: 5px;"></div>
+                        <div style="height: 4px; width: 60%; background: #f1f3f7;"></div>
+                    `;
+                    // Insert before the grid-area-mock (which contains search, grid, footer)
+                    const mockMain = document.querySelector('.grid-preview-container .preview-mock-body');
+                    if (mockMain) {
+                        mockMain.style.display = 'flex';
+                        mockMain.style.flexDirection = 'row';
+                        const gridAreaMock = mockMain.querySelector('div[style*="flex-direction: column"]');
+                        if (gridAreaMock) {
+                            mockMain.insertBefore(previewFilters, gridAreaMock);
+                        }
+                    }
+                }
+            } else if (previewFilters) {
+                previewFilters.remove();
+            }
+
+            // Update width
+            const width = grid.gridMaxWidth || 100;
+            const widthStyles = `width: ${width}%; max-width: ${width}%; margin: 0 auto;`;
+            previewGrid.style.cssText += widthStyles;
+            if (previewNav) previewNav.style.cssText += widthStyles;
+            if (previewSearch) previewSearch.style.cssText += widthStyles;
+            if (previewFooter) previewFooter.style.cssText += widthStyles;
 
             // Update container layouts
             if (previewNav) previewNav.classList.toggle('active', !!grid.showNav);
@@ -2194,6 +2233,13 @@
                                 <input type="range" id="gridColumns" min="1" max="6" value="${exp.grid.columns}">
                             </div>
 
+                            <div class="slider-group">
+                                <div class="slider-label">
+                                    <label>Grid Max Width (%)</label>
+                                    <span class="slider-value" id="gridWidthValue">${exp.grid.gridMaxWidth || 100}%</span>
+                                </div>
+                                <input type="range" id="gridMaxWidth" min="40" max="100" value="${exp.grid.gridMaxWidth || 100}">
+                            </div>
                             <div class="form-group">
                                 <label for="cardHeight">Card Height</label>
                                 <select id="cardHeight">
@@ -2276,6 +2322,13 @@
                             </div>
 
                             <div class="form-section-title" style="margin-top: 24px;">Display Options</div>
+
+                            <div class="toggle-group">
+                                <div class="toggle ${exp.grid.showFilters ? 'active' : ''}" id="toggleFilters">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <div class="toggle-label">Include Filter Sidebar</div>
+                            </div>
 
                             <div class="toggle-group">
                                 <div class="toggle ${exp.grid.showSearch ? 'active' : ''}" id="toggleSearch">
@@ -2687,7 +2740,7 @@
                 document.getElementById('gridColumns').addEventListener('input', (e) => {
                     exp.grid.columns = parseInt(e.target.value);
                     document.getElementById('columnsValue').textContent = e.target.value;
-                    
+
                     // Recalculate maxItems
                     exp.grid.maxItems = exp.grid.columns * (exp.grid.rows || 4);
                     document.getElementById('totalItemsDisplay').textContent = exp.grid.maxItems;
@@ -2696,6 +2749,12 @@
                     updateGridPreview();
                 });
 
+                document.getElementById('gridMaxWidth').addEventListener('input', (e) => {
+                    exp.grid.gridMaxWidth = parseInt(e.target.value);
+                    document.getElementById('gridWidthValue').textContent = e.target.value + '%';
+                    saveStateSoon();
+                    updateGridPreview();
+                });
                 document.getElementById('gridRows').addEventListener('input', (e) => {
                     exp.grid.rows = parseInt(e.target.value);
                     document.getElementById('rowsValue').textContent = e.target.value;
@@ -2739,8 +2798,9 @@
 
                 // Toggle switches
                 const toggles = [
-                    { id: 'toggleSearch', key: 'showSearch' },
                     { id: 'toggleNav', key: 'showNav' },
+                    { id: 'toggleSearch', key: 'showSearch' },
+                    { id: 'toggleFilters', key: 'showFilters' },
                     { id: 'toggleFooter', key: 'showFooter' },
                     { id: 'toggleImage', key: 'showImage' },
                     { id: 'toggleTitle', key: 'showTitle' },

@@ -346,6 +346,44 @@
         .mock-nav-item:hover { color: var(--primary, #007bff); }
         .mock-nav-item.active { color: var(--primary, #007bff); font-weight: 700; }
 
+        /* Filter Sidebar */
+        .filter-sidebar {
+            width: 240px;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            flex-shrink: 0;
+            display: none;
+            flex-direction: column;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+        .filter-sidebar.active { display: flex; }
+        .filter-group { margin-bottom: 2rem; }
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #444;
+            cursor: pointer;
+        }
+        .filter-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
         .mock-footer {
             display: none;
             background: #f9fafb;
@@ -895,6 +933,7 @@
             overflow: hidden;
             width: 100%;
             max-width: 100%;
+            margin: 0 auto;
             position: relative;
         }
 
@@ -1143,7 +1182,7 @@
         /* Nike Style */
         .card.nike {
             background: #fff;
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
             border-radius: 0;
             box-shadow: none;
             padding: 0;
@@ -1217,7 +1256,7 @@
         .card.nike .card-description {
             order: 4;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 15px;
+            font-size: 10px;
             font-weight: 500;
             color: #111 !important;
             margin-top: 8px;
@@ -1271,7 +1310,7 @@
         .card.short { height: 160px; }
         .card.medium { height: 220px; }
         .card.tall { height: 280px; }
-        .card.nike-height { height: 640px; }
+        .card.nike-height { height: 576px; }
 
         .card-image {
             width: 100%;
@@ -2095,7 +2134,10 @@
                                     <input type="range" id="runnerGridRows" min="1" max="20" step="1" style="width:100%;">
                                 </div>
                                 <div class="form-group" style="margin-top:0.75rem;">
-                                    <label class="textarea-label">Card Height</label>
+                                    <label class="textarea-label">Grid Max Width (%)</label>
+                                    <input type="range" id="runnerGridMaxWidth" min="40" max="100" step="1" style="width:100%;">
+                                </div>
+                                <div class="form-group" style="margin-top:0.75rem;">                                    <label class="textarea-label">Card Height</label>
                                     <select class="log-level-select" id="runnerCardHeight">
                                         <option value="short">Short</option>
                                         <option value="medium">Medium</option>
@@ -2184,6 +2226,11 @@
 
     <!-- Content -->
     <div class="session-content">
+        <!-- Filter Sidebar -->
+        <aside class="filter-sidebar" id="filterSidebar">
+            <div id="filterContent"></div>
+        </aside>
+
         <!-- Grid Area -->
         <div class="grid-area">
             <div class="task-banner" id="taskBanner"></div>
@@ -2523,6 +2570,13 @@
             fetchGridData(); // Re-fetch because maxItems changed
         });
 
+        document.getElementById('runnerGridMaxWidth').addEventListener('input', (e) => {
+            const width = parseInt(e.target.value);
+            experimentConfig.grid.gridMaxWidth = width;
+            document.querySelector('.grid-area').style.maxWidth = width + '%';
+            logDebug('LAYOUT', 'info', `Grid max-width changed to ${width}%`);
+        });
+
         document.getElementById('runnerCardHeight').addEventListener('change', (e) => {
             experimentConfig.grid.cardHeight = e.target.value;
             renderCurrentItems();
@@ -2636,19 +2690,25 @@
         console.log('[Runner] Applying grid class:', gridClass);
         document.getElementById('gridContainer').className = `grid-container ${gridClass}`;
 
+        const gridMaxWidth = experimentConfig.grid.gridMaxWidth || 100;
+        document.querySelector('.grid-area').style.maxWidth = gridMaxWidth + '%';
+
+        renderFilters();
+
         // Initialize sidebar controls (defensive)
         const colEl = document.getElementById('runnerGridColumns');
         const rowEl = document.getElementById('runnerGridRows');
+        const widthEl = document.getElementById('runnerGridMaxWidth');
         const hEl = document.getElementById('runnerCardHeight');
         const sEl = document.getElementById('runnerCardStyle');
         const oEl = document.getElementById('runnerGridOverlayStyle');
-        
+
         if (colEl) colEl.value = gridColumns;
         if (rowEl) rowEl.value = experimentConfig.grid.rows || 4;
+        if (widthEl) widthEl.value = gridMaxWidth;
         if (hEl) hEl.value = experimentConfig.grid.cardHeight || 'medium';
         if (sEl) sEl.value = experimentConfig.grid.cardStyle || 'modern';
         if (oEl) oEl.value = experimentConfig.grid.gridOverlayStyle || 'lines';
-
         // Show search if configured (respecting mode)
         const isActionMode = !experimentConfig.mode || experimentConfig.mode === 'action_transcript';
         const showSearch = experimentConfig.grid.showSearch !== false; // Default true
@@ -3147,6 +3207,48 @@
                 <div class="empty-state-subtext">Try adjusting your search or filters</div>
             </div>
         `;
+    }
+
+    function renderFilters() {
+        const sidebar = document.getElementById('filterSidebar');
+        const content = document.getElementById('filterContent');
+        if (!sidebar || !content) return;
+
+        const show = experimentConfig.grid && experimentConfig.grid.showFilters;
+        sidebar.classList.toggle('active', !!show);
+        if (!show) return;
+
+        // Content-aware mock filters
+        let filterSets = [];
+        const adapterId = experimentConfig.api.adapterId;
+
+        if (adapterId === 'clothing-local-api' || experimentConfig.grid.cardStyle === 'nike') {
+            filterSets = [
+                { title: 'Category', items: ['T-Shirts', 'Jackets', 'Shoes', 'Accessories', 'New Arrivals'] },
+                { title: 'Size', items: ['Small', 'Medium', 'Large', 'Extra Large'] },
+                { title: 'Colour', items: ['Black', 'White', 'Blue', 'Grey'] },
+                { title: 'Price Range', items: ['Under £50', '£50 - £100', '£100 - £200', 'Over £200'] }
+            ];
+        } else {
+            filterSets = [
+                { title: 'Object Type', items: ['Painting', 'Sculpture', 'Photograph', 'Textile', 'Ceramics'] },
+                { title: 'Era', items: ['Ancient', 'Medieval', 'Renaissance', 'Modern', 'Contemporary'] },
+                { title: 'Material', items: ['Oil on Canvas', 'Marble', 'Bronze', 'Silk', 'Paper'] },
+                { title: 'Department', items: ['Prints & Drawings', 'European Art', 'Asian Art', 'Photography'] }
+            ];
+        }
+
+        content.innerHTML = filterSets.map(set => `
+            <div class="filter-group">
+                <div class="filter-title">${set.title}</div>
+                ${set.items.map(item => `
+                    <div class="filter-item">
+                        <div class="filter-checkbox"></div>
+                        <span>${item}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `).join('');
     }
 
     function showErrorState() {
