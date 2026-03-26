@@ -35,6 +35,8 @@ services:
       - DB_NAME=vrp
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
+      - ADMIN_USER=${ADMIN_USER:-Admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-Password}
     depends_on:
       db:
         condition: service_healthy

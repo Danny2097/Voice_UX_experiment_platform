@@ -50,8 +50,8 @@ async function migrate() {
     console.log('[API] Schema applied');
 
     // Seed admin user
-    const adminUser = process.env.ADMIN_USER || 'admin';
-    const adminPass = process.env.ADMIN_PASSWORD || 'password';
+    const adminUser = process.env.ADMIN_USER || 'Admin';
+    const adminPass = process.env.ADMIN_PASSWORD || 'Password';
     const hashed    = hashPassword(adminPass);
 
     await pool.query(`

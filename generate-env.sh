@@ -25,9 +25,11 @@ cat > "$TARGET" << 'EOF'
 # ══════════════════════════════════════════════════════════════
 
 # ── Researcher login (protects Experiment Manager when live) ──
-ADMIN_USER=
-ADMIN_PASSWORD=
+# Researcher Credentials
+ADMIN_USER=Admin
+ADMIN_PASSWORD=Password
 
+# Database Configuration
 # ── PostgreSQL credentials ────────────────────────────────────
 DB_USER=
 DB_PASS=
