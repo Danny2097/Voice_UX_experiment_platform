@@ -121,7 +121,7 @@
 
         /* ===== SIDEBAR ===== */
         .sidebar {
-            width: 320px;
+            width: 360px;
             background: white;
             border-right: 1px solid #e2e6ed;
             display: flex;
@@ -2001,6 +2001,27 @@
         // ============================================================
         // UI RENDERING
         // ============================================================
+        function getGridLabels(adapterId) {
+            const isEcommerce = adapterId === 'clothing-local-api';
+            if (isEcommerce) {
+                return {
+                    image: 'Show Product Image',
+                    title: 'Show Product Name',
+                    subtitle: 'Show Price / Category',
+                    tags: 'Show Status Badges',
+                    description: 'Show Full Description'
+                };
+            }
+            // Default Museum style
+            return {
+                image: 'Show Object Image',
+                title: 'Show Object Title',
+                subtitle: 'Show Maker / Date',
+                tags: 'Show Subject Tags',
+                description: 'Show Historical Notes'
+            };
+        }
+
         function renderExperimentsList() {
             const list = document.getElementById('experimentsList');
             
