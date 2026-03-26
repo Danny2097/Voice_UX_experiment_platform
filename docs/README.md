@@ -23,6 +23,13 @@ docker compose up -d
 
 Open your browser to **http://localhost:8080**
 
+### Default Credentials
+The platform is secured by a researcher login. By default, use:
+- **Username:** `Admin`
+- **Password:** `Password`
+
+To customize these, set the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables in your `.env` file before running `docker compose up -d`.
+
 To stop:
 ```bash
 docker compose down
@@ -222,8 +229,14 @@ The Open Library provides free book data. Use this configuration:
 
 ## Running an Experiment
 
+### High-Fidelity Preview vs. Live Session
+The platform offers two ways to run your experiment:
+
+1.  **High-Fidelity Preview:** Located in the **Run** tab. This allows you to experience the study exactly as a participant would, including the consent screen and session-end flow. It is useful for verifying your layout, workflow, and API connection. **Data is not saved to the database** in this mode.
+2.  **Live Session:** Managed through the **Participants** tab. Each session is unique to a participant and **all data is saved** to the persistent database for later export.
+
 ### Consent flow
-When a participant begins a session, they see:
+When a participant (or researcher in preview) begins a session, they see:
 1. A consent screen displaying:
    - Experiment overview
    - All Participant Information Sheet fields
