@@ -1,0 +1,655 @@
+{
+  "count": 50,
+  "items": [
+    {
+      "id": "CLO-001",
+      "title": "Classic White T-Shirt",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish classic white t-shirt from our tops collection. Features Cotton, Basic, White attributes.",
+      "image": "https://images.unsplash.com/photo-1521590832127-26d145ed0c17?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Cotton",
+        "Basic",
+        "White"
+      ]
+    },
+    {
+      "id": "CLO-002",
+      "title": "Blue Denim Jeans",
+      "subtitle": "Bottoms",
+      "category": "Bottoms",
+      "description": "A stylish blue denim jeans from our bottoms collection. Features Denim, Casual, Blue attributes.",
+      "image": "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Denim",
+        "Casual",
+        "Blue"
+      ]
+    },
+    {
+      "id": "CLO-003",
+      "title": "Leather Biker Jacket",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish leather biker jacket from our outerwear collection. Features Leather, Black, Edgy attributes.",
+      "image": "https://images.unsplash.com/photo-1551028719-0f1cff4a48ad?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Leather",
+        "Black",
+        "Edgy"
+      ]
+    },
+    {
+      "id": "CLO-004",
+      "title": "Grey Pullover Hoodie",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish grey pullover hoodie from our tops collection. Features Comfy, Sporty, Grey attributes.",
+      "image": "https://images.unsplash.com/photo-1556821840-3a460bb6dbb9?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Comfy",
+        "Sporty",
+        "Grey"
+      ]
+    },
+    {
+      "id": "CLO-005",
+      "title": "Floral Summer Dress",
+      "subtitle": "Dresses",
+      "category": "Dresses",
+      "description": "A stylish floral summer dress from our dresses collection. Features Pattern, Light, Floral attributes.",
+      "image": "https://images.unsplash.com/photo-1572804013307-597758e985b2?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Pattern",
+        "Light",
+        "Floral"
+      ]
+    },
+    {
+      "id": "CLO-006",
+      "title": "Black Pleated Skirt",
+      "subtitle": "Bottoms",
+      "category": "Bottoms",
+      "description": "A stylish black pleated skirt from our bottoms collection. Features Formal, Short, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Formal",
+        "Short",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-007",
+      "title": "Khaki Cargo Shorts",
+      "subtitle": "Bottoms",
+      "category": "Bottoms",
+      "description": "A stylish khaki cargo shorts from our bottoms collection. Features Utility, Summer, Khaki attributes.",
+      "image": "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Utility",
+        "Summer",
+        "Khaki"
+      ]
+    },
+    {
+      "id": "CLO-008",
+      "title": "Wool Knit Sweater",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish wool knit sweater from our tops collection. Features Wool, Warm, Beige attributes.",
+      "image": "https://images.unsplash.com/photo-1441742917377-57f78ee0e582?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Wool",
+        "Warm",
+        "Beige"
+      ]
+    },
+    {
+      "id": "CLO-009",
+      "title": "Navy Blue Blazer",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish navy blue blazer from our outerwear collection. Features Formal, Professional, Navy attributes.",
+      "image": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Formal",
+        "Professional",
+        "Navy"
+      ]
+    },
+    {
+      "id": "CLO-010",
+      "title": "Red Silk Tie",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish red silk tie from our accessories collection. Features Silk, Formal, Red attributes.",
+      "image": "https://images.unsplash.com/photo-1598033129183-c4f50c717658?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Silk",
+        "Formal",
+        "Red"
+      ]
+    },
+    {
+      "id": "CLO-011",
+      "title": "Checked Flannel Shirt",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish checked flannel shirt from our tops collection. Features Cotton, Casual, Check attributes.",
+      "image": "https://images.unsplash.com/photo-1592882731550-200778c18742?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Cotton",
+        "Casual",
+        "Check"
+      ]
+    },
+    {
+      "id": "CLO-012",
+      "title": "Cashmere Scarf",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish cashmere scarf from our accessories collection. Features Luxury, Winter, Grey attributes.",
+      "image": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Luxury",
+        "Winter",
+        "Grey"
+      ]
+    },
+    {
+      "id": "CLO-013",
+      "title": "Canvas Sneakers",
+      "subtitle": "Footwear",
+      "category": "Footwear",
+      "description": "A stylish canvas sneakers from our footwear collection. Features Shoes, Canvas, White attributes.",
+      "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Shoes",
+        "Canvas",
+        "White"
+      ]
+    },
+    {
+      "id": "CLO-014",
+      "title": "Leather Chelsea Boots",
+      "subtitle": "Footwear",
+      "category": "Footwear",
+      "description": "A stylish leather chelsea boots from our footwear collection. Features Leather, Boots, Brown attributes.",
+      "image": "https://images.unsplash.com/photo-1605733513597-a8cb1e30953c?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Leather",
+        "Boots",
+        "Brown"
+      ]
+    },
+    {
+      "id": "CLO-015",
+      "title": "Winter Beanie Hat",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish winter beanie hat from our accessories collection. Features Wool, Warm, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1576822676300-b2a3d272d0ac?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Wool",
+        "Warm",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-016",
+      "title": "Denim Jacket",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish denim jacket from our outerwear collection. Features Denim, Classic, Blue attributes.",
+      "image": "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Denim",
+        "Classic",
+        "Blue"
+      ]
+    },
+    {
+      "id": "CLO-017",
+      "title": "Formal Evening Gown",
+      "subtitle": "Dresses",
+      "category": "Dresses",
+      "description": "A stylish formal evening gown from our dresses collection. Features Elegant, Long, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Elegant",
+        "Long",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-018",
+      "title": "Sports Leggings",
+      "subtitle": "Activewear",
+      "category": "Activewear",
+      "description": "A stylish sports leggings from our activewear collection. Features Stretch, Yoga, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1506629082911-aa19ad543832?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Stretch",
+        "Yoga",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-019",
+      "title": "Trench Coat",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish trench coat from our outerwear collection. Features Classic, Rain, Beige attributes.",
+      "image": "https://images.unsplash.com/photo-1591047134397-9dd11df83519?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Classic",
+        "Rain",
+        "Beige"
+      ]
+    },
+    {
+      "id": "CLO-020",
+      "title": "Puffer Winter Jacket",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish puffer winter jacket from our outerwear collection. Features Warm, Quilted, Green attributes.",
+      "image": "https://images.unsplash.com/photo-1604644401217-ee48d1da2902?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Warm",
+        "Quilted",
+        "Green"
+      ]
+    },
+    {
+      "id": "CLO-021",
+      "title": "Graphic Print Tee",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish graphic print tee from our tops collection. Features Graphic, Urban, White attributes.",
+      "image": "https://images.unsplash.com/photo-1503342217485-be3c1303f236?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Graphic",
+        "Urban",
+        "White"
+      ]
+    },
+    {
+      "id": "CLO-022",
+      "title": "Linen Trousers",
+      "subtitle": "Bottoms",
+      "category": "Bottoms",
+      "description": "A stylish linen trousers from our bottoms collection. Features Linen, Summer, White attributes.",
+      "image": "https://images.unsplash.com/photo-1594633312301-443b7119f4a5?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Linen",
+        "Summer",
+        "White"
+      ]
+    },
+    {
+      "id": "CLO-023",
+      "title": "Suede Loafers",
+      "subtitle": "Footwear",
+      "category": "Footwear",
+      "description": "A stylish suede loafers from our footwear collection. Features Suede, Casual, Brown attributes.",
+      "image": "https://images.unsplash.com/photo-1601924990264-909247f98d4d?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Suede",
+        "Casual",
+        "Brown"
+      ]
+    },
+    {
+      "id": "CLO-024",
+      "title": "Aviator Sunglasses",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish aviator sunglasses from our accessories collection. Features Eyewear, Classic, Gold attributes.",
+      "image": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Eyewear",
+        "Classic",
+        "Gold"
+      ]
+    },
+    {
+      "id": "CLO-025",
+      "title": "Luxury Wristwatch",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish luxury wristwatch from our accessories collection. Features Timepiece, Silver, Metal attributes.",
+      "image": "https://images.unsplash.com/photo-1523175132101-2aa2925a9a4b?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Timepiece",
+        "Silver",
+        "Metal"
+      ]
+    },
+    {
+      "id": "CLO-026",
+      "title": "Leather Belt",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish leather belt from our accessories collection. Features Leather, Black, Metal attributes.",
+      "image": "https://images.unsplash.com/photo-1624222247642-d3f3326eb2a1?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Leather",
+        "Black",
+        "Metal"
+      ]
+    },
+    {
+      "id": "CLO-027",
+      "title": "Wool Overcoat",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish wool overcoat from our outerwear collection. Features Wool, Formal, Camel attributes.",
+      "image": "https://images.unsplash.com/photo-1539533397352-75244caeff3a?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Wool",
+        "Formal",
+        "Camel"
+      ]
+    },
+    {
+      "id": "CLO-028",
+      "title": "High-Waisted Shorts",
+      "subtitle": "Bottoms",
+      "category": "Bottoms",
+      "description": "A stylish high-waisted shorts from our bottoms collection. Features Summer, Denim, Blue attributes.",
+      "image": "https://images.unsplash.com/photo-1541099649-183e718bc551?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Summer",
+        "Denim",
+        "Blue"
+      ]
+    },
+    {
+      "id": "CLO-029",
+      "title": "Silk Blouse",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish silk blouse from our tops collection. Features Silk, Elegant, Pink attributes.",
+      "image": "https://images.unsplash.com/photo-1588612140417-762319451199?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Silk",
+        "Elegant",
+        "Pink"
+      ]
+    },
+    {
+      "id": "CLO-030",
+      "title": "Ankle Socks",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish ankle socks from our accessories collection. Features Cotton, Short, White attributes.",
+      "image": "https://images.unsplash.com/photo-1582967729760-02c217ec9fae?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Cotton",
+        "Short",
+        "White"
+      ]
+    },
+    {
+      "id": "CLO-031",
+      "title": "Swim Trunks",
+      "subtitle": "Swimwear",
+      "category": "Swimwear",
+      "description": "A stylish swim trunks from our swimwear collection. Features Summer, Beach, Pattern attributes.",
+      "image": "https://images.unsplash.com/photo-1501290500216-958049713c0b?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Summer",
+        "Beach",
+        "Pattern"
+      ]
+    },
+    {
+      "id": "CLO-032",
+      "title": "One-Piece Swimsuit",
+      "subtitle": "Swimwear",
+      "category": "Swimwear",
+      "description": "A stylish one-piece swimsuit from our swimwear collection. Features Beach, Classic, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1588899131139-59193397d180?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Beach",
+        "Classic",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-033",
+      "title": "Bathrobe",
+      "subtitle": "Loungewear",
+      "category": "Loungewear",
+      "description": "A stylish bathrobe from our loungewear collection. Features Cotton, Soft, White attributes.",
+      "image": "https://images.unsplash.com/photo-1595147134311-667793d40625?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Cotton",
+        "Soft",
+        "White"
+      ]
+    },
+    {
+      "id": "CLO-034",
+      "title": "Corduroy Jacket",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish corduroy jacket from our outerwear collection. Features Corduroy, Retro, Tan attributes.",
+      "image": "https://images.unsplash.com/photo-1611312449408-281149d32d6d?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Corduroy",
+        "Retro",
+        "Tan"
+      ]
+    },
+    {
+      "id": "CLO-035",
+      "title": "V-Neck Cardigan",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish v-neck cardigan from our tops collection. Features Wool, Button, Grey attributes.",
+      "image": "https://images.unsplash.com/photo-1502404036613-268e31846b9a?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Wool",
+        "Button",
+        "Grey"
+      ]
+    },
+    {
+      "id": "CLO-036",
+      "title": "Running Shoes",
+      "subtitle": "Footwear",
+      "category": "Footwear",
+      "description": "A stylish running shoes from our footwear collection. Features Sport, Active, Blue attributes.",
+      "image": "https://images.unsplash.com/photo-1542291013-023b9ea0098d?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Sport",
+        "Active",
+        "Blue"
+      ]
+    },
+    {
+      "id": "CLO-037",
+      "title": "Straw Sun Hat",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish straw sun hat from our accessories collection. Features Summer, Straw, Beige attributes.",
+      "image": "https://images.unsplash.com/photo-1515255385834-0d861d80f83f?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Summer",
+        "Straw",
+        "Beige"
+      ]
+    },
+    {
+      "id": "CLO-038",
+      "title": "Bow Tie",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish bow tie from our accessories collection. Features Formal, Silk, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1598032895394-1b392b43f05f?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Formal",
+        "Silk",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-039",
+      "title": "Chino Pants",
+      "subtitle": "Bottoms",
+      "category": "Bottoms",
+      "description": "A stylish chino pants from our bottoms collection. Features Cotton, Casual, Navy attributes.",
+      "image": "https://images.unsplash.com/photo-1475178626620-df4f6204aeba?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Cotton",
+        "Casual",
+        "Navy"
+      ]
+    },
+    {
+      "id": "CLO-040",
+      "title": "Raincoat",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish raincoat from our outerwear collection. Features Waterproof, Rain, Yellow attributes.",
+      "image": "https://images.unsplash.com/photo-1548629728-a56020150d52?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Waterproof",
+        "Rain",
+        "Yellow"
+      ]
+    },
+    {
+      "id": "CLO-041",
+      "title": "Polo Shirt",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish polo shirt from our tops collection. Features Cotton, Preppy, White attributes.",
+      "image": "https://images.unsplash.com/photo-1624378439446-27a127476fd8?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Cotton",
+        "Preppy",
+        "White"
+      ]
+    },
+    {
+      "id": "CLO-042",
+      "title": "Evening Clutch Bag",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish evening clutch bag from our accessories collection. Features Formal, Small, Gold attributes.",
+      "image": "https://images.unsplash.com/photo-1566150905476-b03405ce2397?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Formal",
+        "Small",
+        "Gold"
+      ]
+    },
+    {
+      "id": "CLO-043",
+      "title": "Hiking Boots",
+      "subtitle": "Footwear",
+      "category": "Footwear",
+      "description": "A stylish hiking boots from our footwear collection. Features Outdoor, Tough, Brown attributes.",
+      "image": "https://images.unsplash.com/photo-1520639840139-2a0750225821?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Outdoor",
+        "Tough",
+        "Brown"
+      ]
+    },
+    {
+      "id": "CLO-044",
+      "title": "Turtleneck Top",
+      "subtitle": "Tops",
+      "category": "Tops",
+      "description": "A stylish turtleneck top from our tops collection. Features Cotton, Winter, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1614251441775-6284127ec7dc?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Cotton",
+        "Winter",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-045",
+      "title": "Vest Jacket",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish vest jacket from our outerwear collection. Features Sleeveless, Puffer, Black attributes.",
+      "image": "https://images.unsplash.com/photo-1639037748961-71329a437433?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Sleeveless",
+        "Puffer",
+        "Black"
+      ]
+    },
+    {
+      "id": "CLO-046",
+      "title": "Denim Skirt",
+      "subtitle": "Bottoms",
+      "category": "Bottoms",
+      "description": "A stylish denim skirt from our bottoms collection. Features Denim, Short, Blue attributes.",
+      "image": "https://images.unsplash.com/photo-1584661135352-04a116f3933c?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Denim",
+        "Short",
+        "Blue"
+      ]
+    },
+    {
+      "id": "CLO-047",
+      "title": "Canvas Backpack",
+      "subtitle": "Accessories",
+      "category": "Accessories",
+      "description": "A stylish canvas backpack from our accessories collection. Features Bag, Travel, Green attributes.",
+      "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Bag",
+        "Travel",
+        "Green"
+      ]
+    },
+    {
+      "id": "CLO-048",
+      "title": "Kimono Robe",
+      "subtitle": "Loungewear",
+      "category": "Loungewear",
+      "description": "A stylish kimono robe from our loungewear collection. Features Silk, Pattern, Red attributes.",
+      "image": "https://images.unsplash.com/photo-1615574843419-be8f635c938d?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Silk",
+        "Pattern",
+        "Red"
+      ]
+    },
+    {
+      "id": "CLO-049",
+      "title": "Overalls",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish overalls from our outerwear collection. Features Denim, Casual, Blue attributes.",
+      "image": "https://images.unsplash.com/photo-1521191089903-8869c93a8915?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Denim",
+        "Casual",
+        "Blue"
+      ]
+    },
+    {
+      "id": "CLO-050",
+      "title": "Poncho",
+      "subtitle": "Outerwear",
+      "category": "Outerwear",
+      "description": "A stylish poncho from our outerwear collection. Features Knit, Layer, Grey attributes.",
+      "image": "https://images.unsplash.com/photo-1524311100569-450f3732626e?auto=format&fit=crop&q=80&w=800",
+      "tags": [
+        "Knit",
+        "Layer",
+        "Grey"
+      ]
+    }
+  ]
+}

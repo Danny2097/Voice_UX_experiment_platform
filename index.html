@@ -1052,6 +1052,278 @@
             margin: 0;
         }
 
+        /* ===== GRID PREVIEW STYLES (Drawer Version) ===== */
+        .preview-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 100vh;
+            background: #f8f9fb;
+            z-index: 2000;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #e2e6ed;
+        }
+
+        .preview-drawer.open {
+            transform: translateX(0);
+        }
+
+        .preview-drawer-header {
+            padding: 20px 24px;
+            background: white;
+            border-bottom: 1px solid #e2e6ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-drawer-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .preview-drawer-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #9ca3af;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .preview-drawer-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .preview-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 1999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .preview-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .btn-preview-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #4f6ef7;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(79,110,247,0.2);
+        }
+
+        .btn-preview-toggle:hover {
+            background: #3d53c7;
+        }
+
+        /* Update existing preview card styles for drawer width */
+        .grid-preview-viewport {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e6ed;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .preview-grid-content {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            gap: 16px;
+            overflow-y: visible;
+        }
+
+        .preview-card {
+            background: #fff;
+            border: 1px solid #e2e6ed;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .preview-card-image {
+            width: 100%;
+            height: 100%; /* Fill the whole card */
+            background: #f1f3f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .preview-card-body {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            background: linear-gradient(to top, 
+                rgba(0,0,0,0.85) 0%, 
+                rgba(0,0,0,0.5) 40%, 
+                rgba(0,0,0,0.2) 70%, 
+                transparent 100%);
+            display: flex;
+            flex-direction: column;
+            pointer-events: none;
+        }
+
+        .preview-card-title {
+            height: 10px;
+            width: 80%;
+            background: rgba(255,255,255,0.9);
+            border-radius: 5px;
+            margin-bottom: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .preview-card-subtitle {
+            height: 6px;
+            width: 50%;
+            background: rgba(255,255,255,0.6);
+            border-radius: 3px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+
+        .preview-card-tags {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .preview-card-tag {
+            height: 12px;
+            width: 24px;
+            background: #f1f3f7;
+            border-radius: 4px;
+        }
+
+        .preview-card-desc {
+            height: 8px;
+            width: 100%;
+            background: #f8f9fb;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        .preview-mock-footer {
+            height: 40px;
+            background: #f8f9fb;
+            border-top: 1px solid #e2e6ed;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .preview-mock-footer.active { display: flex; }
+
+        .preview-mock-footer-item {
+            width: 20px;
+            height: 20px;
+            background: #e2e6ed;
+            border-radius: 50%;
+        }
+
+        /* Preview Card Heights */
+        .preview-card.short { height: 140px; }
+        .preview-card.medium { height: 180px; }
+        .preview-card.tall { height: 240px; }
+        .preview-card.nike-height { height: 520px; }
+
+        /* Preview Card Styles - Simplified versions of experiment.html */
+        .preview-card.modern { border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .preview-card.classic { border-radius: 0; border: 2px solid #333; }
+        .preview-card.minimal { border: none; background: transparent; }
+        .preview-card.glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3); }
+        .preview-card.elevated { border: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .preview-card.neumorphic { background: #f0f0f0; border: none; box-shadow: 4px 4px 8px #cbcbcb, -4px -4px 8px #ffffff; }
+        .preview-card.brutalist { border: 2px solid #000; border-radius: 0; box-shadow: 4px 4px 0px #000; }
+        .preview-card.polaroid { background: #fff; padding: 8px 8px 24px 8px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .preview-card.polaroid .preview-card-image { height: 75%; }
+        .preview-card.polaroid .preview-card-body { position: relative; background: transparent; padding: 8px 0 0 0; }
+        .preview-card.polaroid .preview-card-title { background: #e2e6ed; }
+
+        .preview-card.dark { background: #1f2937; border: 1px solid #374151; }
+        .preview-card.dark .preview-card-title { background: #4b5563; }
+        .preview-card.dark .preview-card-subtitle, 
+        .preview-card.dark .preview-card-tag,
+        .preview-card.dark .preview-card-desc,
+        .preview-card.dark .preview-card-image { background: #374151; }
+
+        .preview-card.etsy { background: #fff; border: 1px solid #e2e6ed; border-radius: 6px; }
+        .preview-card.etsy .preview-card-image { height: 70%; border-bottom: 1px solid #f1f3f7; }
+        .preview-card.etsy .preview-card-body { position: relative; background: transparent; padding: 8px; height: 30%; }
+        .preview-card.etsy .preview-card-title { background: #e2e6ed; width: 90%; }
+        .preview-card.etsy .preview-card-subtitle { background: #f1f3f7; width: 40%; height: 8px; }
+
+        .preview-card.nike { background: #fff; border: 1px solid rgba(0,0,0,0.05); border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; }
+        .preview-card.nike .preview-card-image { order: 1; height: 75%; background: #f6f6f6; border-radius: 0; }
+        .preview-card.nike .preview-card-body { order: 2; background: #fff; padding: 12px 8px; height: 25%; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .preview-card.nike .preview-card-tag { order: 1; background: #9e3500; width: 30%; height: 4px; border-radius: 0; margin-bottom: 2px; flex-shrink: 0; }
+        .preview-card.nike .preview-card-title { order: 2; background: #111; width: 85%; height: 6px; border-radius: 0; flex-shrink: 0; }
+        .preview-card.nike .preview-card-subtitle { order: 3; background: #757575; width: 60%; height: 6px; border-radius: 0; flex-shrink: 0; }
+
+        .preview-card.horizontal { flex-direction: row; height: 120px !important; }
+        .preview-card.horizontal .preview-card-image { width: 40%; height: 100%; }
+        .preview-card.horizontal .preview-card-body { width: 60%; position: relative; background: transparent; height: 100%; justify-content: center; }
+        .preview-card.horizontal .preview-card-title { background: #e2e6ed; }
+
+        /* ===== GRID LAYOUT TAB WRAPPER ===== */
+        .tab-grid-layout-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 180px); /* Adjust based on header/tabs height */
+            margin: -24px; /* Offset detail-content padding */
+        }
+
+        .grid-preview-sticky {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #f8f9fb;
+            padding: 24px;
+            border-bottom: 1px solid #e2e6ed;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .grid-preview-sticky .grid-preview-container {
+            margin-top: 0;
+        }
+
+        .grid-options-scrollable {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
 
 /* ════ Lock Screen ════ */
 #lockScreen {
@@ -1274,6 +1546,38 @@
          from breaking the rest of the page. -->
     <script src="./config.js" onerror="/* config.js not present — using defaults */"></script>
     <script src="./js/api-adapter.js"></script>
+    <div class="preview-overlay" id="previewOverlay"></div>
+    <div class="preview-drawer" id="previewDrawer">
+        <div class="preview-drawer-header">
+            <div class="preview-drawer-title">Live Layout Preview</div>
+            <button class="preview-drawer-close" id="btnClosePreview">&times;</button>
+        </div>
+        <div class="preview-drawer-content">
+            <div class="grid-preview-viewport">
+                <div id="previewMockNav" class="preview-mock-nav">
+                    <div class="preview-mock-nav-item"></div>
+                    <div class="preview-mock-nav-item"></div>
+                    <div style="flex: 1;"></div>
+                    <div class="preview-mock-nav-item" style="width: 20px; border-radius: 50%;"></div>
+                </div>
+                <div id="previewMockSearch" class="preview-mock-search">
+                    <div class="preview-mock-search-bar"></div>
+                </div>
+                <div id="previewGrid" class="preview-grid-content">
+                    <!-- Preview cards injected by JS -->
+                </div>
+                <div id="previewMockFooter" class="preview-mock-footer">
+                    <div class="preview-mock-footer-item"></div>
+                    <div class="preview-mock-footer-item"></div>
+                    <div class="preview-mock-footer-item"></div>
+                </div>
+            </div>
+            <p class="text-muted" style="margin-top: 16px; text-align: center;">
+                This is a low-fidelity visual guide. Use the <strong>Run</strong> tab to test the full experience.
+            </p>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         // STATE & STORAGE
@@ -1362,18 +1666,20 @@
                 const SAVE_DEBOUNCE_MS = 600;
         const API_BASE = ''; // Endpoints already start with /api or /proxy
         const GRID_PRESETS = [
-            { id: 'standard', name: 'Standard Mosaic', category: 'Balanced', description: '3 columns, 20 items. Classic grid with moderate detail.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'modern', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
-            { id: 'masonry', name: 'Featured Entry', category: 'Dynamic', description: '3 columns. First item spans 2x2. Great for landing pages.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'elevated', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'featured-first' } },
-            { id: 'gallery', name: 'Image Gallery', category: 'Visual', description: '4 columns, 40 items. Large images, elevated floating style.', config: { columns: 4, cardHeight: 'tall', cardStyle: 'elevated', maxItems: 40, showImage: true, showTitle: false, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
-            { id: 'compact', name: 'Compact Grid', category: 'Dense', description: '6 columns, 60 items. High density scanning with small cards.', config: { columns: 6, cardHeight: 'short', cardStyle: 'minimal', maxItems: 60, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
-            { id: 'highlight', name: 'Highlight Grid', category: 'Dynamic', description: '4 columns. Every 5th item spans 2 columns.', config: { columns: 4, cardHeight: 'medium', cardStyle: 'modern', maxItems: 40, showImage: true, showTitle: true, showSubtitle: false, showTags: true, showDescription: false, spanPattern: 'every-fifth' } },
-            { id: 'neumorphic', name: 'Soft UI', category: 'Modern', description: '3 columns, 20 items. Neumorphic soft extrusion style.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'neumorphic', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
-            { id: 'brutalist', name: 'Brutalist Grid', category: 'High Contrast', description: '3 columns, 20 items. Bold borders and hard shadows.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'brutalist', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'alternating' } },
-            { id: 'list', name: 'Detailed List', category: 'Informative', description: '1 column, 10 items. Full-width rows with all metadata.', config: { columns: 1, cardHeight: 'medium', cardStyle: 'modern', maxItems: 10, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
-            { id: 'horizontal', name: 'List Feed', category: 'Informative', description: '1 column, 15 items. Wide horizontal cards with side images.', config: { columns: 1, cardHeight: 'short', cardStyle: 'horizontal', maxItems: 15, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
-            { id: 'polaroid', name: 'Photo Deck', category: 'Visual', description: '4 columns, 24 items. Instant camera photo style.', config: { columns: 4, cardHeight: 'tall', cardStyle: 'polaroid', maxItems: 24, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
-            { id: 'archive', name: 'Text Archive', category: 'Minimal', description: '2 columns, 30 items. Strict text view with descriptions.', config: { columns: 2, cardHeight: 'short', cardStyle: 'classic', maxItems: 30, showImage: false, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
-            { id: 'dark', name: 'Night Mode', category: 'Minimal', description: '3 columns, 20 items. Dark background cards for low light.', config: { columns: 3, cardHeight: 'medium', cardStyle: 'dark', maxItems: 20, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } }
+            { id: 'nike', name: 'Nike Athletic', category: 'Themed', description: 'Flat design, bold fonts, square images. Nike.com style.', config: { columns: 3, rows: 4, cardHeight: 'nike-height', cardStyle: 'nike', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
+            { id: 'standard', name: 'Standard Mosaic', category: 'Balanced', description: '3 columns, 4 rows (12 items). Classic grid.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'modern', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
+            { id: 'masonry', name: 'Featured Entry', category: 'Dynamic', description: '3 columns, 4 rows. First item spans 2x2.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'elevated', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'featured-first' } },
+            { id: 'gallery', name: 'Image Gallery', category: 'Visual', description: '4 columns, 5 rows (20 items). Large images.', config: { columns: 4, rows: 5, cardHeight: 'tall', cardStyle: 'elevated', maxItems: 20, showImage: true, showTitle: false, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
+            { id: 'compact', name: 'Compact Grid', category: 'Dense', description: '6 columns, 8 rows (48 items). High density.', config: { columns: 6, rows: 8, cardHeight: 'short', cardStyle: 'minimal', maxItems: 48, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
+            { id: 'highlight', name: 'Highlight Grid', category: 'Dynamic', description: '4 columns, 6 rows. Every 5th item spans 2 columns.', config: { columns: 4, rows: 6, cardHeight: 'medium', cardStyle: 'modern', maxItems: 24, showImage: true, showTitle: true, showSubtitle: false, showTags: true, showDescription: false, spanPattern: 'every-fifth' } },
+            { id: 'neumorphic', name: 'Soft UI', category: 'Modern', description: '3 columns, 4 rows (12 items). Neumorphic style.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'neumorphic', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
+            { id: 'brutalist', name: 'Brutalist Grid', category: 'High Contrast', description: '3 columns, 4 rows. Bold borders.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'brutalist', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'alternating' } },
+            { id: 'list', name: 'Detailed List', category: 'Informative', description: '1 column, 10 rows (10 items). Full-width rows.', config: { columns: 1, rows: 10, cardHeight: 'medium', cardStyle: 'modern', maxItems: 10, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
+            { id: 'horizontal', name: 'List Feed', category: 'Informative', description: '1 column, 12 rows. side images.', config: { columns: 1, rows: 12, cardHeight: 'short', cardStyle: 'horizontal', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
+            { id: 'polaroid', name: 'Photo Deck', category: 'Visual', description: '4 columns, 4 rows (16 items). Polaroid style.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'polaroid', maxItems: 16, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null } },
+            { id: 'archive', name: 'Text Archive', category: 'Minimal', description: '2 columns, 10 rows (20 items). Text view.', config: { columns: 2, rows: 10, cardHeight: 'short', cardStyle: 'classic', maxItems: 20, showImage: false, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null } },
+            { id: 'dark', name: 'Night Mode', category: 'Minimal', description: '3 columns, 4 rows. Dark background cards.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'dark', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null } },
+            { id: 'clothing', name: 'Clothing Mosaic', category: 'Themed', description: 'Etsy-style marketplace layout. Optimized for fashion browsing.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'etsy', maxItems: 16, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, adapterId: 'clothing-local-api' } }
         ];
 
         let state = {
@@ -1467,6 +1773,80 @@
             }, SAVE_DEBOUNCE_MS);
         }
 
+        function updateGridPreview() {
+            const exp = getExperiment(state.selectedExperimentId);
+            if (!exp) return;
+
+            const grid = exp.grid || {};
+            const previewGrid = document.getElementById('previewGrid');
+            const previewNav = document.getElementById('previewMockNav');
+            const previewSearch = document.getElementById('previewMockSearch');
+            const previewFooter = document.getElementById('previewMockFooter');
+
+            if (!previewGrid) return;
+
+            // Update container layouts
+            if (previewNav) previewNav.classList.toggle('active', !!grid.showNav);
+            if (previewSearch) previewSearch.classList.toggle('active', !!grid.showSearch);
+            if (previewFooter) previewFooter.classList.toggle('active', !!grid.showFooter);
+
+            // Update Grid Columns
+            const cols = grid.columns || 3;
+            previewGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+            // Render Preview Cards
+            previewGrid.innerHTML = '';
+            // Render enough cards to show the grid effect
+            const cardCount = Math.min(grid.maxItems || 12, 12);
+            for (let i = 0; i < cardCount; i++) {
+                const card = document.createElement('div');
+                const height = grid.cardHeight || 'medium';
+                const style = grid.cardStyle || 'modern';
+                card.className = `preview-card ${height} ${style}`;
+                if (style === 'horizontal') card.classList.add('horizontal');
+
+                let innerHTML = '';
+                if (grid.showImage) {
+                    innerHTML += `<div class="preview-card-image">🖼️</div>`;
+                }
+
+                innerHTML += `<div class="preview-card-body">`;
+                if (grid.showTitle) innerHTML += `<div class="preview-card-title"></div>`;
+                if (grid.showSubtitle) innerHTML += `<div class="preview-card-subtitle"></div>`;
+                
+                if (grid.showTags) {
+                    innerHTML += `<div class="preview-card-tags">
+                        <div class="preview-card-tag"></div>
+                        <div class="preview-card-tag"></div>
+                    </div>`;
+                }
+
+                if (grid.showDescription) {
+                    innerHTML += `
+                        <div class="preview-card-desc"></div>
+                        <div class="preview-card-desc"></div>
+                        <div class="preview-card-desc" style="width: 60%"></div>
+                    `;
+                }
+                innerHTML += `</div>`;
+                card.innerHTML = innerHTML;
+                previewGrid.appendChild(card);
+            }
+        }
+
+        function togglePreviewDrawer(open) {
+            const drawer = document.getElementById('previewDrawer');
+            const overlay = document.getElementById('previewOverlay');
+            if (open) {
+                drawer.classList.add('open');
+                overlay.classList.add('visible');
+                updateGridPreview();
+            } else {
+                drawer.classList.remove('open');
+                overlay.classList.remove('visible');
+            }
+        }
+
         function showSaveIndicator() {
             const indicator = document.getElementById('saveIndicator');
             indicator.textContent = 'Saved';
@@ -1532,7 +1912,8 @@
                     showSubtitle: true,
                     showTags: true,
                     showDescription: false,
-                    maxItems: 20
+                    rows: 4,
+                    maxItems: 12
                 },
                 api: {
                     endpoint: '',
@@ -1785,7 +2166,12 @@
                     <div class="tab-content ${state.currentTab === 'grid-layout' ? 'active' : ''}" id="tab-grid-layout">
                         <!-- Grid Layout Section -->
                         <div class="form-section">
-                            <div class="form-section-title">Grid Layout</div>
+                            <div class="flex-between" style="margin-bottom: 16px; border-bottom: 1px solid #e2e6ed; padding-bottom: 8px;">
+                                <div class="form-section-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Grid Layout</div>
+                                <button class="btn-preview-toggle" id="btnShowPreview">
+                                    <span>👁️</span> Show Layout Preview
+                                </button>
+                            </div>
 
                             <div class="form-group" style="margin-bottom: 1.5rem;">
                                 <label class="form-label">Quick Grid Presets</label>
@@ -1814,6 +2200,7 @@
                                     <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short</option>
                                     <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium</option>
                                     <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall</option>
+                                    <option value="nike-height" ${exp.grid.cardHeight === 'nike-height' ? 'selected' : ''}>Nike (Extra Tall)</option>
                                 </select>
                             </div>
 
@@ -1827,15 +2214,28 @@
                                     <option value="elevated" ${exp.grid.cardStyle === 'elevated' ? 'selected' : ''}>Elevated (Deep shadow, floating)</option>
                                     <option value="neumorphic" ${exp.grid.cardStyle === 'neumorphic' ? 'selected' : ''}>Neumorphic (Soft extrusion)</option>
                                     <option value="brutalist" ${exp.grid.cardStyle === 'brutalist' ? 'selected' : ''}>Brutalist (Bold, hard shadows)</option>
+                                    <option value="etsy" ${exp.grid.cardStyle === 'etsy' ? 'selected' : ''}>Etsy (Marketplace style)</option>
+                                    <option value="nike" ${exp.grid.cardStyle === 'nike' ? 'selected' : ''}>Nike (Athletic, flat, bold)</option>
                                     <option value="polaroid" ${exp.grid.cardStyle === 'polaroid' ? 'selected' : ''}>Polaroid (Instant photo style)</option>
                                     <option value="dark" ${exp.grid.cardStyle === 'dark' ? 'selected' : ''}>Dark Mode (High contrast dark)</option>
                                     <option value="horizontal" ${exp.grid.cardStyle === 'horizontal' ? 'selected' : ''}>Horizontal (Image on left)</option>
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="maxItems">Max Items Per Page</label>
-                                <input type="number" id="maxItems" value="${exp.grid.maxItems}" min="1" max="100">
+                            <div class="slider-group">
+                                <div class="slider-label">
+                                    <label>Rows</label>
+                                    <span class="slider-value" id="rowsValue">${exp.grid.rows || 4}</span>
+                                </div>
+                                <input type="range" id="gridRows" min="1" max="20" value="${exp.grid.rows || 4}">
+                            </div>
+
+                            <div class="form-group" style="background: #f1f3f7; padding: 12px; border-radius: 6px; border: 1px solid #e2e6ed;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #4b5563;">Total Items Per Page</span>
+                                    <span id="totalItemsDisplay" style="font-size: 18px; font-weight: 700; color: #4f6ef7;">${(exp.grid.columns || 3) * (exp.grid.rows || 4)}</span>
+                                </div>
+                                <p class="form-hint" style="margin-top: 4px;">Calculated as Columns × Rows</p>
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
@@ -2183,6 +2583,9 @@
             // Run tab listeners
             if (state.currentTab === 'run') {
                 document.getElementById('btnRunExperiment').addEventListener('click', async () => {
+                    // Ensure current state is saved before starting
+                    await saveState(exp.id);
+                    
                     const participantId = generateParticipantId();
                     const participant = {
                         id: participantId,
@@ -2277,20 +2680,44 @@
             // Grid Layout tab listeners
             if (state.currentTab === 'grid-layout') {
                 // Grid settings
+                document.getElementById('btnShowPreview').addEventListener('click', () => {
+                    togglePreviewDrawer(true);
+                });
+
                 document.getElementById('gridColumns').addEventListener('input', (e) => {
                     exp.grid.columns = parseInt(e.target.value);
                     document.getElementById('columnsValue').textContent = e.target.value;
+                    
+                    // Recalculate maxItems
+                    exp.grid.maxItems = exp.grid.columns * (exp.grid.rows || 4);
+                    document.getElementById('totalItemsDisplay').textContent = exp.grid.maxItems;
+
                     saveStateSoon();
+                    updateGridPreview();
+                });
+
+                document.getElementById('gridRows').addEventListener('input', (e) => {
+                    exp.grid.rows = parseInt(e.target.value);
+                    document.getElementById('rowsValue').textContent = e.target.value;
+                    
+                    // Recalculate maxItems
+                    exp.grid.maxItems = (exp.grid.columns || 3) * exp.grid.rows;
+                    document.getElementById('totalItemsDisplay').textContent = exp.grid.maxItems;
+
+                    saveStateSoon();
+                    updateGridPreview();
                 });
 
                 document.getElementById('cardHeight').addEventListener('change', (e) => {
                     exp.grid.cardHeight = e.target.value;
                     saveStateSoon();
+                    updateGridPreview();
                 });
 
                 document.getElementById('cardStyle').addEventListener('change', (e) => {
                     exp.grid.cardStyle = e.target.value;
                     saveStateSoon();
+                    updateGridPreview();
                 });
 
                 document.getElementById('gridOverlayStyle').addEventListener('change', (e) => {
@@ -2300,11 +2727,6 @@
 
                 document.getElementById('experimentMode').addEventListener('change', (e) => {
                     exp.mode = e.target.value;
-                    saveStateSoon();
-                });
-
-                document.getElementById('maxItems').addEventListener('input', (e) => {
-                    exp.grid.maxItems = parseInt(e.target.value);
                     saveStateSoon();
                 });
 
@@ -2334,12 +2756,16 @@
                             el.classList.toggle('active');
                             exp.grid[toggle.key] = el.classList.contains('active');
                             saveStateSoon();
+                            updateGridPreview();
                         });
                     }
                 });
 
                 // Render preset picker
                 renderGridPresetPicker(exp.id);
+                
+                // Initial preview render
+                updateGridPreview();
             }
 
             // API Source tab listeners
@@ -2419,7 +2845,8 @@
 
                 // Continue session
                 document.querySelectorAll('.btn-continue-participant').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
+                    btn.addEventListener('click', async (e) => {
+                        await saveState(exp.id);
                         const pid = btn.dataset.participantId;
                         window.location.href = `experiment.html?expId=${exp.id}&participantId=${pid}`;
                     });
@@ -2564,7 +2991,7 @@
             showToast('Saving preset...', 'info');
             
             // Generate a simple description
-            const desc = `${config.columns} col, ${config.maxItems} items. ${config.cardHeight} ${config.cardStyle} style.`;
+            const desc = `${config.columns} col, ${config.rows || 4} rows (${config.maxItems} items). ${config.cardHeight} ${config.cardStyle} style.`;
             
             const preset = await dbRequest('/api/grid-presets', {
                 method: 'POST',
@@ -2601,6 +3028,12 @@
 
             // Apply to experiment
             exp.grid = { ...exp.grid, ...preset.config };
+            
+            // If preset has a specific adapterId linked, load it
+            if (preset.config.adapterId) {
+                loadAdapterPreset(experimentId, preset.config.adapterId);
+            }
+
             saveState();
 
             // Refresh UI
@@ -2778,8 +3211,12 @@
                     headers['x-auth-value'] = exp.api.authValue;
                 }
 
-                const proxyUrl = `/proxy?url=${encodeURIComponent(url)}`;
-                const response = await fetch(proxyUrl, { headers });
+                // Decide whether to use the proxy
+                // Use proxy for external absolute URLs to avoid CORS
+                const isExternal = url.startsWith('http');
+                const fetchUrl = isExternal ? `/proxy?url=${encodeURIComponent(url)}` : url;
+
+                const response = await fetch(fetchUrl, { headers });
                 
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
@@ -3127,6 +3564,15 @@
                 if (e.target.id === 'userModal') {
                     closeUserModal();
                 }
+            });
+
+            // Preview drawer listeners
+            document.getElementById('btnClosePreview').addEventListener('click', () => {
+                togglePreviewDrawer(false);
+            });
+
+            document.getElementById('previewOverlay').addEventListener('click', () => {
+                togglePreviewDrawer(false);
             });
         });
     </script>

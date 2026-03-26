@@ -211,8 +211,8 @@ async function handle(req, res) {
             const query = urlObj.searchParams.get('q')?.toLowerCase();
 
             if (query) {
-                const filtered = mockData.items.filter(item => 
-                    item.title.toLowerCase().includes(query) || 
+                const filtered = mockData.items.filter(item =>
+                    item.title.toLowerCase().includes(query) ||
                     item.description.toLowerCase().includes(query) ||
                     item.category.toLowerCase().includes(query) ||
                     item.tags.some(tag => tag.toLowerCase().includes(query))
@@ -222,6 +222,24 @@ async function handle(req, res) {
             return send(res, 200, mockData);
         }
 
+        // ── GET /api/offline-data ─────────────────────────────────
+        if (pathname === '/api/offline-data' && method === 'GET') {
+            const offlineData = JSON.parse(fs.readFileSync(path.join(__dirname, 'offline-data.json'), 'utf8'));
+            const urlObj = new URL(req.url, `http://localhost:${PORT}`);
+            const query = urlObj.searchParams.get('q')?.toLowerCase();
+
+            if (query) {
+                const filtered = offlineData.items.filter(item =>
+                    item.title.toLowerCase().includes(query) ||
+                    item.subtitle?.toLowerCase().includes(query) ||
+                    item.description.toLowerCase().includes(query) ||
+                    item.category.toLowerCase().includes(query) ||
+                    item.tags.some(tag => tag.toLowerCase().includes(query))
+                );
+                return send(res, 200, { count: filtered.length, items: filtered });
+            }
+            return send(res, 200, offlineData);
+        }
         // ── GET /api/experiments ──────────────────────────────────
         if (pathname === '/api/experiments' && method === 'GET') {
             const exps  = await pool.query(

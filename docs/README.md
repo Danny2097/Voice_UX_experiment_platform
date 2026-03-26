@@ -53,7 +53,14 @@ node server.js
 # Proxy runs on http://localhost:3001
 ```
 
-**Terminal 2: Start the web server**
+**Terminal 2: Start the Standalone Local API**
+```bash
+cd local-api
+node server.js
+# REST API runs on http://localhost:3003
+```
+
+**Terminal 3: Start the web server**
 ```bash
 cd platform
 npx live-server --port=8080

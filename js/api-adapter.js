@@ -4,14 +4,6 @@
  * 
  * Unified adapter pattern for museum and cultural heritage APIs
  * Supports standard fetch and two-step ID-based fetch strategies
- * 
- * REGISTERED ADAPTERS:
- * 1. vam-v2           — Victoria & Albert Museum (standard fetch, no auth)
- * 2. europeana        — Europeana (standard fetch, requires API key)
- * 3. met-museum       — The Met (two-step ID fetch, no auth)
- * 4. wellcome         — Wellcome Collection (standard fetch, no auth)
- * 5. science-museum   — Science Museum Group (standard fetch, no auth)
- * 6. getty            — J. Paul Getty Museum (standard fetch, no auth)
  */
 
 // ============================================================================
@@ -31,10 +23,6 @@ const PLATFORM_CONFIG = {
 
 /**
  * Resolves nested object paths with array index support
- * Examples:
- *   resolvePath({a: {b: [1, 2]}}, 'a.b[0]') → 1
- *   resolvePath({title: 'Test'}, 'title') → 'Test'
- *   resolvePath({items: [...]}, 'items') → [...]
  */
 function resolvePath(obj, path) {
   if (!path || !obj) return undefined;
@@ -45,7 +33,6 @@ function resolvePath(obj, path) {
   for (const segment of segments) {
     if (!current) return undefined;
     
-    // Handle array index notation: 'field[0]' or 'field[0].nested'
     const arrayMatch = segment.match(/^([^\[]+)\[(\d+)\]$/);
     if (arrayMatch) {
       const [, fieldName, index] = arrayMatch;
@@ -65,9 +52,6 @@ function resolvePath(obj, path) {
 // ============================================================================
 
 class ApiAdapter {
-  /**
-   * @param {Object} descriptor - Adapter descriptor with name, description, config
-   */
   constructor(descriptor) {
     this.id = descriptor.id;
     this.name = descriptor.name;
@@ -80,28 +64,25 @@ class ApiAdapter {
     this.config = descriptor.config;
   }
 
-  /**
-   * Validates that required config values are set (especially auth)
-   */
   validate() {
     if (!this.config.endpoint) {
       throw new Error(`Adapter ${this.id}: missing endpoint`);
     }
-    if (this.config.authType === 'apikey' && !this.config.authValue) {
-      throw new Error(`Adapter ${this.id}: requires API key`);
-    }
-    if (this.config.fetchStrategy === 'two-step-ids' && !this.config.objectEndpoint) {
-      throw new Error(`Adapter ${this.id}: two-step strategy requires objectEndpoint`);
-    }
   }
 
-  /**
-   * Builds the full URL with query parameters and auth
-   */
   buildUrl(query = null, page = 1) {
-    const url = new URL(this.config.endpoint);
+    let baseUrl = window.location.origin;
     
-    // Parse and apply default params
+    if (window.location.port === '8080') {
+      if (this.config.endpoint.startsWith('/api')) {
+        baseUrl = window.location.protocol + '//' + window.location.hostname + ':3002';
+      } else if (this.config.endpoint.startsWith('/local-api') || this.config.endpoint.startsWith('/clothing-api')) {
+        baseUrl = window.location.protocol + '//' + window.location.hostname + ':3003';
+      }
+    }
+
+    const url = new URL(this.config.endpoint, baseUrl);
+    
     if (this.config.defaultParams) {
       try {
         const defaultParams = JSON.parse(this.config.defaultParams);
@@ -113,18 +94,15 @@ class ApiAdapter {
       }
     }
 
-    // Add voice query if provided
     if (query) {
       url.searchParams.set(this.config.voiceParamKey, query);
     }
 
-    // Add pagination
     const pageParam = this.config.pageParam || 'page';
     if (page > 1) {
       url.searchParams.set(pageParam, page);
     }
 
-    // Handle API key auth via query parameter (for Europeana, etc.)
     if (this.config.authType === 'apikey' && this.config.authParamName && this.config.authValue) {
       url.searchParams.set(this.config.authParamName, this.config.authValue);
     }
@@ -132,9 +110,6 @@ class ApiAdapter {
     return url.toString();
   }
 
-  /**
-   * Maps a raw API response item to standard Item shape
-   */
   mapItem(rawItem) {
     const mapping = this.config.mapping;
     let item = {
@@ -147,17 +122,6 @@ class ApiAdapter {
       raw: rawItem,
     };
 
-    // Ensure tags is always an array
-    if (!Array.isArray(item.tags)) {
-      item.tags = item.tags ? [item.tags] : [];
-    }
-
-    // Special handling for Met Museum tags: array of objects with 'term' key
-    if (item.tags.length > 0 && typeof item.tags[0] === 'object' && item.tags[0].term) {
-      item.tags = item.tags.map(t => t.term);
-    }
-
-    // Ensure all string fields are non-null
     item.id = item.id || '';
     item.title = item.title || '(Untitled)';
     item.subtitle = item.subtitle || '';
@@ -167,125 +131,38 @@ class ApiAdapter {
     return item;
   }
 
-  /**
-   * Standard fetch strategy: single request to search endpoint
-   */
   async _fetchStandard(query = null, page = 1) {
     const url = this.buildUrl(query, page);
-    
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'User-Agent': PLATFORM_CONFIG.userAgent,
-        'Accept': 'application/json',
-      },
-      timeout: PLATFORM_CONFIG.timeout,
+      headers: { 'User-Agent': PLATFORM_CONFIG.userAgent, 'Accept': 'application/json' },
     });
-
-    if (!response.ok) {
-      throw new Error(`${this.id} API error: ${response.status} ${response.statusText}`);
-    }
-
+    if (!response.ok) throw new Error(`${this.id} error: ${response.status}`);
     const raw = await response.json();
-    const itemsPath = this.config.mapping.itemsPath;
-    const items = resolvePath(raw, itemsPath) || [];
+    const items = resolvePath(raw, this.config.mapping.itemsPath) || [];
     const total = resolvePath(raw, this.config.mapping.totalPath) || 0;
-
-    return {
-      items: items.map(item => this.mapItem(item)),
-      total,
-      page,
-      raw,
-    };
+    return { items: items.map(item => this.mapItem(item)), total, page, raw };
   }
 
-  /**
-   * Two-step fetch strategy: first get IDs, then fetch each object
-   * 
-   * Flow:
-   * 1. Hit search endpoint → get array of IDs
-   * 2. Take first maxItems IDs
-   * 3. Fetch each via objectEndpoint (replace {id} with each ID)
-   * 4. Map each response using mapItem
-   * 5. Return { items, total, page, raw }
-   * 
-   * Limits to 10 parallel fetches to avoid rate limiting
-   */
   async _fetchTwoStepIds(query = null, page = 1) {
     const url = this.buildUrl(query, page);
-    
-    // Step 1: Fetch search results to get IDs
-    const searchResponse = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'User-Agent': PLATFORM_CONFIG.userAgent,
-        'Accept': 'application/json',
-      },
-      timeout: PLATFORM_CONFIG.timeout,
-    });
-
-    if (!searchResponse.ok) {
-      throw new Error(`${this.id} search error: ${searchResponse.status} ${searchResponse.statusText}`);
-    }
-
-    const searchData = await searchResponse.json();
-    const idArrayPath = this.config.mapping.itemsPath;
-    const idArray = resolvePath(searchData, idArrayPath) || [];
-    const total = resolvePath(searchData, this.config.mapping.totalPath) || 0;
-
-    // Step 2: Take first maxItems IDs
-    const ids = idArray.slice(0, this.config.maxItems || 20);
-
-    // Step 3 & 4: Fetch each object in parallel (limited to 10 at a time)
+    const searchRes = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!searchRes.ok) throw new Error(`${this.id} search error`);
+    const searchData = await searchRes.json();
+    const ids = (resolvePath(searchData, this.config.mapping.itemsPath) || []).slice(0, this.config.maxItems || 20);
     const items = [];
-    const objectTemplate = this.config.objectEndpoint;
-
-    for (let i = 0; i < ids.length; i += PLATFORM_CONFIG.maxParallelRequests) {
-      const batchIds = ids.slice(i, i + PLATFORM_CONFIG.maxParallelRequests);
-      const batchPromises = batchIds.map(id => {
-        const objectUrl = objectTemplate.replace('{id}', id);
-        return fetch(objectUrl, {
-          method: 'GET',
-          headers: {
-            'User-Agent': PLATFORM_CONFIG.userAgent,
-            'Accept': 'application/json',
-          },
-          timeout: PLATFORM_CONFIG.timeout,
-        })
-          .then(res => res.ok ? res.json() : Promise.reject(new Error(`Failed to fetch object ${id}`)))
-          .catch(err => {
-            console.warn(`Failed to fetch object ${id}:`, err.message);
-            return null;
-          });
-      });
-
-      const batchResults = await Promise.allSettled(batchPromises);
-      
-      batchResults.forEach(result => {
-        if (result.status === 'fulfilled' && result.value) {
-          items.push(this.mapItem(result.value));
-        }
-      });
+    for (const id of ids) {
+      try {
+        const objUrl = this.config.objectEndpoint.replace('{id}', id);
+        const objRes = await fetch(objUrl, { headers: { 'Accept': 'application/json' } });
+        if (objRes.ok) items.push(this.mapItem(await objRes.json()));
+      } catch (e) { console.warn(e); }
     }
-
-    return {
-      items,
-      total,
-      page,
-      raw: searchData,
-    };
+    return { items, total: resolvePath(searchData, this.config.mapping.totalPath) || 0, page, raw: searchData };
   }
 
-  /**
-   * Main fetch method with strategy routing
-   */
   async fetch(query = null, page = 1) {
-    const strategy = this.config.fetchStrategy || 'standard';
-    
-    if (strategy === 'two-step-ids') {
-      return this._fetchTwoStepIds(query, page);
-    }
-    
+    if (this.config.fetchStrategy === 'two-step-ids') return this._fetchTwoStepIds(query, page);
     return this._fetchStandard(query, page);
   }
 }
@@ -295,81 +172,65 @@ class ApiAdapter {
 // ============================================================================
 
 class _AdapterRegistry {
-  constructor() {
-    this.adapters = {};
-  }
-
+  constructor() { this.adapters = {}; }
   register(descriptor) {
     const adapter = new ApiAdapter(descriptor);
     this.adapters[descriptor.id] = adapter;
     return adapter;
   }
-
-  get(id) {
-    return this.adapters[id];
-  }
-
-  has(id) {
-    return id in this.adapters;
-  }
-
+  get(id) { return this.adapters[id]; }
   list() {
     return Object.entries(this.adapters).map(([id, adapter]) => ({
-      id,
-      name: adapter.name,
-      description: adapter.description,
-      category: adapter.category,
-      requiresKey: adapter.requiresKey,
-      note: adapter.note,
-      keyInstructions: adapter.keyInstructions,
-      docsUrl: adapter.docsUrl,
+      id, name: adapter.name, description: adapter.description, category: adapter.category, requiresKey: adapter.requiresKey
     }));
-  }
-
-  ids() {
-    return Object.keys(this.adapters);
   }
 }
 
 const adapterRegistry = new _AdapterRegistry();
+window.ApiAdapter = ApiAdapter;
+window.apiAdapterRegistry = adapterRegistry;
+window.VRP_CONFIG = PLATFORM_CONFIG;
 
 // ============================================================================
-// BROWSER GLOBALS
-// Always expose to window so index.html and experiment.html can use these
-// without a module bundler.
-// ============================================================================
-
-window.ApiAdapter          = ApiAdapter;
-window.apiAdapterRegistry  = adapterRegistry;   // the singleton instance
-window.VRP_CONFIG          = PLATFORM_CONFIG;
-
-// ============================================================================
-// ADAPTERS: LOCAL MOCK MUSEUM
+// ADAPTERS: STANDALONE LOCAL API
 // ============================================================================
 
 apiAdapterRegistry.register({
-  id: 'local-mock',
-  name: 'Local Mock Museum',
-  description: 'Completely offline mock API for testing and platform demonstrations.',
+  id: 'standalone-local-api',
+  name: 'Standalone Local API',
+  description: 'A dedicated REST API for 50 common objects, running locally without a database.',
   category: 'System',
   requiresKey: false,
   config: {
-    endpoint: '/api/mock-data',
+    endpoint: '/local-api',
     authType: 'none',
     authValue: '',
     defaultParams: '{}',
     voiceParamKey: 'q',
-    maxItems: 10,
+    maxItems: 50,
     fetchStrategy: 'standard',
     mapping: {
-      itemsPath: 'items',
-      totalPath: 'count',
-      id: 'id',
-      title: 'title',
-      subtitle: 'maker',
-      description: 'description',
-      imageUrl: 'image',
-      tags: 'category',
+      itemsPath: 'items', totalPath: 'count', id: 'id', title: 'title', subtitle: 'subtitle', description: 'description', imageUrl: 'image', tags: 'category'
+    },
+  },
+});
+
+adapterRegistry.register({
+  id: 'clothing-local-api',
+  name: 'Clothing Dataset',
+  description: 'Dedicated REST API for 50 clothing items (T-shirts, Jackets, Shoes, etc.).',
+  category: 'System',
+  requiresKey: false,
+  config: {
+    endpoint: '/clothing-api',
+    authType: 'none',
+    authValue: '',
+    defaultParams: '{}',
+    voiceParamKey: 'q',
+    maxItems: 50,
+    fetchStrategy: 'standard',
+    mapping: {
+      itemsPath: 'items', totalPath: 'count', id: 'id', title: 'title', subtitle: 'subtitle', description: 'description', imageUrl: 'image', tags: 'category'
     },
   },
 });
@@ -394,14 +255,7 @@ adapterRegistry.register({
     maxItems: 20,
     fetchStrategy: 'standard',
     mapping: {
-      itemsPath: 'records',
-      totalPath: 'info.record_count',
-      id: 'systemNumber',
-      title: '_primaryTitle',
-      subtitle: '_primaryMaker.name',
-      description: '_primaryDescription.value',
-      imageUrl: '_images._primary_thumbnail',
-      tags: '_objectType',
+      itemsPath: 'records', totalPath: 'info.record_count', id: 'systemNumber', title: '_primaryTitle', subtitle: '_primaryMaker.name', description: '_primaryDescription.value', imageUrl: '_images._primary_thumbnail', tags: '_objectType'
     },
   },
 });
@@ -417,7 +271,7 @@ adapterRegistry.register({
   category: 'European Heritage',
   docsUrl: 'https://apis.europeana.eu/en',
   requiresKey: true,
-  keyInstructions: 'Register for a free API key at https://apis.europeana.eu/en and enter it as the Auth Value. Set Auth Type to "apikey".',
+  keyInstructions: 'Register for a free API key at https://apis.europeana.eu/en',
   config: {
     endpoint: 'https://api.europeana.eu/record/v2/search.json',
     authType: 'apikey',
@@ -428,14 +282,7 @@ adapterRegistry.register({
     maxItems: 20,
     fetchStrategy: 'standard',
     mapping: {
-      itemsPath: 'items',
-      totalPath: 'totalResults',
-      id: 'id',
-      title: 'title[0]',
-      subtitle: 'dcCreator[0]',
-      description: 'dcDescription[0]',
-      imageUrl: 'edmIsShownBy[0]',
-      tags: 'type',
+      itemsPath: 'items', totalPath: 'totalResults', id: 'id', title: 'title[0]', subtitle: 'dcCreator[0]', description: 'dcDescription[0]', imageUrl: 'edmIsShownBy[0]', tags: 'type'
     },
   },
 });
@@ -461,14 +308,7 @@ adapterRegistry.register({
     maxItems: 20,
     fetchStrategy: 'two-step-ids',
     mapping: {
-      itemsPath: 'objectIDs',
-      totalPath: 'total',
-      id: 'objectID',
-      title: 'title',
-      subtitle: 'artistDisplayName',
-      description: 'objectName',
-      imageUrl: 'primaryImageSmall',
-      tags: 'department',
+      itemsPath: 'objectIDs', totalPath: 'total', id: 'objectID', title: 'title', subtitle: 'artistDisplayName', description: 'objectName', imageUrl: 'primaryImageSmall', tags: 'department'
     },
   },
 });
@@ -493,14 +333,7 @@ adapterRegistry.register({
     maxItems: 20,
     fetchStrategy: 'standard',
     mapping: {
-      itemsPath: 'results',
-      totalPath: 'totalResults',
-      id: 'id',
-      title: 'title',
-      subtitle: 'contributors[0].agent.label',
-      description: 'description',
-      imageUrl: 'thumbnail.url',
-      tags: 'workType.label',
+      itemsPath: 'results', totalPath: 'totalResults', id: 'id', title: 'title', subtitle: 'contributors[0].agent.label', description: 'description', imageUrl: 'thumbnail.url', tags: 'workType.label'
     },
   },
 });
@@ -525,14 +358,7 @@ adapterRegistry.register({
     maxItems: 20,
     fetchStrategy: 'standard',
     mapping: {
-      itemsPath: 'data',
-      totalPath: 'meta.hit_count',
-      id: 'id',
-      title: 'attributes.summary_title',
-      subtitle: 'attributes.lifecycle.creation[0].maker[0].summary_title',
-      description: 'attributes.description[0].value',
-      imageUrl: 'attributes.multimedia[0].processed.thumbnail.location',
-      tags: 'attributes.categories[0].value',
+      itemsPath: 'data', totalPath: 'meta.hit_count', id: 'id', title: 'attributes.summary_title', subtitle: 'attributes.lifecycle.creation[0].maker[0].summary_title', description: 'attributes.description[0].value', imageUrl: 'attributes.multimedia[0].processed.thumbnail.location', tags: 'attributes.categories[0].value'
     },
   },
 });
@@ -548,7 +374,6 @@ adapterRegistry.register({
   category: 'Art & Design',
   docsUrl: 'https://data.getty.edu/museum/collection/docs/',
   requiresKey: false,
-  note: 'Uses Linked Art (JSON-LD) format. Full-text search support is limited — browse by object type or use direct object IDs.',
   config: {
     endpoint: 'https://data.getty.edu/museum/collection/object/',
     authType: 'none',
@@ -558,29 +383,11 @@ adapterRegistry.register({
     maxItems: 20,
     fetchStrategy: 'standard',
     mapping: {
-      itemsPath: 'items',
-      totalPath: 'total',
-      id: 'id',
-      title: '_label',
-      subtitle: 'produced_by.carried_out_by[0]._label',
-      description: 'referred_to_by[0].content',
-      imageUrl: 'representation[0].id',
-      tags: 'classified_as[0]._label',
+      itemsPath: 'items', totalPath: 'total', id: 'id', title: '_label', subtitle: 'produced_by.carried_out_by[0]._label', description: 'referred_to_by[0].content', imageUrl: 'representation[0].id', tags: 'classified_as[0]._label'
     },
   },
 });
 
-// ============================================================================
-// NODE / CommonJS EXPORT (used if loaded via require() in proxy/tests)
-// ============================================================================
-
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    ApiAdapter,
-    AdapterRegistry: _AdapterRegistry,
-    apiAdapterRegistry: adapterRegistry,
-    adapterRegistry,
-    resolvePath,
-    PLATFORM_CONFIG,
-  };
+  module.exports = { ApiAdapter, adapterRegistry, PLATFORM_CONFIG };
 }
