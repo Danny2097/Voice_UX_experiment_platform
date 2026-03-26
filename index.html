@@ -2180,11 +2180,13 @@
                 <div class="detail-content">
                     <div class="tabs" id="tabs">
                         <button class="tab-button ${state.currentTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
-                        <button class="tab-button ${state.currentTab === 'pis' ? 'active' : ''}" data-tab="pis">PIS</button>
-                        <button class="tab-button ${state.currentTab === 'grid-layout' ? 'active' : ''}" data-tab="grid-layout">Layout</button>
-                        <button class="tab-button ${state.currentTab === 'api' ? 'active' : ''}" data-tab="api">API Source</button>
                         <button class="tab-button ${state.currentTab === 'local-data' ? 'active' : ''}" data-tab="local-data">Local Data</button>
-                        <button class="tab-button ${state.currentTab === 'participants' ? 'active' : ''}" data-tab="participants">Participants</button>                        <button class="tab-button ${state.currentTab === 'export' ? 'active' : ''}" data-tab="export">Export</button>
+                        <button class="tab-button ${state.currentTab === 'api' ? 'active' : ''}" data-tab="api">API Source</button>
+                        <button class="tab-button ${state.currentTab === 'grid-layout' ? 'active' : ''}" data-tab="grid-layout">Layout</button>
+                        <button class="tab-button ${state.currentTab === 'workflow' ? 'active' : ''}" data-tab="workflow">Workflow</button>
+                        <button class="tab-button ${state.currentTab === 'pis' ? 'active' : ''}" data-tab="pis">PIS</button>
+                        <button class="tab-button ${state.currentTab === 'participants' ? 'active' : ''}" data-tab="participants">Participants</button>
+                        <button class="tab-button ${state.currentTab === 'export' ? 'active' : ''}" data-tab="export">Export</button>
                         <button class="tab-button ${state.currentTab === 'run' ? 'active' : ''}" data-tab="run">Run</button>
                     </div>
 
@@ -2214,15 +2216,6 @@
                                     <label for="expDuration">Estimated Duration (minutes)</label>
                                     <input type="number" id="expDuration" value="${exp.duration}" min="1" max="480">
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <div class="form-section-title">Study Tasks</div>
-                            <div class="form-group">
-                                <label for="taskPrompt">📋 Default Task Prompt</label>
-                                <textarea id="taskPrompt" placeholder="Instructions shown to all participants (e.g., 'Find a blue jacket')...">${escapeHtml(exp.grid.taskPrompt || '')}</textarea>
-                                <p class="form-hint">This instruction will appear at the top of the grid for participants.</p>
                             </div>
                         </div>
 
@@ -2557,6 +2550,27 @@
                                     <strong>Action and Transcript:</strong> Voice queries trigger API searches and update the UI in real-time.<br>
                                     <strong>Transcript Only:</strong> Voice is recorded and transcribed for analysis, but the UI remains static.
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: WORKFLOW -->
+                    <div class="tab-content ${state.currentTab === 'workflow' ? 'active' : ''}" id="tab-workflow">
+                        <div class="form-section">
+                            <div class="form-section-title">Study Tasks</div>
+                            <div class="form-group">
+                                <label for="taskPrompt">📋 Default Task Prompt</label>
+                                <textarea id="taskPrompt" placeholder="Instructions shown to all participants (e.g., 'Find a blue jacket')...">${escapeHtml(exp.grid.taskPrompt || '')}</textarea>
+                                <p class="form-hint">This instruction will appear at the top of the grid for participants.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Experiment Workflow</div>
+                            <div class="form-group">
+                                <label for="workflowNodes">🧩 Card Sequence</label>
+                                <input type="text" id="workflowNodes" value="${escapeHtml(exp.grid.workflowNodes || '')}" placeholder="e.g., 1, 4, 5">
+                                <p class="form-hint">Comma-separated card indices to highlight in sequence (starting from 1).</p>
                             </div>
                         </div>
                     </div>
@@ -2966,8 +2980,16 @@
                 document.getElementById('expDuration').addEventListener('input', (e) => {
                     updateExperiment(exp.id, { duration: parseInt(e.target.value) });
                 });
+            }
+
+            // Workflow tab listeners
+            if (state.currentTab === 'workflow') {
                 document.getElementById('taskPrompt').addEventListener('input', (e) => {
                     exp.grid.taskPrompt = e.target.value;
+                    saveStateSoon();
+                });
+                document.getElementById('workflowNodes').addEventListener('input', (e) => {
+                    exp.grid.workflowNodes = e.target.value;
                     saveStateSoon();
                 });
             }

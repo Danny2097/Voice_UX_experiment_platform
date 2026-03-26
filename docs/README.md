@@ -87,35 +87,39 @@ Follow these steps to set up and run an experiment.
 Fill in:
 - **Experiment name** – e.g., "Museum Search Task Study"
 - **Description** – Brief summary of what participants will do
-- **Researcher name** – Your name or team identifier
+- **Status** – Set to "Draft" while configuring, "Active" for data collection
+- **Estimated Duration** – Help participants understand the time commitment
 
-### Step 3: Participant Information Sheet (PIS)
-Add any fields you need to collect:
-- **Standard fields** (e.g., Age, Gender, Profession) are provided
-- **Custom fields** – Add bespoke questions for your study (e.g., "Prior voice assistant use?")
-- Participants will see these fields when consenting to the study
-- All responses are stored with the session data
+### Step 3: Local Data (Optional)
+If you have a custom dataset:
+1. Switch to the **Local Data** tab
+2. Download the CSV template
+3. Upload your populated CSV; the **Dataset name** will automatically be suggested based on your filename
+4. This creates a local API endpoint for your experiment
 
-### Step 4: Configure the grid
-- **Grid columns** – How many columns the card grid displays (typically 4–6)
-- **Card height** – Height of each card in pixels (typically 150–250)
-- **Display fields** – Which data fields to show on each card (e.g., title, image, description)
-- **Sort/filter** – Optional; add rules to pre-filter or sort the dataset
-
-### Step 5: Configure the API source
-- **API endpoint** – Full URL to the REST API (e.g., `https://api.example.com/v1/items`)
+### Step 4: Configure the API source
+- **API endpoint** – Full URL to the REST API or your Local Data endpoint
 - **Field mapping** – Map API response fields to grid display fields
-  - Example: `{ "title": "name", "subtitle": "artist", "image": "imageUrl" }`
-- See "Connecting a data source" (below) for detailed instructions
+- Click **Test Connection** to verify the data loads correctly
 
-### Step 6: Test the connection
-- Click **Test Connection** to verify the API responds and the field mapping works
-- Debug errors in the browser console or the researcher panel
+### Step 5: Configure the grid layout
+- **Grid columns** – How many columns the card grid displays
+- **Card style** – Choose from Modern, Brutalist, Nike, Etsy, and more
+- **Interaction Styles** – Enable "Highlight on hover" and customize the border color/width
+- **Display fields** – Toggle visibility of images, titles, subtitles, tags, and descriptions
 
-### Step 7: Run the experiment
-1. Switch to the **Participants** tab
-2. Click **Run Experiment** next to a participant row
-3. The Experiment Runner opens in a new window
+### Step 6: Define the Workflow
+Switch to the **Workflow** tab to set up the participant's task:
+- **Task Prompt** – Enter the instructions shown at the top of the grid (e.g., "Find the red sneakers")
+- **Card Sequence** – Enter a comma-separated list of card indices (e.g., `1, 4, 12`) to guide the researcher through the study.
+
+### Step 7: Participant Information Sheet (PIS)
+Add any fields you need to collect (Age, Gender, etc.) and customize the study purpose and withdrawal information.
+
+### Step 8: Run the experiment
+1. Switch to the **Run** tab
+2. Use **High-Fidelity Preview** to test the flow yourself (this mirrors the participant's experience exactly but doesn't save data)
+3. Use the **Participants** tab to launch live sessions for real users.
 
 ---
 
@@ -242,9 +246,15 @@ The Experiment Runner provides:
 ### Grid interaction logging
 Every interaction is logged automatically:
 - Card selection (time, card ID, method: voice/click)
+- Workflow advancement (step number, target card ID)
 - Microphone state changes
 - Errors or API timeouts
 - Participant voice transcripts (if enabled)
+
+### Features for Researchers
+- **Workflow Autoscroll:** When advancing a step, the target card is automatically scrolled into the center of the viewport and highlighted with a pulsing border.
+- **Preview Parity:** High-fidelity preview mode now uses the exact same consent and session flow as participant experiments.
+- **Dataset Auto-naming:** Uploaded CSV files now automatically suggest a dataset name based on the filename.
 
 ### Ending a session
 1. Click the **End Session** button in the researcher panel
@@ -332,7 +342,9 @@ The right sidebar (toggle with **≡ Menu**) provides researcher-facing controls
 | **Recording toggle** | Record voice transcripts alongside interaction logs. Disable if not using voice or to save storage. |
 | **Log level** | Verbose (all events), Normal (key events only), or Silent (minimal logging). Useful for reducing noise in the debug output. |
 | **Task prompt** | Display a custom instruction or reminder to the participant (e.g., "Find a landscape painting"). Updates in real time. |
+| **Workflow Controls** | Advance through the pre-defined card sequence. The platform will automatically scroll to and highlight the current target card. |
 | **Notes** | Free-text field for researcher observations. Saved with the session. |
+| **Researcher Shortcuts** | Use **Alt+N** to advance to the next workflow step and **Alt+R** to reset the workflow. |
 | **Debug terminal** | Real-time event log showing API calls, microphone activity, grid selections, and errors. Use to troubleshoot during a session. |
 
 ---

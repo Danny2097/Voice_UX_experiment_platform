@@ -1059,6 +1059,8 @@
             display: flex;
             flex-direction: column;
             position: relative; /* Base for overlay content */
+            scroll-margin-top: 100px;
+            scroll-margin-bottom: 20px;
         }
 
         /* Modern (Default) */
@@ -1132,6 +1134,21 @@
             background: #fff;
         }
         .card.brutalist:hover {
+        }
+
+        /* Workflow Highlight */
+        .card.workflow-active {
+            border: 5px solid #ff00ff !important;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6), 0 0 40px rgba(255, 0, 255, 0.3) !important;
+            transform: scale(1.05) translateY(-10px) !important;
+            z-index: 100 !important;
+            animation: workflow-pulse 1.5s infinite ease-in-out !important;
+        }
+
+        @keyframes workflow-pulse {
+            0% { border-color: #ff00ff; box-shadow: 0 0 20px rgba(255, 0, 255, 0.6); }
+            50% { border-color: #00ffff; box-shadow: 0 0 30px rgba(0, 255, 255, 0.8); }
+            100% { border-color: #ff00ff; box-shadow: 0 0 20px rgba(255, 0, 255, 0.6); }
         }
 
         /* Etsy Style */
@@ -2040,6 +2057,7 @@
             </div>
 
             <div class="header-actions" style="display: flex; gap: 8px; margin-right: 4px;">
+                <button id="headerNextWorkflowBtn" class="btn btn-primary btn-sm" style="display: none; background: #ff00ff; color: white; border: none; height: 28px; font-weight: 700; padding: 0 12px; align-items: center; gap: 6px; box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);">Next Step →</button>
                 <button id="headerMicBtn" class="btn btn-secondary btn-sm" style="height: 28px; white-space: nowrap; min-width: 140px;">🎙️ Enable Microphone</button>
                 <button id="headerRecBtn" class="btn btn-secondary btn-sm" style="height: 28px; white-space: nowrap; min-width: 130px;">⏺ Start Recording</button>
                 <button id="headerEndSessionBtn" class="end-session-btn" style="height: 28px; padding: 0 12px; margin-left: 4px;">🛑 End Session</button>
@@ -2440,6 +2458,20 @@
 
                                 <label class="textarea-label" style="margin-top: 1rem;">📝 Notes</label>
                                 <textarea class="textarea-field" id="notesField" placeholder="Private researcher notes..."></textarea>
+                                
+                                <div class="panel-group-title" style="margin-top: 1.5rem;">Workflow Control</div>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 0.75rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <span style="font-size: 11px; font-weight: 700; color: #64748b;">Current Step</span>
+                                        <span id="workflowStepDisplay" style="font-size: 11px; font-weight: 700; color: #4f6ef7;">Not Started</span>
+                                    </div>
+                                    <div id="workflowTargetDisplay" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">--</div>
+                                    <div style="font-size: 10px; color: #94a3b8;" id="workflowProgressDisplay">No workflow defined</div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm" id="btnResetWorkflow" style="height: 32px; font-size: 11px;">Reset</button>
+                                    <button class="btn btn-primary btn-sm" id="btnNextWorkflow" style="height: 32px; font-size: 11px; background: #4f6ef7;">Next Card →</button>
+                                </div>
                             </div>
                         </div>
 
@@ -2597,6 +2629,8 @@
     const API_BASE = '';
 
     let currentPhase = 'consent'; // consent, session, end
+    let currentWorkflowStep = -1; // -1 = not started
+    let isPreview = false;
     let sessionData = {
         sessionId: generateUUID(),
         experimentId: expId,
@@ -2699,7 +2733,7 @@
 
             // Handle Preview Mode Early
             const urlParams = new URLSearchParams(window.location.search);
-            const isPreview = urlParams.get('preview') === 'true';
+            isPreview = urlParams.get('preview') === 'true';
 
             participantRecord = (experimentConfig.participants || []).find(p => p.id === participantId) || null;
 
@@ -2762,30 +2796,17 @@
                 if (banner) banner.style.display = 'flex';
                 document.getElementById('btnExitPreview').addEventListener('click', () => window.close());
                 
-                // Hide participant-specific controls
-                const endBtn = document.getElementById('headerEndSessionBtn');
-                if (endBtn) endBtn.style.display = 'none';
+                // Ensure researcher UI reflects preview state
+                const dropdownName = document.getElementById('dropdownUserName');
+                if (dropdownName) dropdownName.textContent = 'Researcher (Preview)';
                 
-                // Show session UI immediately (skip consent)
-                document.getElementById('consentScreen').style.display = 'none';
-                document.getElementById('sessionWrapper').style.display = 'block';
-                
-                // Open side panel and select debug tab
-                const sidePanel = document.getElementById('sidePanel');
-                if (sidePanel) {
-                    sidePanel.classList.add('open');
-                    // Find and click debug tab
-                    const debugTab = Array.from(document.querySelectorAll('.tab-item')).find(t => t.textContent.trim() === 'Debug');
-                    if (debugTab) debugTab.click();
-                }
-
-                // Load initial data
-                fetchGridData();
-            } else {
-                // NORMAL MODE: Show consent screen
-                showPhase('consent');
-                populateConsentScreen();
+                const pBadge = document.getElementById('participantBadge');
+                if (pBadge) pBadge.textContent = 'PREVIEW';
             }
+
+            // Always start with consent phase (Preview should be the same as Experiment)
+            showPhase('consent');
+            populateConsentScreen();
         } catch (err) {
             console.error('[Runner] Fatal initialization error:', err);
             showErrorScreen('A fatal error occurred during startup: ' + err.message);
@@ -2858,6 +2879,33 @@
         document.getElementById('gridHoverToggle').addEventListener('change', toggleGridHover);
         document.getElementById('taskPromptField').addEventListener('change', updateTaskPrompt);
         document.getElementById('notesField').addEventListener('change', updateNotes);
+
+        // Workflow Controls
+        document.getElementById('btnNextWorkflow').addEventListener('click', nextWorkflowStep);
+        document.getElementById('btnResetWorkflow').addEventListener('click', resetWorkflow);
+        document.getElementById('headerNextWorkflowBtn').addEventListener('click', nextWorkflowStep);
+
+        // Keyboard Shortcuts for Researcher
+        window.addEventListener('keydown', (e) => {
+            // Only trigger if not in a text input/textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            // Alt+N for Next Workflow Step
+            if (e.altKey && e.key.toLowerCase() === 'n') {
+                e.preventDefault();
+                nextWorkflowStep();
+                showToast('Next Workflow Step', 'info');
+            }
+            // Alt+R for Reset
+            if (e.altKey && e.key.toLowerCase() === 'r') {
+                e.preventDefault();
+                resetWorkflow();
+                showToast('Workflow Reset', 'info');
+            }
+        });
+
+        // Initial UI Update
+        updateWorkflowUI();
 
         // Layout & Style real-time updates
         document.getElementById('runnerGridColumns').addEventListener('input', (e) => {
@@ -3172,6 +3220,10 @@
     }
 
     function declineConsent() {
+        if (isPreview) {
+            window.close();
+            return;
+        }
         window.location.href = './index.html';
     }
 
@@ -3805,6 +3857,9 @@
             const card = createCard(item, index);
             container.appendChild(card);
         });
+
+        // Ensure workflow highlights are applied if active
+        updateWorkflowUI();
     }
 
     function createCard(item, index) {
@@ -4298,6 +4353,14 @@
         sessionData.sessionEnd = new Date().toISOString();
         logEvent('session_end', {});
 
+        // 1. Skip database updates in PREVIEW MODE
+        if (isPreview) {
+            logDebug('SESSION', 'info', 'Preview session ended — skipping database save');
+            populateSessionEndScreen();
+            showPhase('end');
+            return;
+        }
+
         // 1. Update participant record on server
         if (participantRecord) {
             participantRecord.endedAt = sessionData.sessionEnd;
@@ -4507,6 +4570,120 @@ Generated by Voice Control Research Platform
         setTimeout(() => {
             toast.remove();
         }, 3000);
+    }
+
+    // ========== WORKFLOW ==========
+
+    function getWorkflowArray() {
+        if (!experimentConfig || !experimentConfig.grid || !experimentConfig.grid.workflowNodes) {
+            return [];
+        }
+        return experimentConfig.grid.workflowNodes
+            .split(',')
+            .map(s => parseInt(s.trim()))
+            .filter(n => !isNaN(n));
+    }
+
+    function updateWorkflowUI() {
+        const workflow = getWorkflowArray();
+        const stepDisplay = document.getElementById('workflowStepDisplay');
+        const targetDisplay = document.getElementById('workflowTargetDisplay');
+        const progressDisplay = document.getElementById('workflowProgressDisplay');
+        const btnNext = document.getElementById('btnNextWorkflow');
+        const headerBtnNext = document.getElementById('headerNextWorkflowBtn');
+
+        if (workflow.length === 0) {
+            stepDisplay.textContent = 'None';
+            targetDisplay.textContent = '--';
+            progressDisplay.textContent = 'No workflow defined in Manager';
+            btnNext.disabled = true;
+            if (headerBtnNext) headerBtnNext.style.display = 'none';
+            return;
+        }
+
+        btnNext.disabled = false;
+        if (headerBtnNext) {
+            headerBtnNext.style.display = 'flex';
+            headerBtnNext.textContent = currentWorkflowStep === -1 ? '🧩 Start Workflow' : 'Next Step →';
+            headerBtnNext.disabled = currentWorkflowStep >= workflow.length - 1 && currentWorkflowStep !== -1;
+            
+            // If the workflow is completely finished (last step reached)
+            if (currentWorkflowStep >= workflow.length - 1 && currentWorkflowStep !== -1) {
+                headerBtnNext.textContent = 'Workflow Complete';
+                headerBtnNext.style.background = '#10b981'; // Green
+                headerBtnNext.style.boxShadow = 'none';
+            } else {
+                headerBtnNext.style.background = '#ff00ff'; // Magenta
+                headerBtnNext.style.boxShadow = '0 0 10px rgba(255, 0, 255, 0.3)';
+            }
+        }
+
+        if (currentWorkflowStep === -1) {
+            stepDisplay.textContent = 'Ready';
+            targetDisplay.textContent = 'Press Next to Start';
+            progressDisplay.textContent = `${workflow.length} steps configured`;
+            btnNext.textContent = 'Start Workflow';
+        } else if (currentWorkflowStep >= workflow.length) {
+            stepDisplay.textContent = 'Done';
+            targetDisplay.textContent = 'Workflow Complete';
+            progressDisplay.textContent = `All ${workflow.length} steps finished`;
+            btnNext.disabled = true;
+        } else {
+            const cardIndex = workflow[currentWorkflowStep];
+            stepDisplay.textContent = `Step ${currentWorkflowStep + 1}/${workflow.length}`;
+            targetDisplay.textContent = `Target: Card #${cardIndex}`;
+            progressDisplay.textContent = `Next: ${currentWorkflowStep + 2 <= workflow.length ? 'Card #' + workflow[currentWorkflowStep + 1] : 'End'}`;
+            btnNext.textContent = 'Next Card →';
+        }
+
+        // Apply highlights to cards
+        document.querySelectorAll('.card').forEach((card, index) => {
+            const actualIndex = index + 1; // 1-based for researcher convenience
+            if (currentWorkflowStep !== -1 && currentWorkflowStep < workflow.length && workflow[currentWorkflowStep] === actualIndex) {
+                card.classList.add('workflow-active');
+                
+                // Use setTimeout to ensure any layout changes (like class adding) have settled
+                setTimeout(() => {
+                    // Try to scroll it into view. Using 'nearest' for block to avoid jumping 
+                    // if already partially visible, combined with the scroll-margin-top 
+                    // we added to the CSS.
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Force a second scroll if the container is specific
+                    const container = document.getElementById('gridContainer');
+                    if (container) {
+                        const cardTop = card.offsetTop;
+                        const containerScrollTop = container.scrollTop;
+                        const containerHeight = container.offsetHeight;
+                        
+                        // If it's still not visibly in the safe zone
+                        if (cardTop < containerScrollTop + 100 || cardTop > containerScrollTop + containerHeight - 100) {
+                             container.scrollTo({
+                                 top: cardTop - 120, // Offset for header/search
+                                 behavior: 'smooth'
+                             });
+                        }
+                    }
+                }, 100);
+            } else {
+                card.classList.remove('workflow-active');
+            }
+        });
+    }
+
+    function nextWorkflowStep() {
+        const workflow = getWorkflowArray();
+        if (workflow.length === 0) return;
+
+        currentWorkflowStep++;
+        logDebug('WORKFLOW', 'info', `Advanced to step ${currentWorkflowStep + 1} (Card #${workflow[currentWorkflowStep] || 'END'})`);
+        updateWorkflowUI();
+    }
+
+    function resetWorkflow() {
+        currentWorkflowStep = -1;
+        logDebug('WORKFLOW', 'info', 'Workflow reset');
+        updateWorkflowUI();
     }
 
     // ========== PERSISTENCE ==========
