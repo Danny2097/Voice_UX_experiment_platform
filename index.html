@@ -1150,6 +1150,16 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
+        .preview-mock-banner {
+            display: none;
+            background: #fffbeb;
+            border-bottom: 1px solid #fef3c7;
+            padding: 10px 20px;
+            font-size: 11px;
+            color: #92400e;
+        }
+        .preview-mock-banner.active { display: block; }
+
         .preview-grid-content {
             flex: 1;
             padding: 20px;
@@ -1563,6 +1573,7 @@
                 <div id="previewMockSearch" class="preview-mock-search">
                     <div class="preview-mock-search-bar"></div>
                 </div>
+                <div id="previewTaskBanner" class="preview-mock-banner"></div>
                 <div id="previewGrid" class="preview-grid-content">
                     <!-- Preview cards injected by JS -->
                 </div>
@@ -1666,20 +1677,20 @@
                 const SAVE_DEBOUNCE_MS = 600;
         const API_BASE = ''; // Endpoints already start with /api or /proxy
         const GRID_PRESETS = [
-            { id: 'nike', name: 'Nike Athletic', category: 'Themed', description: 'Flat design, bold fonts, square images. Nike.com style.', config: { columns: 3, rows: 4, cardHeight: 'nike-height', cardStyle: 'nike', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'standard', name: 'Standard Mosaic', category: 'Balanced', description: '3 columns, 4 rows (12 items). Classic grid.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'modern', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'masonry', name: 'Featured Entry', category: 'Dynamic', description: '3 columns, 4 rows. First item spans 2x2.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'elevated', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'featured-first', gridMaxWidth: 100 } },
-            { id: 'gallery', name: 'Image Gallery', category: 'Visual', description: '4 columns, 5 rows (20 items). Large images.', config: { columns: 4, rows: 5, cardHeight: 'tall', cardStyle: 'elevated', maxItems: 20, showImage: true, showTitle: false, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'compact', name: 'Compact Grid', category: 'Dense', description: '6 columns, 8 rows (48 items). High density.', config: { columns: 6, rows: 8, cardHeight: 'short', cardStyle: 'minimal', maxItems: 48, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'highlight', name: 'Highlight Grid', category: 'Dynamic', description: '4 columns, 6 rows. Every 5th item spans 2 columns.', config: { columns: 4, rows: 6, cardHeight: 'medium', cardStyle: 'modern', maxItems: 24, showImage: true, showTitle: true, showSubtitle: false, showTags: true, showDescription: false, spanPattern: 'every-fifth', gridMaxWidth: 100 } },
-            { id: 'neumorphic', name: 'Soft UI', category: 'Modern', description: '3 columns, 4 rows (12 items). Neumorphic style.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'neumorphic', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'brutalist', name: 'Brutalist Grid', category: 'High Contrast', description: '3 columns, 4 rows. Bold borders.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'brutalist', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'alternating', gridMaxWidth: 100 } },
-            { id: 'list', name: 'Detailed List', category: 'Informative', description: '1 column, 10 rows (10 items). Full-width rows.', config: { columns: 1, rows: 10, cardHeight: 'medium', cardStyle: 'modern', maxItems: 10, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'horizontal', name: 'List Feed', category: 'Informative', description: '1 column, 12 rows. side images.', config: { columns: 1, rows: 12, cardHeight: 'short', cardStyle: 'horizontal', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'polaroid', name: 'Photo Deck', category: 'Visual', description: '4 columns, 4 rows (16 items). Polaroid style.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'polaroid', maxItems: 16, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'archive', name: 'Text Archive', category: 'Minimal', description: '2 columns, 10 rows (20 items). Text view.', config: { columns: 2, rows: 10, cardHeight: 'short', cardStyle: 'classic', maxItems: 20, showImage: false, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'dark', name: 'Night Mode', category: 'Minimal', description: '3 columns, 4 rows. Dark background cards.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'dark', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100 } },
-            { id: 'clothing', name: 'Clothing Mosaic', category: 'Themed', description: 'Etsy-style marketplace layout. Optimized for fashion browsing.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'etsy', maxItems: 16, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, adapterId: 'clothing-local-api', gridMaxWidth: 100 } }
+            { id: 'nike', name: 'Nike Athletic', category: 'Themed', description: 'Flat design, bold fonts, square images. Nike.com style.', config: { columns: 3, rows: 4, cardHeight: 'nike-height', cardStyle: 'nike', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100, gridGap: 24, containerPadding: 2, itemRadius: 0, shadowStrength: 0 } },
+            { id: 'standard', name: 'Standard Mosaic', category: 'Balanced', description: '3 columns, 4 rows (12 items). Classic grid.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'modern', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100, gridGap: 24, containerPadding: 2, itemRadius: 12, shadowStrength: 0.1 } },
+            { id: 'masonry', name: 'Featured Entry', category: 'Dynamic', description: '3 columns, 4 rows. First item spans 2x2.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'elevated', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'featured-first', gridMaxWidth: 100, gridGap: 24, containerPadding: 2, itemRadius: 12, shadowStrength: 0.2 } },
+            { id: 'gallery', name: 'Image Gallery', category: 'Visual', description: '4 columns, 5 rows (20 items). Large images.', config: { columns: 4, rows: 5, cardHeight: 'tall', cardStyle: 'elevated', maxItems: 20, showImage: true, showTitle: false, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100, gridGap: 16, containerPadding: 1, itemRadius: 8, shadowStrength: 0.15 } },
+            { id: 'compact', name: 'Compact Grid', category: 'Dense', description: '6 columns, 8 rows (48 items). High density.', config: { columns: 6, rows: 8, cardHeight: 'short', cardStyle: 'minimal', maxItems: 48, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100, gridGap: 8, containerPadding: 1, itemRadius: 4, shadowStrength: 0.05 } },
+            { id: 'highlight', name: 'Highlight Grid', category: 'Dynamic', description: '4 columns, 6 rows. Every 5th item spans 2 columns.', config: { columns: 4, rows: 6, cardHeight: 'medium', cardStyle: 'modern', maxItems: 24, showImage: true, showTitle: true, showSubtitle: false, showTags: true, showDescription: false, spanPattern: 'every-fifth', gridMaxWidth: 100, gridGap: 16, containerPadding: 2, itemRadius: 12, shadowStrength: 0.1 } },
+            { id: 'neumorphic', name: 'Soft UI', category: 'Modern', description: '3 columns, 4 rows (12 items). Neumorphic style.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'neumorphic', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100, gridGap: 32, containerPadding: 3, itemRadius: 20, shadowStrength: 0.15 } },
+            { id: 'brutalist', name: 'Brutalist Grid', category: 'High Contrast', description: '3 columns, 4 rows. Bold borders.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'brutalist', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: 'alternating', gridMaxWidth: 100, gridGap: 0, containerPadding: 2, itemRadius: 0, shadowStrength: 0.3 } },
+            { id: 'list', name: 'Detailed List', category: 'Informative', description: '1 column, 10 rows (10 items). Full-width rows.', config: { columns: 1, rows: 10, cardHeight: 'medium', cardStyle: 'modern', maxItems: 10, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100, gridGap: 20, containerPadding: 2, itemRadius: 8, shadowStrength: 0.08 } },
+            { id: 'horizontal', name: 'List Feed', category: 'Informative', description: '1 column, 12 rows. side images.', config: { columns: 1, rows: 12, cardHeight: 'short', cardStyle: 'horizontal', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100, gridGap: 16, containerPadding: 2, itemRadius: 8, shadowStrength: 0.1 } },
+            { id: 'polaroid', name: 'Photo Deck', category: 'Visual', description: '4 columns, 4 rows (16 items). Polaroid style.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'polaroid', maxItems: 16, showImage: true, showTitle: true, showSubtitle: false, showTags: false, showDescription: false, spanPattern: null, gridMaxWidth: 100, gridGap: 30, containerPadding: 3, itemRadius: 0, shadowStrength: 0.15 } },
+            { id: 'archive', name: 'Text Archive', category: 'Minimal', description: '2 columns, 10 rows (20 items). Text view.', config: { columns: 2, rows: 10, cardHeight: 'short', cardStyle: 'classic', maxItems: 20, showImage: false, showTitle: true, showSubtitle: true, showTags: true, showDescription: true, spanPattern: null, gridMaxWidth: 100, gridGap: 12, containerPadding: 2, itemRadius: 0, shadowStrength: 0 } },
+            { id: 'dark', name: 'Night Mode', category: 'Minimal', description: '3 columns, 4 rows. Dark background cards.', config: { columns: 3, rows: 4, cardHeight: 'medium', cardStyle: 'dark', maxItems: 12, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, gridMaxWidth: 100, gridGap: 24, containerPadding: 2, itemRadius: 12, shadowStrength: 0.1 } },
+            { id: 'clothing', name: 'Clothing Mosaic', category: 'Themed', description: 'Etsy-style marketplace layout. Optimized for fashion browsing.', config: { columns: 4, rows: 4, cardHeight: 'tall', cardStyle: 'etsy', maxItems: 16, showImage: true, showTitle: true, showSubtitle: true, showTags: true, showDescription: false, spanPattern: null, adapterId: 'clothing-local-api', gridMaxWidth: 100, gridGap: 20, containerPadding: 2, itemRadius: 6, shadowStrength: 0.12 } }
         ];
 
         let state = {
@@ -1773,6 +1784,28 @@
             }, SAVE_DEBOUNCE_MS);
         }
 
+        // Listen for updates from preview/runner window
+        window.addEventListener('message', (event) => {
+            if (event.origin !== window.location.origin) return;
+            if (event.data && event.data.type === 'VRP_CONFIG_UPDATED') {
+                const updatedExp = event.data.config;
+                const index = state.experiments.findIndex(e => e.id === updatedExp.id);
+                if (index !== -1) {
+                    // Update internal state
+                    state.experiments[index] = updatedExp;
+                    
+                    // If this is the currently viewed experiment, refresh UI
+                    if (state.selectedExperimentId === updatedExp.id) {
+                        renderDetailPanel();
+                        updateGridPreview();
+                    }
+                    
+                    // Persist changes
+                    saveStateSoon(updatedExp.id);
+                }
+            }
+        });
+
         function updateGridPreview() {
             const exp = getExperiment(state.selectedExperimentId);
             if (!exp) return;
@@ -1829,9 +1862,22 @@
             if (previewSearch) previewSearch.classList.toggle('active', !!grid.showSearch);
             if (previewFooter) previewFooter.classList.toggle('active', !!grid.showFooter);
 
+            // Update Task Banner
+            const banner = document.getElementById('previewTaskBanner');
+            if (banner) {
+                if (grid.taskPrompt) {
+                    banner.innerHTML = `📋 <strong>Task:</strong> ${escapeHtml(grid.taskPrompt)}`;
+                    banner.classList.add('active');
+                } else {
+                    banner.classList.remove('active');
+                }
+            }
+
             // Update Grid Columns
             const cols = grid.columns || 3;
             previewGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            previewGrid.style.gap = `${grid.gridGap || 24}px`;
+            previewGrid.style.padding = `${grid.containerPadding || 2}rem`;
 
             // Render Preview Cards
             previewGrid.innerHTML = '';
@@ -1843,6 +1889,15 @@
                 const style = grid.cardStyle || 'modern';
                 card.className = `preview-card ${height} ${style}`;
                 if (style === 'horizontal') card.classList.add('horizontal');
+
+                // Apply custom layout settings to preview cards
+                if (grid.itemRadius !== undefined) {
+                    card.style.borderRadius = `${grid.itemRadius}px`;
+                }
+                if (grid.shadowStrength !== undefined) {
+                    const strength = grid.shadowStrength;
+                    card.style.boxShadow = `0 4px 6px -1px rgba(0,0,0,${strength}), 0 2px 4px -1px rgba(0,0,0,${strength / 2})`;
+                }
 
                 let innerHTML = '';
                 if (grid.showImage) {
@@ -1952,7 +2007,11 @@
                     showTags: true,
                     showDescription: false,
                     rows: 4,
-                    maxItems: 12
+                    maxItems: 12,
+                    gridGap: 24,
+                    containerPadding: 2,
+                    itemRadius: 12,
+                    shadowStrength: 0.1
                 },
                 api: {
                     endpoint: '',
@@ -2159,6 +2218,15 @@
                         </div>
 
                         <div class="form-section">
+                            <div class="form-section-title">Study Tasks</div>
+                            <div class="form-group">
+                                <label for="taskPrompt">📋 Default Task Prompt</label>
+                                <textarea id="taskPrompt" placeholder="Instructions shown to all participants (e.g., 'Find a blue jacket')...">${escapeHtml(exp.grid.taskPrompt || '')}</textarea>
+                                <p class="form-hint">This instruction will appear at the top of the grid for participants.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
                             <div class="form-section-title">System Information</div>
                             <div class="form-group">
                                 <label>Experiment ID</label>
@@ -2226,154 +2294,231 @@
                     <div class="tab-content ${state.currentTab === 'grid-layout' ? 'active' : ''}" id="tab-grid-layout">
                         <!-- Grid Layout Section -->
                         <div class="form-section">
-                            <div class="flex-between" style="margin-bottom: 16px; border-bottom: 1px solid #e2e6ed; padding-bottom: 8px;">
-                                <div class="form-section-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Grid Layout</div>
-                                <button class="btn-preview-toggle" id="btnShowPreview">
-                                    <span>👁️</span> Show Layout Preview
-                                </button>
+                            <div class="flex-between" style="margin-bottom: 16px; border-bottom: 1px solid #e2e6ed; padding-bottom: 12px;">
+                                <div class="form-section-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Visual Configuration</div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-preview-toggle" id="btnShowPreview" title="Show simple visual guide">
+                                        <span>👁️</span> Visual Guide
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" id="btnLaunchHighFidPreview" style="background: #4f6ef7; color: white; display: flex; align-items: center; gap: 6px;">
+                                        <span>🚀</span> High-Fid Preview & Tune
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
-                                <label class="form-label">Quick Grid Presets</label>
-                                <p class="form-hint">Instantly configure columns and display options.</p>
+                            <div class="form-group" style="margin-bottom: 2rem;">
+                                <label class="form-label">🚀 Quick Start: Layout Presets</label>
+                                <p class="form-hint">Apply a pre-configured design to jumpstart your experiment.</p>
                                 <div id="gridPresetPickerGrid" style="
                                     display: grid;
                                     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
                                     gap: 0.5rem;
-                                    margin-top: 0.5rem;
+                                    margin-top: 0.75rem;
                                 ">
                                     <!-- Cards injected by JS -->
                                 </div>
                             </div>
+
+                            <!-- SUBSECTION: GRID SETUP -->
+                            <div style="font-size: 11px; font-weight: 700; color: #95a3b3; text-transform: uppercase; letter-spacing: 0.5px; margin: 2rem 0 1rem 0; padding-bottom: 4px; border-bottom: 1px solid #f1f3f7;">Grid Setup</div>
                             
-                            <div class="slider-group">
-                                <div class="slider-label">
-                                    <label>Columns</label>
-                                    <span class="slider-value" id="columnsValue">${exp.grid.columns}</span>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="slider-group">
+                                    <div class="slider-label">
+                                        <label>Columns</label>
+                                        <span class="slider-value" id="columnsValue">${exp.grid.columns}</span>
+                                    </div>
+                                    <input type="range" id="gridColumns" min="1" max="6" value="${exp.grid.columns}">
                                 </div>
-                                <input type="range" id="gridColumns" min="1" max="6" value="${exp.grid.columns}">
+                                <div class="slider-group">
+                                    <div class="slider-label">
+                                        <label>Rows</label>
+                                        <span class="slider-value" id="rowsValue">${exp.grid.rows || 4}</span>
+                                    </div>
+                                    <input type="range" id="gridRows" min="1" max="20" value="${exp.grid.rows || 4}">
+                                </div>
+                            </div>
+
+                            <div class="slider-group" style="margin-top: 1rem;">
+                                <div class="slider-label">
+                                    <label>Grid Gap (px)</label>
+                                    <span class="slider-value" id="gridGapValue">${exp.grid.gridGap || 24}px</span>
+                                </div>
+                                <input type="range" id="gridGap" min="0" max="80" step="4" value="${exp.grid.gridGap || 24}">
                             </div>
 
                             <div class="slider-group">
                                 <div class="slider-label">
-                                    <label>Grid Max Width (%)</label>
+                                    <label>Container Padding (rem)</label>
+                                    <span class="slider-value" id="containerPaddingValue">${exp.grid.containerPadding || 2}rem</span>
+                                </div>
+                                <input type="range" id="containerPadding" min="0" max="8" step="0.5" value="${exp.grid.containerPadding || 2}">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-label">
+                                    <label>Max Page Width (%)</label>
                                     <span class="slider-value" id="gridWidthValue">${exp.grid.gridMaxWidth || 100}%</span>
                                 </div>
                                 <input type="range" id="gridMaxWidth" min="40" max="100" value="${exp.grid.gridMaxWidth || 100}">
                             </div>
-                            <div class="form-group">
-                                <label for="cardHeight">Card Height</label>
-                                <select id="cardHeight">
-                                    <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short</option>
-                                    <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium</option>
-                                    <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall</option>
-                                    <option value="nike-height" ${exp.grid.cardHeight === 'nike-height' ? 'selected' : ''}>Nike (Extra Tall)</option>
-                                </select>
+
+                            <div class="form-group" style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #64748b;">Items per page</span>
+                                    <span id="totalItemsDisplay" style="font-size: 20px; font-weight: 800; color: #4f6ef7;">${(exp.grid.columns || 3) * (exp.grid.rows || 4)}</span>
+                                </div>
+                                <p class="form-hint" style="margin-top: 4px;">Automatically calculated (Cols × Rows)</p>
                             </div>
 
-                            <div class="form-group">
-                                <label for="cardStyle">Visual Style</label>
-                                <select id="cardStyle">
-                                    <option value="modern" ${exp.grid.cardStyle === 'modern' ? 'selected' : ''}>Modern (Rounded, subtle shadow)</option>
-                                    <option value="classic" ${exp.grid.cardStyle === 'classic' ? 'selected' : ''}>Classic (Sharp borders, flat)</option>
-                                    <option value="minimal" ${exp.grid.cardStyle === 'minimal' ? 'selected' : ''}>Minimal (No border, very light)</option>
-                                    <option value="glass" ${exp.grid.cardStyle === 'glass' ? 'selected' : ''}>Glassmorphism (Frosted glass)</option>
-                                    <option value="elevated" ${exp.grid.cardStyle === 'elevated' ? 'selected' : ''}>Elevated (Deep shadow, floating)</option>
-                                    <option value="neumorphic" ${exp.grid.cardStyle === 'neumorphic' ? 'selected' : ''}>Neumorphic (Soft extrusion)</option>
-                                    <option value="brutalist" ${exp.grid.cardStyle === 'brutalist' ? 'selected' : ''}>Brutalist (Bold, hard shadows)</option>
-                                    <option value="etsy" ${exp.grid.cardStyle === 'etsy' ? 'selected' : ''}>Etsy (Marketplace style)</option>
-                                    <option value="nike" ${exp.grid.cardStyle === 'nike' ? 'selected' : ''}>Nike (Athletic, flat, bold)</option>
-                                    <option value="polaroid" ${exp.grid.cardStyle === 'polaroid' ? 'selected' : ''}>Polaroid (Instant photo style)</option>
-                                    <option value="dark" ${exp.grid.cardStyle === 'dark' ? 'selected' : ''}>Dark Mode (High contrast dark)</option>
-                                    <option value="horizontal" ${exp.grid.cardStyle === 'horizontal' ? 'selected' : ''}>Horizontal (Image on left)</option>
-                                </select>
+                            <!-- SUBSECTION: CARD STYLING -->
+                            <div style="font-size: 11px; font-weight: 700; color: #95a3b3; text-transform: uppercase; letter-spacing: 0.5px; margin: 2rem 0 1rem 0; padding-bottom: 4px; border-bottom: 1px solid #f1f3f7;">Card Appearance</div>
+                            
+                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="cardStyle">Visual Style</label>
+                                    <select id="cardStyle">
+                                        <option value="modern" ${exp.grid.cardStyle === 'modern' ? 'selected' : ''}>Modern</option>
+                                        <option value="classic" ${exp.grid.cardStyle === 'classic' ? 'selected' : ''}>Classic</option>
+                                        <option value="minimal" ${exp.grid.cardStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
+                                        <option value="glass" ${exp.grid.cardStyle === 'glass' ? 'selected' : ''}>Glassmorphism</option>
+                                        <option value="elevated" ${exp.grid.cardStyle === 'elevated' ? 'selected' : ''}>Elevated</option>
+                                        <option value="neumorphic" ${exp.grid.cardStyle === 'neumorphic' ? 'selected' : ''}>Neumorphic</option>
+                                        <option value="brutalist" ${exp.grid.cardStyle === 'brutalist' ? 'selected' : ''}>Brutalist</option>
+                                        <option value="etsy" ${exp.grid.cardStyle === 'etsy' ? 'selected' : ''}>Etsy</option>
+                                        <option value="nike" ${exp.grid.cardStyle === 'nike' ? 'selected' : ''}>Nike</option>
+                                        <option value="polaroid" ${exp.grid.cardStyle === 'polaroid' ? 'selected' : ''}>Polaroid</option>
+                                        <option value="dark" ${exp.grid.cardStyle === 'dark' ? 'selected' : ''}>Dark Mode</option>
+                                        <option value="horizontal" ${exp.grid.cardStyle === 'horizontal' ? 'selected' : ''}>Horizontal</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardHeight">Card Height</label>
+                                    <select id="cardHeight">
+                                        <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short</option>
+                                        <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium</option>
+                                        <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall</option>
+                                        <option value="nike-height" ${exp.grid.cardHeight === 'nike-height' ? 'selected' : ''}>Extra Tall</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="slider-group" style="margin-top: 1rem;">
+                                <div class="slider-label">
+                                    <label>Corner Radius (px)</label>
+                                    <span class="slider-value" id="itemRadiusValue">${exp.grid.itemRadius || 12}px</span>
+                                </div>
+                                <input type="range" id="itemRadius" min="0" max="40" step="2" value="${exp.grid.itemRadius || 12}">
                             </div>
 
                             <div class="slider-group">
                                 <div class="slider-label">
-                                    <label>Rows</label>
-                                    <span class="slider-value" id="rowsValue">${exp.grid.rows || 4}</span>
+                                    <label>Shadow Strength</label>
+                                    <span class="slider-value" id="shadowStrengthValue">${exp.grid.shadowStrength || 0.1}</span>
                                 </div>
-                                <input type="range" id="gridRows" min="1" max="20" value="${exp.grid.rows || 4}">
+                                <input type="range" id="shadowStrength" min="0" max="0.5" step="0.05" value="${exp.grid.shadowStrength || 0.1}">
                             </div>
 
-                            <div class="form-group" style="background: #f1f3f7; padding: 12px; border-radius: 6px; border: 1px solid #e2e6ed;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 13px; font-weight: 600; color: #4b5563;">Total Items Per Page</span>
-                                    <span id="totalItemsDisplay" style="font-size: 18px; font-weight: 700; color: #4f6ef7;">${(exp.grid.columns || 3) * (exp.grid.rows || 4)}</span>
+                            <!-- SUBSECTION: INTERACTION STYLES -->
+                            <div style="font-size: 11px; font-weight: 700; color: #95a3b3; text-transform: uppercase; letter-spacing: 0.5px; margin: 2rem 0 1rem 0; padding-bottom: 4px; border-bottom: 1px solid #f1f3f7;">Interaction Styles</div>
+                            
+                            <div class="toggle-group" style="margin-bottom: 1rem;">
+                                <div class="toggle ${exp.grid.hoverEnabled !== false ? 'active' : ''}" id="toggleHover">
+                                    <div class="toggle-thumb"></div>
                                 </div>
-                                <p class="form-hint" style="margin-top: 4px;">Calculated as Columns × Rows</p>
+                                <div class="toggle-label">Highlight items on hover</div>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="hoverBorderColor">Hover Border Color</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="color" id="hoverBorderColor" value="${exp.grid.hoverBorderColor || '#4f6ef7'}" style="width: 40px; height: 32px; padding: 2px; border: 1px solid #e2e6ed; border-radius: 4px; background: white; cursor: pointer;">
+                                        <input type="text" id="hoverBorderColorText" value="${exp.grid.hoverBorderColor || '#4f6ef7'}" class="form-control" style="flex: 1; height: 32px; font-size: 13px;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hoverBorderWidth">Hover Border Width</label>
+                                    <select id="hoverBorderWidth" style="height: 32px; font-size: 13px;">
+                                        <option value="2px" ${exp.grid.hoverBorderWidth === '2px' ? 'selected' : ''}>Thin (2px)</option>
+                                        <option value="4px" ${exp.grid.hoverBorderWidth === '4px' || !exp.grid.hoverBorderWidth ? 'selected' : ''}>Medium (4px)</option>
+                                        <option value="6px" ${exp.grid.hoverBorderWidth === '6px' ? 'selected' : ''}>Thick (6px)</option>
+                                        <option value="8px" ${exp.grid.hoverBorderWidth === '8px' ? 'selected' : ''}>Extra Thick (8px)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- SUBSECTION: CONTENT VISIBILITY -->
+                            <div style="font-size: 11px; font-weight: 700; color: #95a3b3; text-transform: uppercase; letter-spacing: 0.5px; margin: 2rem 0 1rem 0; padding-bottom: 4px; border-bottom: 1px solid #f1f3f7;">Card Content</div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                                 <div class="toggle-group">
                                     <div class="toggle ${exp.grid.showImage ? 'active' : ''}" id="toggleImage">
                                         <div class="toggle-thumb"></div>
                                     </div>
-                                    <div class="toggle-label">Show Image</div>
+                                    <div class="toggle-label">Thumbnail Image</div>
                                 </div>
-
                                 <div class="toggle-group">
                                     <div class="toggle ${exp.grid.showTitle ? 'active' : ''}" id="toggleTitle">
                                         <div class="toggle-thumb"></div>
                                     </div>
-                                    <div class="toggle-label">Show Title</div>
+                                    <div class="toggle-label">Primary Title</div>
                                 </div>
-
                                 <div class="toggle-group">
                                     <div class="toggle ${exp.grid.showSubtitle ? 'active' : ''}" id="toggleSubtitle">
                                         <div class="toggle-thumb"></div>
                                     </div>
-                                    <div class="toggle-label">Show Subtitle</div>
+                                    <div class="toggle-label">Maker / Subtitle</div>
                                 </div>
-
                                 <div class="toggle-group">
                                     <div class="toggle ${exp.grid.showTags ? 'active' : ''}" id="toggleTags">
                                         <div class="toggle-thumb"></div>
                                     </div>
-                                    <div class="toggle-label">Show Tags</div>
+                                    <div class="toggle-label">Category Tags</div>
                                 </div>
-
                                 <div class="toggle-group">
                                     <div class="toggle ${exp.grid.showDescription ? 'active' : ''}" id="toggleDescription">
                                         <div class="toggle-thumb"></div>
                                     </div>
-                                    <div class="toggle-label">Show Description</div>
+                                    <div class="toggle-label">Full Description</div>
                                 </div>
                             </div>
 
-                            <div class="form-section-title" style="margin-top: 24px;">Display Options</div>
+                            <!-- SUBSECTION: SHELL ELEMENTS -->
+                            <div style="font-size: 11px; font-weight: 700; color: #95a3b3; text-transform: uppercase; letter-spacing: 0.5px; margin: 2rem 0 1rem 0; padding-bottom: 4px; border-bottom: 1px solid #f1f3f7;">Interface Elements</div>
 
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showFilters ? 'active' : ''}" id="toggleFilters">
-                                    <div class="toggle-thumb"></div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showNav ? 'active' : ''}" id="toggleNav">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Navigation Bar</div>
                                 </div>
-                                <div class="toggle-label">Include Filter Sidebar</div>
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showSearch ? 'active' : ''}" id="toggleSearch">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Search Bar</div>
+                                </div>
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showFilters ? 'active' : ''}" id="toggleFilters">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Filter Sidebar</div>
+                                </div>
+                                <div class="toggle-group">
+                                    <div class="toggle ${exp.grid.showFooter ? 'active' : ''}" id="toggleFooter">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div class="toggle-label">Footer</div>
+                                </div>
                             </div>
 
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showSearch ? 'active' : ''}" id="toggleSearch">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Search Bar</div>
-                            </div>
+                            <!-- SUBSECTION: TECHNICAL -->
+                            <div style="font-size: 11px; font-weight: 700; color: #95a3b3; text-transform: uppercase; letter-spacing: 0.5px; margin: 2rem 0 1rem 0; padding-bottom: 4px; border-bottom: 1px solid #f1f3f7;">Technical Overlays</div>
 
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showNav ? 'active' : ''}" id="toggleNav">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Navigation Bar</div>
-                            </div>
-
-                            <div class="toggle-group">
-                                <div class="toggle ${exp.grid.showFooter ? 'active' : ''}" id="toggleFooter">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                                <div class="toggle-label">Include Footer</div>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 1.5rem;">
-                                <label for="gridOverlayStyle">Overlay Style</label>
+                            <div class="form-group">
+                                <label for="gridOverlayStyle">Analysis Grid Overlay Style</label>
                                 <select id="gridOverlayStyle">
                                     <option value="lines" ${exp.grid.gridOverlayStyle === 'lines' ? 'selected' : ''}>Subtle Lines (Light)</option>
                                     <option value="lines-dark" ${exp.grid.gridOverlayStyle === 'lines-dark' ? 'selected' : ''}>Bold Lines (Dark)</option>
@@ -2392,25 +2537,25 @@
                                 </select>
                             </div>
 
-                            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e6ed;">
+                            <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e6ed; display: flex; justify-content: center;">
                                 <button class="btn btn-secondary btn-sm" id="btnSaveGridPreset">
-                                    💾 Save current config as Preset
+                                    💾 Save current as New Preset
                                 </button>
                             </div>
                         </div>
 
                         <!-- Experiment Mode Section -->
                         <div class="form-section">
-                            <div class="form-section-title">Experiment Mode</div>
+                            <div class="form-section-title">Experiment Logic</div>
                             <div class="form-group">
-                                <label for="experimentMode">Interaction Type</label>
+                                <label for="experimentMode">Interaction Model</label>
                                 <select id="experimentMode">
                                     <option value="action_transcript" ${exp.mode === 'action_transcript' ? 'selected' : ''}>Action and Transcript (Full interactive)</option>
                                     <option value="transcript_only" ${exp.mode === 'transcript_only' ? 'selected' : ''}>Transcript Only (No voice-driven actions)</option>
                                 </select>
-                                <div class="text-muted" style="margin-top: 6px;">
-                                    <strong>Action and Transcript:</strong> Voice queries trigger API searches.<br>
-                                    <strong>Transcript Only:</strong> Voice is recorded and transcribed, but the interface does not react.
+                                <div class="text-muted" style="margin-top: 8px; font-size: 12px; line-height: 1.5;">
+                                    <strong>Action and Transcript:</strong> Voice queries trigger API searches and update the UI in real-time.<br>
+                                    <strong>Transcript Only:</strong> Voice is recorded and transcribed for analysis, but the UI remains static.
                                 </div>
                             </div>
                         </div>
@@ -2723,6 +2868,22 @@
             if (state.currentTab === 'local-data') {
                 fetchLocalDatasets();
 
+                const fileInput = document.getElementById('csvFileInput');
+                const nameInput = document.getElementById('importName');
+                
+                if (fileInput && nameInput) {
+                    fileInput.addEventListener('change', () => {
+                        if (fileInput.files.length > 0) {
+                            const fileName = fileInput.files[0].name;
+                            // Remove extension and sanitize (replace non-alphanumeric with underscore)
+                            const baseName = fileName.split('.').slice(0, -1).join('.')
+                                .toLowerCase()
+                                .replace(/[^a-z0-9_-]/gi, '_');
+                            nameInput.value = baseName;
+                        }
+                    });
+                }
+
                 document.getElementById('btnUploadCsv').addEventListener('click', async () => {
                     const fileInput = document.getElementById('csvFileInput');
                     const nameInput = document.getElementById('importName');
@@ -2805,6 +2966,10 @@
                 document.getElementById('expDuration').addEventListener('input', (e) => {
                     updateExperiment(exp.id, { duration: parseInt(e.target.value) });
                 });
+                document.getElementById('taskPrompt').addEventListener('input', (e) => {
+                    exp.grid.taskPrompt = e.target.value;
+                    saveStateSoon();
+                });
             }
 
             // PIS tab listeners
@@ -2842,6 +3007,10 @@
                     togglePreviewDrawer(true);
                 });
 
+                document.getElementById('btnLaunchHighFidPreview').addEventListener('click', () => {
+                    window.open(`experiment.html?expId=${exp.id}&preview=true`, '_blank');
+                });
+
                 document.getElementById('gridColumns').addEventListener('input', (e) => {
                     exp.grid.columns = parseInt(e.target.value);
                     document.getElementById('columnsValue').textContent = e.target.value;
@@ -2863,13 +3032,67 @@
                 document.getElementById('gridRows').addEventListener('input', (e) => {
                     exp.grid.rows = parseInt(e.target.value);
                     document.getElementById('rowsValue').textContent = e.target.value;
-                    
+
                     // Recalculate maxItems
                     exp.grid.maxItems = (exp.grid.columns || 3) * exp.grid.rows;
                     document.getElementById('totalItemsDisplay').textContent = exp.grid.maxItems;
 
                     saveStateSoon();
                     updateGridPreview();
+                });
+
+                document.getElementById('gridGap').addEventListener('input', (e) => {
+                    exp.grid.gridGap = parseInt(e.target.value);
+                    document.getElementById('gridGapValue').textContent = e.target.value + 'px';
+                    saveStateSoon();
+                    updateGridPreview();
+                });
+
+                document.getElementById('containerPadding').addEventListener('input', (e) => {
+                    exp.grid.containerPadding = parseFloat(e.target.value);
+                    document.getElementById('containerPaddingValue').textContent = e.target.value + 'rem';
+                    saveStateSoon();
+                    updateGridPreview();
+                });
+
+                document.getElementById('itemRadius').addEventListener('input', (e) => {
+                    exp.grid.itemRadius = parseInt(e.target.value);
+                    document.getElementById('itemRadiusValue').textContent = e.target.value + 'px';
+                    saveStateSoon();
+                    updateGridPreview();
+                });
+
+                document.getElementById('shadowStrength').addEventListener('input', (e) => {
+                    exp.grid.shadowStrength = parseFloat(e.target.value);
+                    document.getElementById('shadowStrengthValue').textContent = e.target.value;
+                    saveStateSoon();
+                    updateGridPreview();
+                });
+
+                document.getElementById('toggleHover').addEventListener('click', () => {
+                    exp.grid.hoverEnabled = exp.grid.hoverEnabled === false ? true : false;
+                    document.getElementById('toggleHover').classList.toggle('active', exp.grid.hoverEnabled !== false);
+                    saveStateSoon();
+                    updateGridPreview();
+                });
+
+                document.getElementById('hoverBorderColor').addEventListener('input', (e) => {
+                    const color = e.target.value;
+                    exp.grid.hoverBorderColor = color;
+                    document.getElementById('hoverBorderColorText').value = color;
+                    saveStateSoon();
+                });
+
+                document.getElementById('hoverBorderColorText').addEventListener('input', (e) => {
+                    const color = e.target.value;
+                    exp.grid.hoverBorderColor = color;
+                    document.getElementById('hoverBorderColor').value = color;
+                    saveStateSoon();
+                });
+
+                document.getElementById('hoverBorderWidth').addEventListener('change', (e) => {
+                    exp.grid.hoverBorderWidth = e.target.value;
+                    saveStateSoon();
                 });
 
                 document.getElementById('cardHeight').addEventListener('change', (e) => {

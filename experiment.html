@@ -525,6 +525,21 @@
             margin-bottom: 1.5rem;
         }
 
+        .panel-group-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #95a3b3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 1.5rem 0 0.75rem 0;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #f1f3f7;
+        }
+
+        .panel-group-title:first-child {
+            margin-top: 0;
+        }
+
         .panel-section-header {
             display: flex;
             align-items: center;
@@ -1000,6 +1015,30 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             auto-rows: max-content;
+        }
+
+        /* Layout Debug Styles */
+        .debug-outline * {
+            outline: 1px solid rgba(255, 0, 0, 0.2) !important;
+        }
+
+        .card-index-debug {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            z-index: 10;
+            pointer-events: none;
+            font-family: monospace;
+            display: none;
+        }
+
+        .debug-show-indices .card-index-debug {
+            display: block;
         }
 
         .grid-container.cols-1 { grid-template-columns: repeat(1, 1fr); }
@@ -1994,6 +2033,12 @@
         </div>
 
         <div class="header-right">
+            <!-- Preview Banner -->
+            <div id="previewBanner" style="display: none; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; align-items: center; gap: 6px; margin-right: 12px; height: 28px;">
+                <span>🛠️ PREVIEW MODE</span>
+                <button id="btnExitPreview" style="background: #ea580c; color: white; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 10px;">Exit Preview</button>
+            </div>
+
             <div class="header-actions" style="display: flex; gap: 8px; margin-right: 4px;">
                 <button id="headerMicBtn" class="btn btn-secondary btn-sm" style="height: 28px; white-space: nowrap; min-width: 140px;">🎙️ Enable Microphone</button>
                 <button id="headerRecBtn" class="btn btn-secondary btn-sm" style="height: 28px; white-space: nowrap; min-width: 130px;">⏺ Start Recording</button>
@@ -2114,10 +2159,101 @@
                                         <button class="debug-btn" onclick="copyDebugLog()">Copy all</button>
                                     </div>
                                 </div>
+
+                                <div class="debug-layout-controls" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e6ed;">
+                                    <div class="debug-label" style="font-size: 11px; font-weight: 700; color: #7f8fa3; text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.5px;">Layout Debug</div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem;">
+                                        <label class="config-toggle" style="padding: 8px; font-size: 11px;">
+                                            <input type="checkbox" id="debugShowIndices">
+                                            <span>Show Indices</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 8px; font-size: 11px;">
+                                            <input type="checkbox" id="debugShowOutlines">
+                                            <span>Show Outlines</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <label class="textarea-label">Grid Gap</label>
+                                            <span id="val-debugGridGap" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">24px</span>
+                                        </div>
+                                        <input type="range" id="debugGridGap" min="0" max="80" step="4" value="24" style="width:100%;">
+                                    </div>
+                                    
+                                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <label class="textarea-label">Container Padding</label>
+                                            <span id="val-debugContainerPadding" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">2rem</span>
+                                        </div>
+                                        <input type="range" id="debugContainerPadding" min="0" max="8" step="0.5" value="2" style="width:100%;">
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <label class="textarea-label">Item Radius</label>
+                                            <span id="val-debugItemRadius" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">12px</span>
+                                        </div>
+                                        <input type="range" id="debugItemRadius" min="0" max="40" step="2" value="12" style="width:100%;">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <label class="textarea-label">Shadow Strength</label>
+                                            <span id="val-debugShadowStrength" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">0.1</span>
+                                        </div>
+                                        <input type="range" id="debugShadowStrength" min="0" max="0.5" step="0.05" value="0.1" style="width:100%;">
+                                    </div>
+
+                                    <div class="debug-label" style="font-size: 11px; font-weight: 700; color: #7f8fa3; text-transform: uppercase; margin-top: 1.25rem; margin-bottom: 0.75rem; letter-spacing: 0.5px; border-top: 1px solid #f1f3f7; padding-top: 0.75rem;">Card Content</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowImage">
+                                            <span>Image</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowTitle">
+                                            <span>Title</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowSubtitle">
+                                            <span>Subtitle</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowTags">
+                                            <span>Tags</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowDescription">
+                                            <span>Description</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="debug-label" style="font-size: 11px; font-weight: 700; color: #7f8fa3; text-transform: uppercase; margin-top: 1.25rem; margin-bottom: 0.75rem; letter-spacing: 0.5px; border-top: 1px solid #f1f3f7; padding-top: 0.75rem;">Interface Elements</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowNav">
+                                            <span>Nav Bar</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowSearch">
+                                            <span>Search Bar</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowFilters">
+                                            <span>Filters</span>
+                                        </label>
+                                        <label class="config-toggle" style="padding: 6px; font-size: 10px;">
+                                            <input type="checkbox" id="debugShowFooter">
+                                            <span>Footer</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Configuration Section -->
+                        <!-- Layout & Style Section -->
                         <div class="panel-section">
                             <div class="panel-section-header" onclick="togglePanelSection(this)">
                                 <span class="icon">📐</span>
@@ -2125,27 +2261,38 @@
                                 <span class="panel-section-toggle">▶</span>
                             </div>
                             <div class="panel-section-body">
-                                <div class="form-group">
-                                    <label class="textarea-label">Columns</label>
-                                    <input type="range" id="runnerGridColumns" min="1" max="6" step="1" style="width:100%;">
+                                <div class="panel-group-title">Grid Geometry</div>
+                                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div class="form-group">
+                                        <label class="textarea-label">Columns</label>
+                                        <input type="range" id="runnerGridColumns" min="1" max="6" step="1" style="width:100%;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="textarea-label">Rows</label>
+                                        <input type="range" id="runnerGridRows" min="1" max="20" step="1" style="width:100%;">
+                                    </div>
                                 </div>
                                 <div class="form-group" style="margin-top:0.75rem;">
-                                    <label class="textarea-label">Rows</label>
-                                    <input type="range" id="runnerGridRows" min="1" max="20" step="1" style="width:100%;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <label class="textarea-label">Grid Gap</label>
+                                        <span id="val-runnerGridGap" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">24px</span>
+                                    </div>
+                                    <input type="range" id="runnerGridGap" min="0" max="80" step="4" value="24" style="width:100%;">
+                                </div>
+                                <div class="form-group" style="margin-top:0.75rem;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <label class="textarea-label">Container Padding</label>
+                                        <span id="val-runnerContainerPadding" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">2rem</span>
+                                    </div>
+                                    <input type="range" id="runnerContainerPadding" min="0" max="8" step="0.5" value="2" style="width:100%;">
                                 </div>
                                 <div class="form-group" style="margin-top:0.75rem;">
                                     <label class="textarea-label">Grid Max Width (%)</label>
                                     <input type="range" id="runnerGridMaxWidth" min="40" max="100" step="1" style="width:100%;">
                                 </div>
-                                <div class="form-group" style="margin-top:0.75rem;">                                    <label class="textarea-label">Card Height</label>
-                                    <select class="log-level-select" id="runnerCardHeight">
-                                        <option value="short">Short</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="tall">Tall</option>
-                                        <option value="nike-height">Nike (Extra Tall)</option>
-                                    </select>
-                                    </div>
-                                    <div class="form-group" style="margin-top:0.75rem;">
+
+                                <div class="panel-group-title">Card Appearance</div>
+                                <div class="form-group">
                                     <label class="textarea-label">Visual Style</label>
                                     <select class="log-level-select" id="runnerCardStyle">
                                         <option value="modern">Modern</option>
@@ -2162,13 +2309,42 @@
                                         <option value="horizontal">Horizontal</option>
                                     </select>
                                 </div>
+                                <div class="form-group" style="margin-top:0.75rem;">
+                                    <label class="textarea-label">Card Height</label>
+                                    <select class="log-level-select" id="runnerCardHeight">
+                                        <option value="short">Short</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="tall">Tall</option>
+                                        <option value="nike-height">Nike (Extra Tall)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-top:0.75rem;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <label class="textarea-label">Item Radius</label>
+                                        <span id="val-runnerItemRadius" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">12px</span>
+                                    </div>
+                                    <input type="range" id="runnerItemRadius" min="0" max="40" step="2" value="12" style="width:100%;">
+                                </div>
+                                <div class="form-group" style="margin-top:0.75rem;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <label class="textarea-label">Shadow Strength</label>
+                                        <span id="val-runnerShadowStrength" style="font-size: 11px; color: #4f6ef7; font-weight: 600;">0.1</span>
+                                    </div>
+                                    <input type="range" id="runnerShadowStrength" min="0" max="0.5" step="0.05" value="0.1" style="width:100%;">
+                                </div>
+
+                                <div class="panel-group-title">Interaction Styles</div>
+                                <label class="config-toggle">
+                                    <input type="checkbox" id="gridHoverToggle" checked>
+                                    <span class="panel-label">Highlight on hover</span>
+                                </label>
                                 <div class="form-group" style="margin-top:0.75rem; display: flex; gap: 10px; align-items: flex-end;">
                                     <div style="flex: 1;">
-                                        <label class="textarea-label">Hover Border Color</label>
+                                        <label class="textarea-label">Hover Color</label>
                                         <input type="color" id="hoverBorderColor" value="#4f6ef7" style="width: 100%; height: 38px; padding: 4px; border: 1px solid #e2e6ed; border-radius: 6px; background: white; cursor: pointer;">
                                     </div>
                                     <div style="flex: 1;">
-                                        <label class="textarea-label">Hover Thickness</label>
+                                        <label class="textarea-label">Hover Width</label>
                                         <select class="log-level-select" id="hoverBorderWidth">
                                             <option value="2px">Thin (2px)</option>
                                             <option value="4px" selected>Medium (4px)</option>
@@ -2177,10 +2353,54 @@
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="panel-group-title">Card Content</div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowImage">
+                                        <span>Show Image</span>
+                                    </label>
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowTitle">
+                                        <span>Show Title</span>
+                                    </label>
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowSubtitle">
+                                        <span>Show Subtitle</span>
+                                    </label>
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowTags">
+                                        <span>Show Tags</span>
+                                    </label>
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowDescription">
+                                        <span>Show Description</span>
+                                    </label>
+                                </div>
+
+                                <div class="panel-group-title">Interface Elements</div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowNav">
+                                        <span>Navigation Bar</span>
+                                    </label>
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowSearch">
+                                        <span>Search Bar</span>
+                                    </label>
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowFilters">
+                                        <span>Filter Sidebar</span>
+                                    </label>
+                                    <label class="config-toggle" style="padding: 6px; font-size: 11px;">
+                                        <input type="checkbox" id="runnerShowFooter">
+                                        <span>Page Footer</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Configuration Section -->
+                        <!-- Settings Section -->
                         <div class="panel-section">
                             <div class="panel-section-header" onclick="togglePanelSection(this)">
                                 <span class="icon">⚙️</span>
@@ -2188,6 +2408,7 @@
                                 <span class="panel-section-toggle">▶</span>
                             </div>
                             <div class="panel-section-body">
+                                <div class="panel-group-title">Overlays & Aids</div>
                                 <label class="config-toggle">
                                     <input type="checkbox" id="gridOverlayToggle">
                                     <span class="panel-label">Grid overlay</span>
@@ -2213,12 +2434,8 @@
                                     </select>
                                 </div>
 
-                                <label class="config-toggle" style="margin-top: 0.75rem;">
-                                    <input type="checkbox" id="gridHoverToggle" checked>
-                                    <span class="panel-label">Highlight on hover</span>
-                                </label>
-
-                                <label class="textarea-label" style="margin-top: 1rem;">📋 Task Prompt</label>
+                                <div class="panel-group-title">Study Tasks</div>
+                                <label class="textarea-label">📋 Task Prompt</label>
                                 <textarea class="textarea-field" id="taskPromptField" placeholder="Enter task for participant..."></textarea>
 
                                 <label class="textarea-label" style="margin-top: 1rem;">📝 Notes</label>
@@ -2480,19 +2697,30 @@
 
             console.log('[Runner] Experiment config loaded:', experimentConfig);
 
+            // Handle Preview Mode Early
+            const urlParams = new URLSearchParams(window.location.search);
+            const isPreview = urlParams.get('preview') === 'true';
+
             participantRecord = (experimentConfig.participants || []).find(p => p.id === participantId) || null;
 
             if (!participantRecord) {
-                console.error('[Runner] Participant not found in experiment:', participantId);
-                showErrorScreen('Participant record not found. Please start the experiment from the Manager.');
-                return;
+                if (isPreview) {
+                    console.log('[Runner] Creating mock participant for preview mode');
+                    participantRecord = {
+                        id: 'PREVIEW-PARTICIPANT',
+                        name: 'Preview Mode',
+                        startedAt: new Date().toISOString(),
+                        events: []
+                    };
+                } else {
+                    console.error('[Runner] Participant not found in experiment:', participantId);
+                    showErrorScreen('Participant record not found. Please start the experiment from the Manager.');
+                    return;
+                }
             }
 
             console.log('[Runner] Participant record found:', participantRecord);
 
-            // Show consent screen
-            showPhase('consent');
-            populateConsentScreen();
             setupEventListeners();
 
             // Initialize speech recognition if available
@@ -2524,6 +2752,40 @@
             }
 
             logDebug('APP', 'info', `Experiment initialized: ${expId}`);
+
+            // 6. Finalize Preview Mode
+            if (isPreview) {
+                logDebug('APP', 'warn', 'Runner started in PREVIEW MODE');
+                
+                // Show banner and handle exit
+                const banner = document.getElementById('previewBanner');
+                if (banner) banner.style.display = 'flex';
+                document.getElementById('btnExitPreview').addEventListener('click', () => window.close());
+                
+                // Hide participant-specific controls
+                const endBtn = document.getElementById('headerEndSessionBtn');
+                if (endBtn) endBtn.style.display = 'none';
+                
+                // Show session UI immediately (skip consent)
+                document.getElementById('consentScreen').style.display = 'none';
+                document.getElementById('sessionWrapper').style.display = 'block';
+                
+                // Open side panel and select debug tab
+                const sidePanel = document.getElementById('sidePanel');
+                if (sidePanel) {
+                    sidePanel.classList.add('open');
+                    // Find and click debug tab
+                    const debugTab = Array.from(document.querySelectorAll('.tab-item')).find(t => t.textContent.trim() === 'Debug');
+                    if (debugTab) debugTab.click();
+                }
+
+                // Load initial data
+                fetchGridData();
+            } else {
+                // NORMAL MODE: Show consent screen
+                showPhase('consent');
+                populateConsentScreen();
+            }
         } catch (err) {
             console.error('[Runner] Fatal initialization error:', err);
             showErrorScreen('A fatal error occurred during startup: ' + err.message);
@@ -2605,6 +2867,7 @@
             document.getElementById('gridContainer').className = `grid-container ${gridClass}`;
             logDebug('LAYOUT', 'info', `Columns changed to ${e.target.value}. New maxItems: ${experimentConfig.grid.maxItems}`);
             fetchGridData(); // Re-fetch because maxItems changed
+            syncWithManager();
         });
 
         document.getElementById('runnerGridRows').addEventListener('input', (e) => {
@@ -2612,6 +2875,7 @@
             experimentConfig.grid.maxItems = (experimentConfig.grid.columns || 3) * experimentConfig.grid.rows;
             logDebug('LAYOUT', 'info', `Rows changed to ${e.target.value}. New maxItems: ${experimentConfig.grid.maxItems}`);
             fetchGridData(); // Re-fetch because maxItems changed
+            syncWithManager();
         });
 
         document.getElementById('runnerGridMaxWidth').addEventListener('input', (e) => {
@@ -2619,18 +2883,21 @@
             experimentConfig.grid.gridMaxWidth = width;
             document.querySelector('.grid-area').style.maxWidth = width + '%';
             logDebug('LAYOUT', 'info', `Grid max-width changed to ${width}%`);
+            syncWithManager();
         });
 
         document.getElementById('runnerCardHeight').addEventListener('change', (e) => {
             experimentConfig.grid.cardHeight = e.target.value;
             renderCurrentItems();
             logDebug('LAYOUT', 'info', `Card height changed to ${e.target.value}`);
+            syncWithManager();
         });
 
         document.getElementById('runnerCardStyle').addEventListener('change', (e) => {
             experimentConfig.grid.cardStyle = e.target.value;
             renderCurrentItems();
             logDebug('LAYOUT', 'info', `Visual style changed to ${e.target.value}`);
+            syncWithManager();
         });
 
         document.getElementById('hoverBorderColor').addEventListener('input', (e) => {
@@ -2638,6 +2905,7 @@
             experimentConfig.grid.hoverBorderColor = color;
             document.documentElement.style.setProperty('--hover-border-color', color);
             logDebug('LAYOUT', 'info', `Hover border color changed to ${color}`);
+            syncWithManager();
         });
 
         document.getElementById('hoverBorderWidth').addEventListener('change', (e) => {
@@ -2645,10 +2913,199 @@
             experimentConfig.grid.hoverBorderWidth = width;
             document.documentElement.style.setProperty('--hover-border-width', width);
             logDebug('LAYOUT', 'info', `Hover border thickness changed to ${width}`);
+            syncWithManager();
+        });
+
+        // Layout controls (Main panel)
+        document.getElementById('runnerGridGap').addEventListener('input', (e) => {
+            const gap = e.target.value;
+            experimentConfig.grid.gridGap = gap;
+            document.getElementById('gridContainer').style.gap = `${gap}px`;
+            document.getElementById('val-runnerGridGap').textContent = `${gap}px`;
+            // Sync with debug
+            const dbg = document.getElementById('debugGridGap');
+            if (dbg) {
+                dbg.value = gap;
+                document.getElementById('val-debugGridGap').textContent = `${gap}px`;
+            }
+        });
+
+        document.getElementById('runnerContainerPadding').addEventListener('input', (e) => {
+            const padding = e.target.value;
+            experimentConfig.grid.containerPadding = padding;
+            document.getElementById('gridContainer').style.padding = `${padding}rem`;
+            document.getElementById('val-runnerContainerPadding').textContent = `${padding}rem`;
+            // Sync with debug
+            const dbg = document.getElementById('debugContainerPadding');
+            if (dbg) {
+                dbg.value = padding;
+                document.getElementById('val-debugContainerPadding').textContent = `${padding}rem`;
+            }
+        });
+
+        document.getElementById('runnerItemRadius').addEventListener('input', (e) => {
+            const radius = e.target.value;
+            experimentConfig.grid.itemRadius = radius;
+            document.querySelectorAll('.card').forEach(card => card.style.borderRadius = `${radius}px`);
+            document.getElementById('val-runnerItemRadius').textContent = `${radius}px`;
+            // Sync with debug
+            const dbg = document.getElementById('debugItemRadius');
+            if (dbg) {
+                dbg.value = radius;
+                document.getElementById('val-debugItemRadius').textContent = `${radius}px`;
+            }
+        });
+
+        document.getElementById('runnerShadowStrength').addEventListener('input', (e) => {
+            const strength = e.target.value;
+            experimentConfig.grid.shadowStrength = strength;
+            const shadow = `0 4px 6px -1px rgba(0,0,0,${strength}), 0 2px 4px -1px rgba(0,0,0,${strength / 2})`;
+            document.querySelectorAll('.card').forEach(card => card.style.boxShadow = shadow);
+            document.getElementById('val-runnerShadowStrength').textContent = strength;
+            // Sync with debug
+            const dbg = document.getElementById('debugShadowStrength');
+            if (dbg) {
+                dbg.value = strength;
+                document.getElementById('val-debugShadowStrength').textContent = strength;
+            }
+        });
+
+        // Layout Debug Controls
+        document.getElementById('debugShowIndices').addEventListener('change', (e) => {
+            document.getElementById('gridContainer').classList.toggle('debug-show-indices', e.target.checked);
+            logDebug('DEBUG', 'info', `Show card indices: ${e.target.checked}`);
+        });
+
+        document.getElementById('debugShowOutlines').addEventListener('change', (e) => {
+            document.body.classList.toggle('debug-outline', e.target.checked);
+            logDebug('DEBUG', 'info', `Show outlines: ${e.target.checked}`);
+        });
+
+        document.getElementById('debugGridGap').addEventListener('input', (e) => {
+            const gap = e.target.value;
+            experimentConfig.grid.gridGap = gap; // Update config too
+            document.getElementById('gridContainer').style.gap = `${gap}px`;
+            document.getElementById('val-debugGridGap').textContent = `${gap}px`;
+            // Sync with main panel
+            const main = document.getElementById('runnerGridGap');
+            if (main) {
+                main.value = gap;
+                document.getElementById('val-runnerGridGap').textContent = `${gap}px`;
+            }
+        });
+
+        document.getElementById('debugContainerPadding').addEventListener('input', (e) => {
+            const padding = e.target.value;
+            experimentConfig.grid.containerPadding = padding; // Update config too
+            document.getElementById('gridContainer').style.padding = `${padding}rem`;
+            document.getElementById('val-debugContainerPadding').textContent = `${padding}rem`;
+            // Sync with main panel
+            const main = document.getElementById('runnerContainerPadding');
+            if (main) {
+                main.value = padding;
+                document.getElementById('val-runnerContainerPadding').textContent = `${padding}rem`;
+            }
+        });
+
+        document.getElementById('debugItemRadius').addEventListener('input', (e) => {
+            const radius = e.target.value;
+            experimentConfig.grid.itemRadius = radius; // Update config too
+            document.querySelectorAll('.card').forEach(card => card.style.borderRadius = `${radius}px`);
+            document.getElementById('val-debugItemRadius').textContent = `${radius}px`;
+            // Sync with main panel
+            const main = document.getElementById('runnerItemRadius');
+            if (main) {
+                main.value = radius;
+                document.getElementById('val-runnerItemRadius').textContent = `${radius}px`;
+            }
+        });
+
+        document.getElementById('debugShadowStrength').addEventListener('input', (e) => {
+            const strength = e.target.value;
+            experimentConfig.grid.shadowStrength = strength; // Update config too
+            const shadow = `0 4px 6px -1px rgba(0,0,0,${strength}), 0 2px 4px -1px rgba(0,0,0,${strength / 2})`;
+            document.querySelectorAll('.card').forEach(card => card.style.boxShadow = shadow);
+            document.getElementById('val-debugShadowStrength').textContent = strength;
+            // Sync with main panel
+            const main = document.getElementById('runnerShadowStrength');
+            if (main) {
+                main.value = strength;
+                document.getElementById('val-runnerShadowStrength').textContent = strength;
+            }
+        });
+
+        // Card Content Toggles
+        const contentToggles = [
+            { main: 'runnerShowImage', debug: 'debugShowImage', key: 'showImage' },
+            { main: 'runnerShowTitle', debug: 'debugShowTitle', key: 'showTitle' },
+            { main: 'runnerShowSubtitle', debug: 'debugShowSubtitle', key: 'showSubtitle' },
+            { main: 'runnerShowTags', debug: 'debugShowTags', key: 'showTags' },
+            { main: 'runnerShowDescription', debug: 'debugShowDescription', key: 'showDescription' }
+        ];
+
+        contentToggles.forEach(t => {
+            const m = document.getElementById(t.main);
+            const d = document.getElementById(t.debug);
+            
+            const handle = (e) => {
+                const val = e.target.checked;
+                experimentConfig.grid[t.key] = val;
+                if (m) m.checked = val;
+                if (d) d.checked = val;
+                renderCurrentItems();
+                logDebug('LAYOUT', 'info', `Card content: ${t.key} = ${val}`);
+                syncWithManager();
+            };
+
+            if (m) m.addEventListener('change', handle);
+            if (d) d.addEventListener('change', handle);
+        });
+
+        // Interface Element Toggles
+        const interfaceToggles = [
+            { main: 'runnerShowNav', debug: 'debugShowNav', key: 'showNav' },
+            { main: 'runnerShowSearch', debug: 'debugShowSearch', key: 'showSearch' },
+            { main: 'runnerShowFilters', debug: 'debugShowFilters', key: 'showFilters' },
+            { main: 'runnerShowFooter', debug: 'debugShowFooter', key: 'showFooter' }
+        ];
+
+        interfaceToggles.forEach(t => {
+            const m = document.getElementById(t.main);
+            const d = document.getElementById(t.debug);
+            
+            const handle = (e) => {
+                const val = e.target.checked;
+                experimentConfig.grid[t.key] = val;
+                if (m) m.checked = val;
+                if (d) d.checked = val;
+                applyInterfaceVisibility(t.key, val);
+                logDebug('LAYOUT', 'info', `Interface element: ${t.key} = ${val}`);
+                syncWithManager();
+            };
+
+            if (m) m.addEventListener('change', handle);
+            if (d) d.addEventListener('change', handle);
         });
     }
 
-    // Helper to refresh grid cards without a new fetch
+        function applyInterfaceVisibility(key, visible) {
+        if (key === 'showNav') {
+            const nav = document.getElementById('mockNav');
+            if (nav) nav.style.display = visible ? 'flex' : 'none';
+        } else if (key === 'showSearch') {
+            const search = document.getElementById('searchBar');
+            if (search) search.style.display = visible ? 'flex' : 'none';
+        } else if (key === 'showFilters') {
+            const sidebar = document.getElementById('filterSidebar');
+            if (sidebar) sidebar.style.display = visible ? 'block' : 'none';
+        } else if (key === 'showFooter') {
+            const footer = document.getElementById('mockFooter');
+            if (footer) footer.style.display = visible ? 'block' : 'none';
+        }
+        }
+
+        // Helper to refresh grid cards without a new fetch
+
     function renderCurrentItems() {
         if (currentItems && currentItems.length > 0) {
             displayGridCards(currentItems);
@@ -2763,12 +3220,156 @@
         const hbColorEl = document.getElementById('hoverBorderColor');
         const hbWidthEl = document.getElementById('hoverBorderWidth');
 
+        // New Layout Elements
+        const gapEl = document.getElementById('runnerGridGap');
+        const gapVal = document.getElementById('val-runnerGridGap');
+        const padEl = document.getElementById('runnerContainerPadding');
+        const padVal = document.getElementById('val-runnerContainerPadding');
+        const radEl = document.getElementById('runnerItemRadius');
+        const radVal = document.getElementById('val-runnerItemRadius');
+        const shEl = document.getElementById('runnerShadowStrength');
+        const shVal = document.getElementById('val-runnerShadowStrength');
+
+        // New Debug Elements
+        const dGapEl = document.getElementById('debugGridGap');
+        const dGapVal = document.getElementById('val-debugGridGap');
+        const dPadEl = document.getElementById('debugContainerPadding');
+        const dPadVal = document.getElementById('val-debugContainerPadding');
+        const dRadEl = document.getElementById('debugItemRadius');
+        const dRadVal = document.getElementById('val-debugItemRadius');
+        const dShEl = document.getElementById('debugShadowStrength');
+        const dShVal = document.getElementById('val-debugShadowStrength');
+
         if (colEl) colEl.value = gridColumns;
         if (rowEl) rowEl.value = experimentConfig.grid.rows || 4;
         if (widthEl) widthEl.value = gridMaxWidth;
         if (hEl) hEl.value = experimentConfig.grid.cardHeight || 'medium';
         if (sEl) sEl.value = experimentConfig.grid.cardStyle || 'modern';
         if (oEl) oEl.value = experimentConfig.grid.gridOverlayStyle || 'lines';
+
+        // Initialize and apply new settings
+        const currentGap = experimentConfig.grid.gridGap || 24;
+        const currentPadding = experimentConfig.grid.containerPadding || 2;
+        const currentRadius = experimentConfig.grid.itemRadius || 12;
+        const currentShadow = experimentConfig.grid.shadowStrength || 0.1;
+
+        // Apply to grid container
+        document.getElementById('gridContainer').style.gap = `${currentGap}px`;
+        document.getElementById('gridContainer').style.padding = `${currentPadding}rem`;
+
+        // Update UI inputs
+        if (gapEl) {
+            gapEl.value = currentGap;
+            if (gapVal) gapVal.textContent = `${currentGap}px`;
+        }
+        if (padEl) {
+            padEl.value = currentPadding;
+            if (padVal) padVal.textContent = `${currentPadding}rem`;
+        }
+        if (radEl) {
+            radEl.value = currentRadius;
+            if (radVal) radVal.textContent = `${currentRadius}px`;
+        }
+        if (shEl) {
+            shEl.value = currentShadow;
+            if (shVal) shVal.textContent = currentShadow;
+        }
+
+        // Sync Debug UI
+        if (dGapEl) {
+            dGapEl.value = currentGap;
+            if (dGapVal) dGapVal.textContent = `${currentGap}px`;
+        }
+        if (dPadEl) {
+            dPadEl.value = currentPadding;
+            if (dPadVal) dPadVal.textContent = `${currentPadding}rem`;
+        }
+        if (dRadEl) {
+            dRadEl.value = currentRadius;
+            if (dRadVal) dRadVal.textContent = `${currentRadius}px`;
+        }
+        if (dShEl) {
+            dShEl.value = currentShadow;
+            if (dShVal) dShVal.textContent = currentShadow;
+        }
+
+        // Initialize Card Content Toggles
+        const contentToggles = [
+            { main: 'runnerShowImage', debug: 'debugShowImage', key: 'showImage' },
+            { main: 'runnerShowTitle', debug: 'debugShowTitle', key: 'showTitle' },
+            { main: 'runnerShowSubtitle', debug: 'debugShowSubtitle', key: 'showSubtitle' },
+            { main: 'runnerShowTags', debug: 'debugShowTags', key: 'showTags' },
+            { main: 'runnerShowDescription', debug: 'debugShowDescription', key: 'showDescription' }
+        ];
+
+        contentToggles.forEach(t => {
+            const m = document.getElementById(t.main);
+            const d = document.getElementById(t.debug);
+            const val = !!experimentConfig.grid[t.key];
+            if (m) m.checked = val;
+            if (d) d.checked = val;
+        });
+
+        // Initialize Interface Element Toggles
+        const interfaceToggles = [
+            { main: 'runnerShowNav', debug: 'debugShowNav', key: 'showNav' },
+            { main: 'runnerShowSearch', debug: 'debugShowSearch', key: 'showSearch' },
+            { main: 'runnerShowFilters', debug: 'debugShowFilters', key: 'showFilters' },
+            { main: 'runnerShowFooter', debug: 'debugShowFooter', key: 'showFooter' }
+        ];
+
+        interfaceToggles.forEach(t => {
+            const m = document.getElementById(t.main);
+            const d = document.getElementById(t.debug);
+            const val = !!experimentConfig.grid[t.key];
+            if (m) m.checked = val;
+            if (d) d.checked = val;
+            
+            // Apply initial visibility
+            applyInterfaceVisibility(t.key, val);
+        });
+
+        // Initialize Hover State
+        const hoverEnabled = experimentConfig.grid.hoverEnabled !== false;
+        const hoverToggle = document.getElementById('gridHoverToggle');
+        if (hoverToggle) {
+            hoverToggle.checked = hoverEnabled;
+            // Apply initial state to DOM (manually call function logic without full sync)
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.boxShadow = hoverEnabled ? '' : 'none';
+                card.style.borderWidth = hoverEnabled ? '' : '1px';
+                card.style.borderColor = hoverEnabled ? '' : 'var(--border-color, #e0e0e0)';
+                card.style.margin = hoverEnabled ? '' : '0';
+                
+                if (hoverEnabled) {
+                    card.style.setProperty('--hover-border-width', experimentConfig.grid.hoverBorderWidth || '4px');
+                } else {
+                    card.style.setProperty('--hover-border-width', '0px');
+                }
+            });
+        }
+        
+        // Initialize Task Prompt and Notes
+        const taskPrompt = experimentConfig.grid.taskPrompt || '';
+        const taskPromptEl = document.getElementById('taskPromptField');
+        if (taskPromptEl) {
+            taskPromptEl.value = taskPrompt;
+            sessionData.taskPrompt = taskPrompt;
+            
+            // Apply to banner
+            const banner = document.getElementById('taskBanner');
+            if (taskPrompt && banner) {
+                banner.innerHTML = `📋 <strong>Task:</strong> ${taskPrompt}`;
+                banner.classList.add('active');
+            }
+        }
+        
+        const notes = experimentConfig.grid.notes || '';
+        const notesEl = document.getElementById('notesField');
+        if (notesEl) {
+            notesEl.value = notes;
+            sessionData.notes = notes;
+        }
         
         // Apply hover settings from config
         if (hbColorEl) {
@@ -3200,13 +3801,13 @@
         const max = experimentConfig.grid.maxItems || 20;
         const itemsToDisplay = items.slice(0, max);
 
-        itemsToDisplay.forEach(item => {
-            const card = createCard(item);
+        itemsToDisplay.forEach((item, index) => {
+            const card = createCard(item, index);
             container.appendChild(card);
         });
     }
 
-    function createCard(item) {
+    function createCard(item, index) {
         const card = document.createElement('div');
         const grid = experimentConfig.grid || {};
         const apiConfig = experimentConfig.api || {};
@@ -3215,6 +3816,21 @@
         const cardHeight = grid.cardHeight || 'medium';
         const cardStyle = grid.cardStyle || 'modern';
         card.className = `card ${cardHeight} ${cardStyle}`;
+
+        // Apply custom layout settings
+        if (grid.itemRadius) {
+            card.style.borderRadius = `${grid.itemRadius}px`;
+        }
+        if (grid.shadowStrength) {
+            const strength = grid.shadowStrength;
+            card.style.boxShadow = `0 4px 6px -1px rgba(0,0,0,${strength}), 0 2px 4px -1px rgba(0,0,0,${strength / 2})`;
+        }
+
+        // Add index debug overlay
+        const indexOverlay = document.createElement('div');
+        indexOverlay.className = 'card-index-debug';
+        indexOverlay.textContent = index + 1;
+        card.appendChild(indexOverlay);
 
         // Image
         if (grid.showImage) {
@@ -3596,6 +4212,12 @@
 
     function toggleGridHover() {
         const enabled = document.getElementById('gridHoverToggle').checked;
+        
+        // Persist to experimentConfig
+        if (experimentConfig && experimentConfig.grid) {
+            experimentConfig.grid.hoverEnabled = enabled;
+        }
+
         document.querySelectorAll('.card').forEach(card => {
             card.style.boxShadow = enabled ? '' : 'none';
             card.style.borderWidth = enabled ? '' : '1px';
@@ -3609,6 +4231,8 @@
                 card.style.setProperty('--hover-border-width', '0px');
             }
         });
+
+        syncWithManager();
     }
 
     // ========== CONFIGURATION ==========
@@ -3616,6 +4240,11 @@
     function updateTaskPrompt() {
         const prompt = document.getElementById('taskPromptField').value;
         sessionData.taskPrompt = prompt;
+
+        // Persist to experimentConfig
+        if (experimentConfig && experimentConfig.grid) {
+            experimentConfig.grid.taskPrompt = prompt;
+        }
 
         const banner = document.getElementById('taskBanner');
         if (prompt) {
@@ -3626,12 +4255,20 @@
         }
 
         logDebug('CONFIG', 'info', `Task prompt updated`);
+        syncWithManager();
     }
 
     function updateNotes() {
         const notes = document.getElementById('notesField').value;
         sessionData.notes = notes;
+
+        // Persist to experimentConfig
+        if (experimentConfig && experimentConfig.grid) {
+            experimentConfig.grid.notes = notes;
+        }
+
         logDebug('CONFIG', 'info', `Notes updated`);
+        syncWithManager();
     }
 
     // ========== SESSION END ==========
@@ -3910,12 +4547,25 @@ Generated by Voice Control Research Platform
             if (result) {
                 showToast('Configuration saved successfully', 'success');
                 logDebug('PERSISTENCE', 'info', 'Experiment configuration updated in database');
+                
+                // Notify manager window if open
+                syncWithManager();
             }
         } catch (err) {
             showToast('Failed to save configuration', 'error');
         } finally {
             btn.disabled = false;
             btn.innerHTML = originalText;
+        }
+    }
+
+    function syncWithManager() {
+        if (window.opener && !window.opener.closed) {
+            window.opener.postMessage({
+                type: 'VRP_CONFIG_UPDATED',
+                experimentId: experimentConfig.id,
+                config: JSON.parse(JSON.stringify(experimentConfig))
+            }, window.location.origin);
         }
     }
 
