@@ -1,0 +1,581 @@
+{
+  "count": 48,
+  "items": [
+    {
+      "id": "DD1399-105",
+      "title": "Nike Dunk High Retro",
+      "subtitle": "Men's Shoe",
+      "category": "Men's Shoe",
+      "description": "Created for the hardwood but taken to the streets, the '80s b-ball icon returns with perfectly sheened overlays and original university colors. With its classic hoops design, the Nike Dunk High Retro channels '80s vintage back onto the streets while its padded, high-top collar adds an old-school look rooted in comfort.",
+      "image": "/experiment_images/DD1399_105.png",
+      "tags": [
+        "White/Total Orange/Black",
+        "DD1399-105"
+      ]
+    },
+    {
+      "id": "247-impossiblysoft-mens-dri-fit-crew-X6qnrK",
+      "title": "Nike 24.7 ImpossiblySoft",
+      "subtitle": "Men's Dri-FIT Crew",
+      "category": "Men's Dri-FIT Crew",
+      "description": "",
+      "image": "/experiment_images/247_impossiblysoft_mens_dri_fit_crew_X6qnrK.png",
+      "tags": [
+        "Obsidian/Dark Obsidian",
+        "HQ6964-451"
+      ]
+    },
+    {
+      "id": "aaron-judge-new-york-yankees-mens-dri-fit-adv-9vgHpp",
+      "title": "Paul Goldschmidt New York Yankees",
+      "subtitle": "Men's Nike Dri-FIT ADV MLB Limited Jersey",
+      "category": "Men's Nike Dri-FIT ADV MLB Limited Jersey",
+      "description": "Designed with an authentic look, this Paul Goldschmidt Jersey is inspired by the uniforms your New York Yankees wear on the field. The sweat-wicking, double-knit mesh fabric helps deliver a breathable and comfortable feel all season.",
+      "image": "/experiment_images/aaron_judge_new_york_yankees_mens_dri_fit_adv_9vgHpp.png",
+      "tags": [
+        "Pitch Blue",
+        "LM25NKA1NK9-743"
+      ]
+    },
+    {
+      "id": "acg-phassad-mens-shoes-C77V0n",
+      "title": "Nike ACG Phassad",
+      "subtitle": "Men's Shoes",
+      "category": "Men's Shoes",
+      "description": "",
+      "image": "/experiment_images/acg_phassad_mens_shoes_C77V0n.png",
+      "tags": [
+        "Anthracite/Iron Grey/Black/Mink",
+        "HM7133-003"
+      ]
+    },
+    {
+      "id": "acg-x-united-states-olympic-team-mens-therma-fit-adv-jacket-U1aLINga",
+      "title": "Nike ACG x United States Olympic Team",
+      "subtitle": "Men's Therma-FIT ADV Jacket",
+      "category": "Men's Therma-FIT ADV Jacket",
+      "description": "This product is made with at least 75% recycled fibersRep Team USA on sport's biggest stage. Here's this jacket in a nutshell: Heat-regulating, water-repellent and lightweight. And when you don't need insulated warmth, fold it into the internal pocket for safekeeping.",
+      "image": "/experiment_images/acg_x_united_states_olympic_team_mens_therma_fit_adv_jacket_U1aLINga.png",
+      "tags": [
+        "Light Orewood Brown/Summit White/Obsidian/Chile Red",
+        "IO9789-177"
+      ]
+    },
+    {
+      "id": "aeroswift-womens-dri-fit-adv-mid-rise-3-brief-lined-running-shorts-SsbNQGKt",
+      "title": "Nike AeroSwift",
+      "subtitle": "Women's Dri-FIT ADV Mid-Rise 3\" Brief-Lined Running Shorts",
+      "category": "Women's Dri-FIT ADV Mid-Rise 3\" Brief-Lined Running Shorts",
+      "description": "",
+      "image": "/experiment_images/aeroswift_womens_dri_fit_adv_mid_rise_3_brief_lined_running_shorts_SsbNQGKt.png",
+      "tags": [
+        "Cyber/Black",
+        "FN2328-389"
+      ]
+    },
+    {
+      "id": "after-dark-tour-womens-loose-short-sleeve-t-shirt-NvMMsr",
+      "title": "Nike After Dark Tour",
+      "subtitle": "Women's Loose Short-Sleeve T-Shirt",
+      "category": "Women's Loose Short-Sleeve T-Shirt",
+      "description": "",
+      "image": "/experiment_images/after_dark_tour_womens_loose_short_sleeve_t_shirt_NvMMsr.png",
+      "tags": [
+        "Black",
+        "IF4053-010"
+      ]
+    },
+    {
+      "id": "air-max-dn8-womens-shoes-N94kjmSP",
+      "title": "Nike Air Max Dn8",
+      "subtitle": "Women's Shoes",
+      "category": "Women's Shoes",
+      "description": "The Dn8 takes our Dynamic Air system and condenses it into a sleek, low-profile package. Powered by eight pressurized Air tubes, it gives you a responsive sensation with every step. Enter an unreal experience of movement.",
+      "image": "/experiment_images/air_max_dn8_womens_shoes_N94kjmSP.png",
+      "tags": [
+        "Black/Anthracite/Black",
+        "IM0568-001"
+      ]
+    },
+    {
+      "id": "air-max-isla-womens-sandals-TSzfGq",
+      "title": "Nike Air Max Isla",
+      "subtitle": "Women's Sandals",
+      "category": "Women's Sandals",
+      "description": "Step up into cushioning and style with the Air Max Isla—it's like a luxury vacation for your feet. Padded, velvety straps and an Air Max unit work together to create the perfect balance of support and softness. And that chunky look? Not only does it give you extra height, but it elevates any outfit. Your comfiest shoes are now your platforms.",
+      "image": "/experiment_images/air_max_isla_womens_sandals_TSzfGq.png",
+      "tags": [
+        "Black/Sail",
+        "FJ5929-002"
+      ]
+    },
+    {
+      "id": "air-trainer-huarache-mens-shoes-RRWwxZ51",
+      "title": "Nike Air Trainer Huarache",
+      "subtitle": "Men's Shoes",
+      "category": "Men's Shoes",
+      "description": "The Nike Air Trainer Huarache steps you into that legendary Huarache fit, a foot-hugging design that uses a cushioned inner sleeve and midfoot strap for extra comfort and support. Rich in details, this silhouette mixes real and synthetic leather with rugged textiles to create a textured upper.",
+      "image": "/experiment_images/air_trainer_huarache_mens_shoes_RRWwxZ51.png",
+      "tags": [
+        "Challenge Red/Challenge Red/Challenge Red/Black",
+        "IQ0615-600"
+      ]
+    },
+    {
+      "id": "aura-travel-wallet-u5Gkjlgo",
+      "title": "Nike Aura",
+      "subtitle": "Travel Wallet",
+      "category": "Travel Wallet",
+      "description": "",
+      "image": "/experiment_images/aura_travel_wallet_u5Gkjlgo.png",
+      "tags": [
+        "Black",
+        "N1012371-013"
+      ]
+    },
+    {
+      "id": "calm-2-womens-slides-euqoC1d5",
+      "title": "Nike Calm 2.0",
+      "subtitle": "Women's Slides",
+      "category": "Women's Slides",
+      "description": "The Calm Slide 2.0 uses an extra-forgiving solar foam for ultimate comfort while updated outsole cutouts provide more flexibility than the original.",
+      "image": "/experiment_images/calm_2_womens_slides_euqoC1d5.png",
+      "tags": [
+        "Black/Black/Black",
+        "IB7561-001"
+      ]
+    },
+    {
+      "id": "calm-se-womens-mules-Q7wM1b",
+      "title": "Nike Calm SE",
+      "subtitle": "Women's Mules",
+      "category": "Women's Mules",
+      "description": "Made with soft yet responsive foam and blanketed in super cozy material, these versatile mules feature a minimal design that’s easy to wear. And the heel strap is both adjustable and removable to give you a personalized fit.",
+      "image": "/experiment_images/calm_se_womens_mules_Q7wM1b.png",
+      "tags": [
+        "Black/Black",
+        "FZ3119-001"
+      ]
+    },
+    {
+      "id": "calm-womens-slides-HGG3C4",
+      "title": "Nike Calm RealTree",
+      "subtitle": "Women's Slides",
+      "category": "Women's Slides",
+      "description": "Made with soft yet supportive foam, the minimal design features a RealTree print on the upper and is easy to style with or without socks. And they’ve got a textured footbed to help keep your feet in place.",
+      "image": "/experiment_images/calm_womens_slides_HGG3C4.png",
+      "tags": [
+        "Silt Red/Silt Red/Silt Red",
+        "IF5621-600"
+      ]
+    },
+    {
+      "id": "celso-girl-womens-slides-9AwYMr",
+      "title": "Nike Celso Girl",
+      "subtitle": "Women's Slides",
+      "category": "Women's Slides",
+      "description": "The Nike Celso Girl Slides offer soft cushioning and easy style. Its synthetic nubuck strap is plush and smooth, while a foam footbed offers comfort.",
+      "image": "/experiment_images/celso_girl_womens_slides_9AwYMr.png",
+      "tags": [
+        "Black/White",
+        "314870-011"
+      ]
+    },
+    {
+      "id": "charge-canvas-womens-shoes-RKTth4Tk",
+      "title": "Nike Charge Canvas",
+      "subtitle": "Women's Shoes",
+      "category": "Women's Shoes",
+      "description": "The Nike Charge pairs a low-top silhouette with flexible canvas for premium performance. A dual-density insole supports your feet and adds plenty of cushioning.",
+      "image": "/experiment_images/charge_canvas_womens_shoes_RKTth4Tk.png",
+      "tags": [
+        "Light Magenta/Silt Red/White",
+        "IM4398-500"
+      ]
+    },
+    {
+      "id": "cincinnati-bengals-sideline-team-issue-mens-dri-fit-t-shirt-bSFp77",
+      "title": "Cincinnati Bengals Sideline Team Issue",
+      "subtitle": "Men's Nike Dri-FIT NFL T-Shirt",
+      "category": "Men's Nike Dri-FIT NFL T-Shirt",
+      "description": "",
+      "image": "/experiment_images/cincinnati_bengals_sideline_team_issue_mens_dri_fit_t_shirt_bSFp77.png",
+      "tags": [
+        "Black",
+        "02ET00A9A-AR5"
+      ]
+    },
+    {
+      "id": "club-mens-joggers-UaoROJ9O",
+      "title": "Nike Club",
+      "subtitle": "Men's Joggers",
+      "category": "Men's Joggers",
+      "description": "",
+      "image": "/experiment_images/club_mens_joggers_UaoROJ9O.png",
+      "tags": [
+        "Court Blue/Court Blue/Light Khaki",
+        "FN3787-476"
+      ]
+    },
+    {
+      "id": "club-mens-open-hem-fleece-pants-AVWynput",
+      "title": "Nike Club",
+      "subtitle": "Men's Open-Hem Fleece Pants",
+      "category": "Men's Open-Hem Fleece Pants",
+      "description": "",
+      "image": "/experiment_images/club_mens_open_hem_fleece_pants_AVWynput.png",
+      "tags": [
+        "Obsidian/Obsidian/White",
+        "FN3730-451"
+      ]
+    },
+    {
+      "id": "cortez-leather-womens-shoes-07HlDB",
+      "title": "Nike Cortez Leather",
+      "subtitle": "Women's Shoes",
+      "category": "Women's Shoes",
+      "description": "",
+      "image": "/experiment_images/cortez_leather_womens_shoes_07HlDB.png",
+      "tags": [
+        "Black/Gum Light Brown/White",
+        "HQ1841-002"
+      ]
+    },
+    {
+      "id": "cortez-textile-mens-shoes-Tlm9kW",
+      "title": "Nike Cortez Textile",
+      "subtitle": "Men's Shoes",
+      "category": "Men's Shoes",
+      "description": "",
+      "image": "/experiment_images/cortez_textile_mens_shoes_Tlm9kW.png",
+      "tags": [
+        "Dark Hazel/Sail/Volt Tint",
+        "HF0263-201"
+      ]
+    },
+    {
+      "id": "detroit-lions-wide-receiver-jersey-fashion-womens-dri-fit-cropped-top-J3YJh2Sq",
+      "title": "Detroit Lions Wide Receiver Jersey Fashion",
+      "subtitle": "Women's Nike Dri-FIT NFL Cropped Top",
+      "category": "Women's Nike Dri-FIT NFL Cropped Top",
+      "description": "The Wide Receiver Jersey Fashion Top provides a trendy show of Detroit Lions support with a cropped design and bold team graphics. Its polyester fabric is enhanced with sweat-wicking technology to help deliver added comfort.",
+      "image": "/experiment_images/detroit_lions_wide_receiver_jersey_fashion_womens_dri_fit_cropped_top_J3YJh2Sq.png",
+      "tags": [
+        "Black",
+        "03O300A9J-5HX"
+      ]
+    },
+    {
+      "id": "diamond-duffel-bag-72l-bL5mCt",
+      "title": "Nike Diamond",
+      "subtitle": "Duffel Bag (72L)",
+      "category": "Duffel Bag (72L)",
+      "description": "The bag's lock-in zippered pocket features sleeves that securely hold up to two bats, while the main compartment is ideal for your gear and personal essentials.",
+      "image": "/experiment_images/diamond_duffel_bag_72l_bL5mCt.png",
+      "tags": [
+        "Black",
+        "N1012175-091"
+      ]
+    },
+    {
+      "id": "doug-williams-washington-commanders-womens-DETZC60A",
+      "title": "Doug Williams Washington Commanders",
+      "subtitle": "Women’s Nike NFL Game Jersey",
+      "category": "Women’s Nike NFL Game Jersey",
+      "description": "",
+      "image": "/experiment_images/doug_williams_washington_commanders_womens_DETZC60A.png",
+      "tags": [
+        "White",
+        "67NW0G7GW6X-0Z0"
+      ]
+    },
+    {
+      "id": "dri-fit-womens-t-shirt-dM375qq5",
+      "title": "Nike Dri-FIT",
+      "subtitle": "Women's T-Shirt",
+      "category": "Women's T-Shirt",
+      "description": "",
+      "image": "/experiment_images/dri_fit_womens_t_shirt_dM375qq5.png",
+      "tags": [
+        "Midnight Navy/White",
+        "DX0687-410"
+      ]
+    },
+    {
+      "id": "duke-courtside-basketball-practice-mens-dri-fit-pullover-hoodie-igXnS93P",
+      "title": "Duke Courtside Basketball Practice",
+      "subtitle": "Men's Nike Dri-FIT Pullover Hoodie",
+      "category": "Men's Nike Dri-FIT Pullover Hoodie",
+      "description": "",
+      "image": "/experiment_images/duke_courtside_basketball_practice_mens_dri_fit_pullover_hoodie_igXnS93P.png",
+      "tags": [
+        "Dark Grey Heather",
+        "04EJ018NDU-REJ"
+      ]
+    },
+    {
+      "id": "dunk-low-womens-shoes-ktc1HMbt",
+      "title": "Nike Dunk Low LX",
+      "subtitle": "Women's Shoes",
+      "category": "Women's Shoes",
+      "description": "",
+      "image": "/experiment_images/dunk_low_womens_shoes_ktc1HMbt.png",
+      "tags": [
+        "Photon Dust/Pink Foam/Medium Soft Pink/Metallic Silver",
+        "HM3698-006"
+      ]
+    },
+    {
+      "id": "everyone-watches-womens-sports-by-togethxr-t-shirt-74akkKAX",
+      "title": "Everyone Watches Women's Sports™",
+      "subtitle": "Nike by TOGETHXR T-Shirt",
+      "category": "Nike by TOGETHXR T-Shirt",
+      "description": "Made in collaboration with TOGETHXR, the roomy cotton tee is built for lasting comfort. Soft heavyweight cotton provides a structured feel.",
+      "image": "/experiment_images/everyone_watches_womens_sports_by_togethxr_t_shirt_74akkKAX.png",
+      "tags": [
+        "Sail",
+        "IM0560-133"
+      ]
+    },
+    {
+      "id": "fashion-indianapolis-colts-womens-t-shirt-bGCPb5",
+      "title": "Indianapolis Colts Script",
+      "subtitle": "Women's Nike NFL T-Shirt",
+      "category": "Women's Nike NFL T-Shirt",
+      "description": "Made with soft tri-blend material, this Indianapolis Colts Script T-Shirt features a heathered design that accentuates the team details to help you comfortably support your favorite NFL squad.",
+      "image": "/experiment_images/fashion_indianapolis_colts_womens_t_shirt_bGCPb5.png",
+      "tags": [
+        "Royal",
+        "NKMVEX4998-EVH"
+      ]
+    },
+    {
+      "id": "fc-barcelona-2025-26-stadium-third-womens-dri-fit-total-90-soccer-replica-jersey-SpJ8WN",
+      "title": "FC Barcelona 2025/26 Stadium Third",
+      "subtitle": "Women's Nike Dri-FIT Total 90 Soccer Replica Jersey",
+      "category": "Women's Nike Dri-FIT Total 90 Soccer Replica Jersey",
+      "description": "",
+      "image": "/experiment_images/fc_barcelona_2025_26_stadium_third_womens_dri_fit_total_90_soccer_replica_jersey_SpJ8WN.png",
+      "tags": [
+        "Bright Mango/Midnight Navy/Midnight Navy",
+        "HM3240-855"
+      ]
+    },
+    {
+      "id": "form-mens-dri-fit-5-unlined-versatile-shorts-7gZxEe00",
+      "title": "Nike Form",
+      "subtitle": "Men's Dri-FIT 5\" Unlined Versatile Shorts",
+      "category": "Men's Dri-FIT 5\" Unlined Versatile Shorts",
+      "description": "Designed for running, training and yoga, the versatile Form shorts are built to handle those days when you need to shake up your exercise routine. With a 5\" inseam and smooth, sweat-wicking fabric, these shorts are designed to keep up with your moves—from PR dead lifts to hot yoga classes.",
+      "image": "/experiment_images/form_mens_dri_fit_5_unlined_versatile_shorts_7gZxEe00.png",
+      "tags": [
+        "Desert Khaki/Black",
+        "FN4347-251"
+      ]
+    },
+    {
+      "id": "gamma-force-womens-shoes-4TR9Xf",
+      "title": "Nike Gamma Force",
+      "subtitle": "Women's Shoes",
+      "category": "Women's Shoes",
+      "description": "The Gamma Force is forging its own legacy: court style that can be worn all day, wherever you go.",
+      "image": "/experiment_images/gamma_force_womens_shoes_4TR9Xf.png",
+      "tags": [
+        "White/Summit White/Iron Grey/Black",
+        "DX9176-100"
+      ]
+    },
+    {
+      "id": "gato-big-kids-shoes-PPob8uw4",
+      "title": "Nike Gato",
+      "subtitle": "Little Kids' Shoes",
+      "category": "Little Kids' Shoes",
+      "description": "The Nike Gato is made from 100% football DNA. Take the pitch and the playground with a hexagonal outsole that mirrors the pattern of a soccer ball. Stay fast and tight with a low-profile design that pairs with any outfit you throw on. And with durable materials and premium vamp stitching across the upper, you wear them in, not out.",
+      "image": "/experiment_images/gato_big_kids_shoes_PPob8uw4.png",
+      "tags": [
+        "Peony/Pink Foam/Tattoo/White",
+        "IM2208-600"
+      ]
+    },
+    {
+      "id": "gato-lv8-big-kids-shoes-TB7vcagQ",
+      "title": "Nike Gato LV8",
+      "subtitle": "Big Kids' Shoes",
+      "category": "Big Kids' Shoes",
+      "description": "",
+      "image": "/experiment_images/gato_lv8_big_kids_shoes_TB7vcagQ.png",
+      "tags": [
+        "Metallic Silver/White/Gum Light Brown/Metallic Silver",
+        "II7084-001"
+      ]
+    },
+    {
+      "id": "houston-club-fleece-menshoodie-4PcQkV",
+      "title": "Houston Club Fleece",
+      "subtitle": "Men's Nike College Hoodie",
+      "category": "Men's Nike College Hoodie",
+      "description": "",
+      "image": "/experiment_images/houston_club_fleece_menshoodie_4PcQkV.png",
+      "tags": [
+        "Black",
+        "M31777P738-HOU"
+      ]
+    },
+    {
+      "id": "jalen-hurts-womens-fleece-hoodie-6XyHLf49",
+      "title": "Jalen Hurts",
+      "subtitle": "Women's Fleece Hoodie",
+      "category": "Women's Fleece Hoodie",
+      "description": "",
+      "image": "/experiment_images/jalen_hurts_womens_fleece_hoodie_6XyHLf49.png",
+      "tags": [
+        "Kelly Green",
+        "IQ6006-366"
+      ]
+    },
+    {
+      "id": "jordan-air-rev-golf-shoes-hJ9qptJV",
+      "title": "Jordan Air Rev",
+      "subtitle": "Golf Shoes",
+      "category": "Golf Shoes",
+      "description": "",
+      "image": "/experiment_images/jordan_air_rev_golf_shoes_hJ9qptJV.png",
+      "tags": [
+        "White/Black",
+        "FV6338-103"
+      ]
+    },
+    {
+      "id": "jordan-championship-basketball-LQQVHZ",
+      "title": "Jordan Championship",
+      "subtitle": "Basketball",
+      "category": "Basketball",
+      "description": "It's the championship game, and you've worked all season to get here. You step back and shoot the game-winning basket. Grab the eight-panel ball built with diamond-textured inlaid channels and nonslip logos to handle the pressure when you need it to the most.",
+      "image": "/experiment_images/jordan_championship_basketball_LQQVHZ.png",
+      "tags": [
+        "Amber/Black",
+        "J1006745-891"
+      ]
+    },
+    {
+      "id": "jordan-city-mens-boots-g7QUj8YW",
+      "title": "Jordan City",
+      "subtitle": "Men's Boots",
+      "category": "Men's Boots",
+      "description": "",
+      "image": "/experiment_images/jordan_city_mens_boots_g7QUj8YW.png",
+      "tags": [
+        "Black/Cool Grey",
+        "HV4580-001"
+      ]
+    },
+    {
+      "id": "jordan-essentials-mens-woven-pants-bGB2evBx",
+      "title": "Jordan Essentials",
+      "subtitle": "Men's Woven Pants",
+      "category": "Men's Woven Pants",
+      "description": "",
+      "image": "/experiment_images/jordan_essentials_mens_woven_pants_bGB2evBx.png",
+      "tags": [
+        "Black/Anthracite",
+        "HF9329-010"
+      ]
+    },
+    {
+      "id": "kobe-mens-pullover-basketball-hoodie-EM4OLuAQ",
+      "title": "Kobe",
+      "subtitle": "Men's Pullover Basketball Hoodie",
+      "category": "Men's Pullover Basketball Hoodie",
+      "description": "",
+      "image": "/experiment_images/kobe_mens_pullover_basketball_hoodie_EM4OLuAQ.png",
+      "tags": [
+        "Black/White",
+        "IB7087-010"
+      ]
+    },
+    {
+      "id": "kobe-mens-tech-fleece-joggers-lKjmb7",
+      "title": "Kobe",
+      "subtitle": "Men's Tech Fleece Joggers",
+      "category": "Men's Tech Fleece Joggers",
+      "description": "",
+      "image": "/experiment_images/kobe_mens_tech_fleece_joggers_lKjmb7.png",
+      "tags": [
+        "Black/White",
+        "IB2716-010"
+      ]
+    },
+    {
+      "id": "life-mens-carpenter-pants-nZ3xPv",
+      "title": "Nike Life",
+      "subtitle": "Men's Carpenter Pants",
+      "category": "Men's Carpenter Pants",
+      "description": "",
+      "image": "/experiment_images/life_mens_carpenter_pants_nZ3xPv.png",
+      "tags": [
+        "Parachute Beige/Desert Khaki/Parachute Beige",
+        "HJ8478-297"
+      ]
+    },
+    {
+      "id": "mind-001-womens-pregame-mules-M5KUVpBx",
+      "title": "Nike Mind 001",
+      "subtitle": "Women's Pregame Mules",
+      "category": "Women's Pregame Mules",
+      "description": "",
+      "image": "/experiment_images/mind_001_womens_pregame_mules_M5KUVpBx.png",
+      "tags": [
+        "Sail/Hyper Crimson/Black/Chrome",
+        "HQ4309-100"
+      ]
+    },
+    {
+      "id": "nikeskims-matte-womens-double-strap-scoop-tank-top-FuDG9q0I",
+      "title": "NikeSKIMS Matte",
+      "subtitle": "Women's Double-Strap Scoop Tank Top",
+      "category": "Women's Double-Strap Scoop Tank Top",
+      "description": "Made with our sculpting Matte fabric, this scoop-neck tank features double straps and a built-in shelf bra for light support. We added our sweat-wicking Dri-FIT technology to make it a studio essential you can wear anywhere.",
+      "image": "/experiment_images/nikeskims_matte_womens_double_strap_scoop_tank_top_FuDG9q0I.png",
+      "tags": [
+        "NSKM Himalayan",
+        "TPTNK10540W-HIM"
+      ]
+    },
+    {
+      "id": "nikeskims-shine-womens-triangle-bra-i5gFobFr",
+      "title": "NikeSKIMS Shine",
+      "subtitle": "Women's Triangle Bra",
+      "category": "Women's Triangle Bra",
+      "description": "Designed to feel luxuriously light, our quick-drying Shine fabric gives this triangle bra a sleek look with subtle shine. Offering light support, it features adjustable straps and lightly molded, built-in pads for coverage and support.",
+      "image": "/experiment_images/nikeskims_shine_womens_triangle_bra_i5gFobFr.png",
+      "tags": [
+        "NSKM NAVY",
+        "BRSPT7842W-NVY"
+      ]
+    },
+    {
+      "id": "one-classic-womens-dri-fit-short-sleeve-top-plus-size-kSeuckXX",
+      "title": "Nike One Classic",
+      "subtitle": "Women's Dri-FIT Short-Sleeve Top",
+      "category": "Women's Dri-FIT Short-Sleeve Top",
+      "description": "The curved hem and elegant seam lines throughout the design keep the look sleek, so you can wear it as the first layer—or the only layer.Stay DryNike Dri-FIT technology moves sweat away from your skin for quicker evaporation, helping you stay dry and comfortable through all your activities.Product Details89% polyester/11% spandexMachine washImportedReflective logo at center chestNot intended for use as Personal Protective Equipment (PPE)This product provides UVA and UVB protection from the sun only in the areas covered by the garment. To protect exposed areas, the use of good quality sunscreen is recommended.",
+      "image": "/experiment_images/one_classic_womens_dri_fit_short_sleeve_top_plus_size_kSeuckXX.png",
+      "tags": [
+        "Midnight Navy/White",
+        "FN2798-410"
+      ]
+    },
+    {
+      "id": "oregon-tech-fleece-menspullover-crew-7gpTDNyb",
+      "title": "Oregon Tech Fleece",
+      "subtitle": "Men's Nike College Pullover Crew",
+      "category": "Men's Nike College Pullover Crew",
+      "description": "",
+      "image": "/experiment_images/oregon_tech_fleece_menspullover_crew_7gpTDNyb.png",
+      "tags": [
+        "Black",
+        "05L6912ZUON-6DU"
+      ]
+    }
+  ]
+}

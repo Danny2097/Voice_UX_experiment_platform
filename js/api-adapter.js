@@ -73,7 +73,10 @@ class ApiAdapter {
   buildUrl(query = null, page = 1) {
     let baseUrl = window.location.origin;
     
-    if (window.location.port === '8080') {
+    // If endpoint is relative, use origin
+    if (this.config.endpoint.startsWith('/')) {
+        baseUrl = window.location.origin;
+    } else if (window.location.port === '8080') {
       if (this.config.endpoint.startsWith('/api')) {
         baseUrl = window.location.protocol + '//' + window.location.hostname + ':3002';
       } else if (this.config.endpoint.startsWith('/local-api') || this.config.endpoint.startsWith('/clothing-api')) {
@@ -113,11 +116,11 @@ class ApiAdapter {
   mapItem(rawItem) {
     const mapping = this.config.mapping;
     let item = {
-      id: resolvePath(rawItem, mapping.id),
+      id: resolvePath(rawItem, mapping.id || 'id'),
       title: resolvePath(rawItem, mapping.title),
       subtitle: resolvePath(rawItem, mapping.subtitle),
       description: resolvePath(rawItem, mapping.description),
-      imageUrl: resolvePath(rawItem, mapping.imageUrl),
+      imageUrl: resolvePath(rawItem, mapping.imageUrl || mapping.image),
       tags: resolvePath(rawItem, mapping.tags),
       raw: rawItem,
     };

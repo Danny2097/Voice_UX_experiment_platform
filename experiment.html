@@ -1041,7 +1041,6 @@
         }
         .card.classic:hover {
             background: #f9f9f9;
-            border-color: var(--primary, #007bff);
         }
 
         /* Minimal */
@@ -1064,7 +1063,6 @@
         }
         .card.glass:hover {
             background: rgba(255, 255, 255, 0.8);
-            transform: scale(1.02);
         }
 
         /* Elevated */
@@ -1074,8 +1072,6 @@
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
         .card.elevated:hover {
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            transform: translateY(-8px);
         }
 
         /* Neumorphic */
@@ -1087,7 +1083,6 @@
         }
         .card.neumorphic:hover {
             box-shadow: inset 7px 7px 15px #cbcbcb, inset -7px -7px 15px #ffffff;
-            transform: none;
         }
 
         /* Brutalist */
@@ -1098,8 +1093,6 @@
             background: #fff;
         }
         .card.brutalist:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 10px 10px 0px #000;
         }
 
         /* Etsy Style */
@@ -1148,9 +1141,6 @@
             border: none;
         }
         .card.etsy:hover {
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-            border-color: #ccc;
-            transform: none;
         }
 
         /* Polaroid */
@@ -1189,9 +1179,6 @@
             transition: all 250ms ease;
         }
         .card.nike:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            border-color: #111;
-            transform: translateY(-2px);
         }
         .card.nike .card-image, 
         .card.nike .card-placeholder {
@@ -1278,7 +1265,7 @@
         .card.dark .card-title { color: #f9fafb; }
         .card.dark .card-subtitle { color: #9ca3af; }
         .card.dark .card-tag { background: #374151; color: #d1d5db; }
-        .card.dark:hover { border-color: #6366f1; background: #111827; }
+        .card.dark:hover { background: #111827; }
 
         /* Horizontal Layout */
         .card.horizontal {
@@ -1296,10 +1283,17 @@
             color: inherit !important;
         }
 
+        :root {
+            --hover-border-color: #4f6ef7;
+            --hover-border-width: 4px;
+        }
+
         .card:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            border-color: var(--primary, #007bff);
-            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+            border: var(--hover-border-width) solid var(--hover-border-color) !important;
+            margin: calc(var(--hover-border-width) * -0.5); /* Adaptive offset */
+            transform: translateY(-6px);
+            z-index: 5;
         }
 
         .card.inactive:hover {
@@ -2000,6 +1994,11 @@
         </div>
 
         <div class="header-right">
+            <div class="header-actions" style="display: flex; gap: 8px; margin-right: 4px;">
+                <button id="headerMicBtn" class="btn btn-secondary btn-sm" style="height: 28px; white-space: nowrap; min-width: 140px;">🎙️ Enable Microphone</button>
+                <button id="headerRecBtn" class="btn btn-secondary btn-sm" style="height: 28px; white-space: nowrap; min-width: 130px;">⏺ Start Recording</button>
+                <button id="headerEndSessionBtn" class="end-session-btn" style="height: 28px; padding: 0 12px; margin-left: 4px;">🛑 End Session</button>
+            </div>
             <div id="currentUserDisplay"></div>
             <div class="researcher-dropdown" id="researcherDropdown">
                 <button class="researcher-toggle-btn" id="researcherToggleBtn" title="Researcher Controls">☰</button>
@@ -2161,7 +2160,23 @@
                                         <option value="polaroid">Polaroid</option>
                                         <option value="dark">Dark Mode</option>
                                         <option value="horizontal">Horizontal</option>
-                                    </select>                                </div>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-top:0.75rem; display: flex; gap: 10px; align-items: flex-end;">
+                                    <div style="flex: 1;">
+                                        <label class="textarea-label">Hover Border Color</label>
+                                        <input type="color" id="hoverBorderColor" value="#4f6ef7" style="width: 100%; height: 38px; padding: 4px; border: 1px solid #e2e6ed; border-radius: 6px; background: white; cursor: pointer;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label class="textarea-label">Hover Thickness</label>
+                                        <select class="log-level-select" id="hoverBorderWidth">
+                                            <option value="2px">Thin (2px)</option>
+                                            <option value="4px" selected>Medium (4px)</option>
+                                            <option value="6px">Thick (6px)</option>
+                                            <option value="8px">Extra Thick (8px)</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -2499,6 +2514,13 @@
             } else {
                 console.warn('SpeechRecognition not supported in this browser');
                 logDebug('SPEECH', 'warn', 'Not supported in this browser');
+                const micBtn = document.getElementById('headerMicBtn');
+                if (micBtn) {
+                    micBtn.disabled = true;
+                    micBtn.title = 'Speech recognition not supported in this browser';
+                    micBtn.style.opacity = '0.5';
+                    micBtn.style.cursor = 'not-allowed';
+                }
             }
 
             logDebug('APP', 'info', `Experiment initialized: ${expId}`);
@@ -2532,13 +2554,24 @@
         // Session controls
         document.getElementById('backBtn').addEventListener('click', promptEndSession);
         document.getElementById('endSessionBtn').addEventListener('click', promptEndSession);
+        document.getElementById('headerEndSessionBtn').addEventListener('click', promptEndSession);
 
         // Microphone
         document.getElementById('micToggle').addEventListener('change', toggleMicrophone);
+        document.getElementById('headerMicBtn').addEventListener('click', () => {
+            const toggle = document.getElementById('micToggle');
+            toggle.checked = !toggle.checked;
+            toggleMicrophone();
+        });
         document.getElementById('sensitivitySlider').addEventListener('input', updateSensitivity);
 
         // Recording
         document.getElementById('recordingToggle').addEventListener('change', toggleRecording);
+        document.getElementById('headerRecBtn').addEventListener('click', () => {
+            const toggle = document.getElementById('recordingToggle');
+            toggle.checked = !toggle.checked;
+            toggleRecording();
+        });
         document.getElementById('logLevelSelect').addEventListener('change', function() {
             logDebug('CONFIG', 'info', `Log level changed to: ${this.value}`);
         });
@@ -2598,6 +2631,20 @@
             experimentConfig.grid.cardStyle = e.target.value;
             renderCurrentItems();
             logDebug('LAYOUT', 'info', `Visual style changed to ${e.target.value}`);
+        });
+
+        document.getElementById('hoverBorderColor').addEventListener('input', (e) => {
+            const color = e.target.value;
+            experimentConfig.grid.hoverBorderColor = color;
+            document.documentElement.style.setProperty('--hover-border-color', color);
+            logDebug('LAYOUT', 'info', `Hover border color changed to ${color}`);
+        });
+
+        document.getElementById('hoverBorderWidth').addEventListener('change', (e) => {
+            const width = e.target.value;
+            experimentConfig.grid.hoverBorderWidth = width;
+            document.documentElement.style.setProperty('--hover-border-width', width);
+            logDebug('LAYOUT', 'info', `Hover border thickness changed to ${width}`);
         });
     }
 
@@ -2713,6 +2760,8 @@
         const hEl = document.getElementById('runnerCardHeight');
         const sEl = document.getElementById('runnerCardStyle');
         const oEl = document.getElementById('runnerGridOverlayStyle');
+        const hbColorEl = document.getElementById('hoverBorderColor');
+        const hbWidthEl = document.getElementById('hoverBorderWidth');
 
         if (colEl) colEl.value = gridColumns;
         if (rowEl) rowEl.value = experimentConfig.grid.rows || 4;
@@ -2720,6 +2769,19 @@
         if (hEl) hEl.value = experimentConfig.grid.cardHeight || 'medium';
         if (sEl) sEl.value = experimentConfig.grid.cardStyle || 'modern';
         if (oEl) oEl.value = experimentConfig.grid.gridOverlayStyle || 'lines';
+        
+        // Apply hover settings from config
+        if (hbColorEl) {
+            const color = experimentConfig.grid.hoverBorderColor || '#4f6ef7';
+            hbColorEl.value = color;
+            document.documentElement.style.setProperty('--hover-border-color', color);
+        }
+        if (hbWidthEl) {
+            const width = experimentConfig.grid.hoverBorderWidth || '4px';
+            hbWidthEl.value = width;
+            document.documentElement.style.setProperty('--hover-border-width', width);
+        }
+
         // Show search if configured (respecting mode)
         const isActionMode = !experimentConfig.mode || experimentConfig.mode === 'action_transcript';
         const showSearch = experimentConfig.grid.showSearch !== false; // Default true
@@ -2758,9 +2820,18 @@
 
     async function toggleMicrophone() {
         micEnabled = document.getElementById('micToggle').checked;
+        const headerMicBtn = document.getElementById('headerMicBtn');
 
         if (micEnabled) {
             logDebug('MIC', 'info', 'Starting microphone services...');
+            
+            // Update header button
+            if (headerMicBtn) {
+                headerMicBtn.textContent = '🎙️ Disable Microphone';
+                headerMicBtn.style.background = '#4f6ef7';
+                headerMicBtn.style.borderColor = '#4f6ef7';
+                headerMicBtn.style.color = 'white';
+            }
             
             // 1. Check for secure context
             if (!window.isSecureContext) {
@@ -2768,6 +2839,12 @@
                 logDebug('MIC', 'error', 'Not a secure context');
                 document.getElementById('micToggle').checked = false;
                 micEnabled = false;
+                if (headerMicBtn) {
+                    headerMicBtn.textContent = '🎙️ Enable Microphone';
+                    headerMicBtn.style.background = '';
+                    headerMicBtn.style.borderColor = '';
+                    headerMicBtn.style.color = '';
+                }
                 return;
             }
 
@@ -2824,6 +2901,13 @@
                 document.getElementById('micToggle').checked = false;
                 micEnabled = false;
                 
+                if (headerMicBtn) {
+                    headerMicBtn.textContent = '🎙️ Enable Microphone';
+                    headerMicBtn.style.background = '';
+                    headerMicBtn.style.borderColor = '';
+                    headerMicBtn.style.color = '';
+                }
+                
                 if (recognition) try { recognition.stop(); } catch(e) {}
             }
         } else {
@@ -2844,6 +2928,14 @@
 
             document.getElementById('waveformContainer').style.display = 'none';
             document.getElementById('waveformContainer').classList.remove('active');
+            
+            const headerMicBtn = document.getElementById('headerMicBtn');
+            if (headerMicBtn) {
+                headerMicBtn.textContent = '🎙️ Enable Microphone';
+                headerMicBtn.style.background = '';
+                headerMicBtn.style.borderColor = '';
+                headerMicBtn.style.color = '';
+            }
             
             logEvent('mic_off', {});
             logDebug('MIC', 'info', 'Services stopped');
@@ -2933,11 +3025,20 @@
 
     function toggleRecording() {
         isRecording = document.getElementById('recordingToggle').checked;
+        const headerRecBtn = document.getElementById('headerRecBtn');
 
         if (isRecording) {
             recordingStartTime = new Date();
             document.getElementById('recordingDot').classList.add('active');
             document.getElementById('recordingStatus').textContent = '● REC';
+            
+            if (headerRecBtn) {
+                headerRecBtn.textContent = '🛑 Stop Recording';
+                headerRecBtn.style.background = '#ef4444';
+                headerRecBtn.style.borderColor = '#ef4444';
+                headerRecBtn.style.color = 'white';
+            }
+            
             logEvent('recording_on', {});
             logDebug('REC', 'info', 'Recording started');
             updateRecordingTimer();
@@ -2945,6 +3046,14 @@
             document.getElementById('recordingDot').classList.remove('active');
             document.getElementById('recordingStatus').textContent = 'Session active — not recording';
             document.getElementById('recordingTimer').textContent = '';
+            
+            if (headerRecBtn) {
+                headerRecBtn.textContent = '⏺ Start Recording';
+                headerRecBtn.style.background = '';
+                headerRecBtn.style.borderColor = '';
+                headerRecBtn.style.color = '';
+            }
+            
             logEvent('recording_off', {});
             logDebug('REC', 'info', 'Recording stopped');
         }
@@ -3100,7 +3209,8 @@
     function createCard(item) {
         const card = document.createElement('div');
         const grid = experimentConfig.grid || {};
-        const mapping = experimentConfig.api.mapping || {};
+        const apiConfig = experimentConfig.api || {};
+        const mapping = apiConfig.mapping || {};
         
         const cardHeight = grid.cardHeight || 'medium';
         const cardStyle = grid.cardStyle || 'modern';
@@ -3108,12 +3218,21 @@
 
         // Image
         if (grid.showImage) {
-            const imageUrl = getNestedValue(item, mapping.imageUrl);
-            if (imageUrl) {
+            // Try mapping first, then common field names
+            let imageUrl = getNestedValue(item, mapping.imageUrl);
+            
+            // Fallbacks for common image field names
+            if (!imageUrl || typeof imageUrl !== 'string') {
+                imageUrl = item.image || item.imageUrl || item.img || item.photo || item.link;
+            }
+
+            if (imageUrl && typeof imageUrl === 'string') {
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.className = 'card-image';
                 img.onerror = () => {
+                    console.warn(`[Runner] Failed to load image: ${imageUrl}`);
+                    logDebug('API', 'warn', `Image failed to load: ${imageUrl}`);
                     img.style.display = 'none';
                     const placeholder = document.createElement('div');
                     placeholder.className = 'card-placeholder';
@@ -3136,19 +3255,21 @@
         if (grid.showTitle) {
             const title = document.createElement('h3');
             title.className = 'card-title';
-            title.textContent = getNestedValue(item, mapping.title) || 'Untitled';
+            const titleVal = getNestedValue(item, mapping.title) || item.title || item._primaryTitle || 'Untitled';
+            title.textContent = titleVal;
             content.appendChild(title);
         }
 
         if (grid.showSubtitle) {
             const subtitle = document.createElement('p');
             subtitle.className = 'card-subtitle';
-            subtitle.textContent = getNestedValue(item, mapping.subtitle) || '';
+            const subVal = getNestedValue(item, mapping.subtitle) || item.subtitle || item.artistDisplayName || '';
+            subtitle.textContent = subVal;
             content.appendChild(subtitle);
         }
 
         if (grid.showTags) {
-            const tags = getNestedValue(item, mapping.tags);
+            const tags = getNestedValue(item, mapping.tags) || item.tags || item.category || item.type;
             if (tags) {
                 const tagsContainer = document.createElement('div');
                 tagsContainer.className = 'card-tags';
@@ -3165,7 +3286,8 @@
         if (grid.showDescription) {
             const desc = document.createElement('p');
             desc.className = 'card-description';
-            desc.textContent = getNestedValue(item, mapping.description) || '';
+            const descVal = getNestedValue(item, mapping.description) || item.description || item.objectName || '';
+            desc.textContent = descVal;
             content.appendChild(desc);
         }
 
@@ -3176,11 +3298,12 @@
         
         if (isActionMode) {
             card.addEventListener('click', () => {
+                const itemId = getNestedValue(item, mapping.id) || item.id || item.systemNumber || 'unknown';
                 logEvent('card_click', {
-                    itemId: getNestedValue(item, mapping.id) || 'unknown',
+                    itemId: itemId,
                     durationSinceStart: new Date() - sessionStartTime
                 });
-                logDebug('INTERACTION', 'event', `Card clicked: ${getNestedValue(item, mapping.id) || 'unknown'}`);
+                logDebug('INTERACTION', 'event', `Card clicked: ${itemId}`);
             });
         } else {
             card.classList.add('inactive');
@@ -3475,6 +3598,16 @@
         const enabled = document.getElementById('gridHoverToggle').checked;
         document.querySelectorAll('.card').forEach(card => {
             card.style.boxShadow = enabled ? '' : 'none';
+            card.style.borderWidth = enabled ? '' : '1px';
+            card.style.borderColor = enabled ? '' : 'var(--border-color, #e0e0e0)';
+            card.style.margin = enabled ? '' : '0';
+            
+            // Apply current thickness if enabled, else reset
+            if (enabled) {
+                card.style.setProperty('--hover-border-width', document.getElementById('hoverBorderWidth').value);
+            } else {
+                card.style.setProperty('--hover-border-width', '0px');
+            }
         });
     }
 

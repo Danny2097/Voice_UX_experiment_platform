@@ -2124,8 +2124,8 @@
                         <button class="tab-button ${state.currentTab === 'pis' ? 'active' : ''}" data-tab="pis">PIS</button>
                         <button class="tab-button ${state.currentTab === 'grid-layout' ? 'active' : ''}" data-tab="grid-layout">Layout</button>
                         <button class="tab-button ${state.currentTab === 'api' ? 'active' : ''}" data-tab="api">API Source</button>
-                        <button class="tab-button ${state.currentTab === 'participants' ? 'active' : ''}" data-tab="participants">Participants</button>
-                        <button class="tab-button ${state.currentTab === 'export' ? 'active' : ''}" data-tab="export">Export</button>
+                        <button class="tab-button ${state.currentTab === 'local-data' ? 'active' : ''}" data-tab="local-data">Local Data</button>
+                        <button class="tab-button ${state.currentTab === 'participants' ? 'active' : ''}" data-tab="participants">Participants</button>                        <button class="tab-button ${state.currentTab === 'export' ? 'active' : ''}" data-tab="export">Export</button>
                         <button class="tab-button ${state.currentTab === 'run' ? 'active' : ''}" data-tab="run">Run</button>
                     </div>
 
@@ -2513,8 +2513,43 @@
                         <div id="testResult"></div>
                     </div>
 
-                    <!-- TAB: RUN -->
-                    <div class="tab-content ${state.currentTab === 'run' ? 'active' : ''}" id="tab-run">
+                    <!-- TAB: LOCAL DATA -->
+                    <div class="tab-content ${state.currentTab === 'local-data' ? 'active' : ''}" id="tab-local-data">
+                       <div class="form-section">
+                           <div class="form-section-title">Import Local Datasets</div>
+                           <p class="form-hint" style="margin-bottom: 1rem;">
+                               Upload a CSV file to create a private API source served by the local REST API.
+                           </p>
+
+                           <div style="background: white; border: 1px solid #e2e6ed; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                               <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                                   <div style="flex: 1;">
+                                       <label class="form-label">1. Download Template</label>
+                                       <p class="form-hint">Get the correctly formatted CSV structure.</p>
+                                       <a href="/api/local-data/template" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem; text-decoration: none; display: inline-flex;">
+                                           📥 Download CSV Template
+                                       </a>
+                                   </div>
+                                   <div style="flex: 1; border-left: 1px solid #e2e6ed; padding-left: 1.5rem;">
+                                       <label class="form-label">2. Upload Populated CSV</label>
+                                       <p class="form-hint">Upload your data to create a new local API.</p>
+                                       <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                                           <input type="text" id="importName" placeholder="Dataset name (e.g. my-items)" class="form-control" style="height: 32px; font-size: 13px;">
+                                           <input type="file" id="csvFileInput" accept=".csv" style="font-size: 12px;">
+                                           <button class="btn btn-primary btn-sm" id="btnUploadCsv">⬆ Upload & Process</button>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+
+                           <div class="form-section-title">Available Local Datasets</div>
+                           <div id="localDatasetsList" class="table-wrapper">
+                               <div class="text-muted" style="padding: 1rem; text-align: center;">Loading datasets...</div>
+                           </div>
+                       </div>
+                    </div>
+
+                    <!-- TAB: RUN -->                    <div class="tab-content ${state.currentTab === 'run' ? 'active' : ''}" id="tab-run">
                         <div class="form-section">
                             <div class="form-section-title">Study Execution</div>
                             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
@@ -2586,6 +2621,11 @@
                             <div class="form-section-title">Session Data</div>
                             
                             ${exp.participants.length > 0 ? `
+                                <div style="display: flex; gap: 12px; margin-bottom: 1.5rem;">
+                                    <button class="btn btn-secondary btn-sm" id="btnExportJSON">📥 Export JSON</button>
+                                    <button class="btn btn-secondary btn-sm" id="btnExportCSV">📄 Export CSV</button>
+                                </div>
+
                                 <div class="table-wrapper">
                                     <table>
                                         <thead>
@@ -2633,11 +2673,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-
-                                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-                                    <button class="btn btn-secondary btn-sm" id="btnExportJSON">Export as JSON</button>
-                                    <button class="btn btn-secondary btn-sm" id="btnExportCSV">Export as CSV</button>
-                                </div>
                             ` : `
                                 <div class="text-muted">No participants yet. Start an experiment to create sessions.</div>
                             `}
@@ -2681,6 +2716,55 @@
                     exp.participants.push(participant);
 
                     window.location.href = `experiment.html?expId=${exp.id}&participantId=${participantId}`;
+                });
+            }
+
+            // Local Data tab listeners
+            if (state.currentTab === 'local-data') {
+                fetchLocalDatasets();
+
+                document.getElementById('btnUploadCsv').addEventListener('click', async () => {
+                    const fileInput = document.getElementById('csvFileInput');
+                    const nameInput = document.getElementById('importName');
+                    
+                    if (!fileInput.files.length) {
+                        showToast('Please select a CSV file', 'error');
+                        return;
+                    }
+                    
+                    const name = nameInput.value.trim().replace(/[^a-z0-9_-]/gi, '_');
+                    if (!name) {
+                        showToast('Please provide a name for this dataset', 'error');
+                        return;
+                    }
+                    
+                    const file = fileInput.files[0];
+                    const btn = document.getElementById('btnUploadCsv');
+                    btn.disabled = true;
+                    btn.textContent = 'Processing...';
+                    
+                    try {
+                        const response = await fetch(`/api/local-data?name=${encodeURIComponent(name)}`, {
+                            method: 'POST',
+                            body: file,
+                            headers: { 'Content-Type': 'text/csv' }
+                        });
+                        
+                        const result = await response.json();
+                        if (result.ok) {
+                            showToast(`Successfully imported ${result.count} items`, 'success');
+                            nameInput.value = '';
+                            fileInput.value = '';
+                            fetchLocalDatasets();
+                        } else {
+                            showToast(result.error || 'Upload failed', 'error');
+                        }
+                    } catch (e) {
+                        showToast('Network error during upload', 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = '⬆ Upload & Process';
+                    }
                 });
             }
 
@@ -3309,12 +3393,12 @@
 
                 if (firstItem) {
                     const mapped = {
-                        id: getNestedValue(firstItem, exp.api.mapping.id),
-                        title: getNestedValue(firstItem, exp.api.mapping.title),
-                        subtitle: getNestedValue(firstItem, exp.api.mapping.subtitle),
-                        description: getNestedValue(firstItem, exp.api.mapping.description),
-                        imageUrl: getNestedValue(firstItem, exp.api.mapping.imageUrl),
-                        tags: getNestedValue(firstItem, exp.api.mapping.tags)
+                        id: getNestedValue(firstItem, exp.api.mapping.id) || firstItem.id || firstItem.systemNumber,
+                        title: getNestedValue(firstItem, exp.api.mapping.title) || firstItem.title || firstItem._primaryTitle,
+                        subtitle: getNestedValue(firstItem, exp.api.mapping.subtitle) || firstItem.subtitle || firstItem.artistDisplayName,
+                        description: getNestedValue(firstItem, exp.api.mapping.description) || firstItem.description || firstItem.objectName,
+                        imageUrl: getNestedValue(firstItem, exp.api.mapping.imageUrl) || firstItem.image || firstItem.imageUrl || firstItem.img || firstItem.link,
+                        tags: getNestedValue(firstItem, exp.api.mapping.tags) || firstItem.tags || firstItem.type
                     };
 
                     resultDiv.innerHTML = `
@@ -3353,6 +3437,123 @@
             const session = await dbRequest(`/api/sessions/by-participant/${participantId}`);
             return session || null;
         }
+
+        async function fetchLocalDatasets() {
+            const listEl = document.getElementById('localDatasetsList');
+            if (!listEl) return;
+            
+            try {
+                const response = await fetch('/api/local-data');
+                const data = await response.json();
+                
+                if (!data.datasets || data.datasets.length === 0) {
+                    listEl.innerHTML = '<div class="text-muted" style="padding: 1rem; text-align: center;">No local datasets imported.</div>';
+                    return;
+                }
+                
+                let html = `
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #e2e6ed; text-align: left;">
+                                <th style="padding: 10px; font-size: 12px; color: #7f8fa3;">Dataset ID</th>
+                                <th style="padding: 10px; font-size: 12px; color: #7f8fa3;">Count</th>
+                                <th style="padding: 10px; font-size: 12px; color: #7f8fa3;">API Endpoint</th>
+                                <th style="padding: 10px; font-size: 12px; color: #7f8fa3;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.datasets.forEach(ds => {
+                    const localPath = `/local-api-proxy${ds.endpoint}`;
+                    const fullUrl = window.location.origin + localPath;
+                    html += `
+                        <tr style="border-bottom: 1px solid #f1f3f7;">
+                            <td style="padding: 10px; font-size: 13px;"><strong>${escapeHtml(ds.id)}</strong></td>
+                            <td style="padding: 10px; font-size: 13px;">${ds.count}</td>
+                            <td style="padding: 10px; font-size: 13px; font-family: monospace; color: #4f6ef7;">
+                                <a href="${fullUrl}" target="_blank" style="color: inherit; text-decoration: none;">${localPath}</a>
+                            </td>
+                            <td style="padding: 10px; font-size: 13px;">
+                                <button class="btn btn-primary btn-sm" onclick="useDatasetInExperiment('${ds.endpoint}')" style="height: 24px; padding: 0 8px; font-size: 11px;">Use in Experiment</button>
+                                <button class="btn btn-secondary btn-sm" onclick="copyToClipboard('${fullUrl}')" style="height: 24px; padding: 0 8px; font-size: 11px;">Copy URL</button>
+                                <button class="btn btn-secondary btn-sm" onclick="deleteLocalDataset('${ds.id}')" style="height: 24px; padding: 0 8px; font-size: 11px; color: #ef4444; border-color: #fee2e2;">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                listEl.innerHTML = html;
+            } catch (e) {
+                listEl.innerHTML = '<div class="text-danger" style="padding: 1rem; text-align: center;">Error loading datasets.</div>';
+            }
+        }
+
+        window.useDatasetInExperiment = function(endpoint) {
+            const expId = state.selectedExperimentId;
+            const exp = expId ? state.experiments.find(e => e.id === expId) : null;
+            
+            if (!exp) {
+                showToast('Please select an experiment first', 'error');
+                return;
+            }
+
+            if (exp.api && exp.api.endpoint && exp.api.endpoint.trim() !== '') {
+                if (!confirm('This will overwrite your current API settings for this experiment. Continue?')) {
+                    return;
+                }
+            }
+            
+            // Ensure api config exists
+            if (!exp.api) exp.api = {};
+            
+            // Standard local API config (matching mock/offline structure)
+            // Use relative path so Nginx proxy handles it (works for both local and Docker)
+            exp.api.endpoint = `/local-api-proxy${endpoint}`;
+            exp.api.authType = 'none';
+            exp.api.voiceParamKey = 'q';
+            exp.api.mapping = {
+                id: 'id',
+                title: 'title',
+                subtitle: 'subtitle',
+                imageUrl: 'image',
+                category: 'category',
+                description: 'description',
+                tags: 'tags',
+                itemsPath: 'items'
+            };
+            
+            state.currentTab = 'api';
+            saveStateSoon(exp.id);
+            renderUI();
+            showToast('Local dataset configured as API source', 'success');
+        };
+
+        window.deleteLocalDataset = async function(id) {
+            if (!confirm(`Are you sure you want to delete the dataset "${id}"?`)) return;
+            
+            try {
+                const response = await fetch(`/api/local-data/${id}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.ok) {
+                    showToast('Dataset deleted', 'success');
+                    fetchLocalDatasets();
+                } else {
+                    showToast(result.error || 'Delete failed', 'error');
+                }
+            } catch (e) {
+                showToast('Network error during deletion', 'error');
+            }
+        };
+
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('URL copied to clipboard', 'success');
+            }).catch(() => {
+                showToast('Failed to copy', 'error');
+            });
+        };
 
         async function exportParticipantsJSON(exp) {
             showToast('Fetching session data…', 'info');

@@ -9,6 +9,8 @@ node_modules/
 
 # Exported session data
 exports/
+experiment_images/
+.firecrawl/
 
 # Build artefacts
 dist/

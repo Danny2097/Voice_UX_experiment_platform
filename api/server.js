@@ -14,6 +14,10 @@ const path = require('path');
 const PORT        = parseInt(process.env.API_PORT || '3002', 10);
 const EXPORTS_DIR = process.env.EXPORTS_DIR || '/exports';
 const AUDIO_DIR   = path.join(EXPORTS_DIR, 'audio');
+const LOCAL_DATA_DIR = path.join(__dirname, '../local-api/data');
+
+// Ensure local data directory exists
+if (!fs.existsSync(LOCAL_DATA_DIR)) fs.mkdirSync(LOCAL_DATA_DIR, { recursive: true });
 
 // Map MIME → file extension (and reverse)
 const MIME_TO_EXT = { 'audio/webm': 'webm', 'audio/ogg': 'ogg', 'audio/mp4': 'm4a', 'audio/mpeg': 'mp3' };
@@ -554,6 +558,80 @@ async function handle(req, res) {
                 .filter(f => AUDIO_EXTS.some(ext => f.endsWith(`.${ext}`)))
                 .map(f => ({ filename: f, participantId: f.replace(/\.[^.]+$/, '') }));
             return send(res, 200, { files });
+        }
+
+        // ── GET /api/local-data/template ─────────────────────────
+        if (pathname === '/api/local-data/template' && method === 'GET') {
+            const template = 'id,title,subtitle,category,description,image,link,tags\n' +
+                             'OBJ-001,Example Item,Common Object,Example,A sample item for your grid.,https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400,https://nike.com/t/example,"Sample,Tag"';
+            res.writeHead(200, {
+                'Content-Type': 'text/csv',
+                'Content-Disposition': 'attachment; filename="vrp-data-template.csv"',
+                'Access-Control-Allow-Origin': '*'
+            });
+            return res.end(template);
+        }
+
+        // ── GET /api/local-data ──────────────────────────────────
+        if (pathname === '/api/local-data' && method === 'GET') {
+            const files = fs.readdirSync(LOCAL_DATA_DIR).filter(f => f.endsWith('.json'));
+            const datasets = files.map(f => {
+                const content = JSON.parse(fs.readFileSync(path.join(LOCAL_DATA_DIR, f), 'utf8'));
+                return {
+                    id: f.replace('.json', ''),
+                    name: f.replace('.json', ''),
+                    count: content.items ? content.items.length : 0,
+                    endpoint: `/api/local/${f.replace('.json', '')}`
+                };
+            });
+            return send(res, 200, { datasets });
+        }
+
+        // ── POST /api/local-data ─────────────────────────────────
+        if (pathname === '/api/local-data' && method === 'POST') {
+            const body = await readBinaryBody(req);
+            const csv = body.toString('utf8');
+            const urlObj = new URL(req.url, `http://localhost:${PORT}`);
+            const fileName = urlObj.searchParams.get('name') || `import_${Date.now()}`;
+            
+            // Simple CSV parser
+            const lines = csv.split(/\r?\n/).filter(line => line.trim());
+            if (lines.length < 2) return send(res, 400, { error: 'CSV must include header and at least one row' });
+            
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            const items = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                // Better CSV regex to handle commas inside quoted fields
+                const row = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+                const item = {};
+                headers.forEach((h, index) => {
+                    let val = row[index] || '';
+                    val = val.trim().replace(/^"|"$/g, '');
+                    if (h === 'tags') {
+                        item[h] = val.split(/[;,]/).map(t => t.trim()).filter(t => t);
+                    } else {
+                        item[h] = val;
+                    }
+                });
+                if (!item.id) item.id = `item_${i}`;
+                items.push(item);
+            }
+            
+            const json = { count: items.length, items };
+            fs.writeFileSync(path.join(LOCAL_DATA_DIR, `${fileName}.json`), JSON.stringify(json, null, 2));
+            return send(res, 200, { ok: true, id: fileName, count: items.length });
+        }
+
+        // ── DELETE /api/local-data/:id ────────────────────────────
+        const localMatch = pathname.match(/^\/api\/local-data\/([^/]+)$/);
+        if (localMatch && method === 'DELETE') {
+            const file = path.join(LOCAL_DATA_DIR, `${localMatch[1]}.json`);
+            if (fs.existsSync(file)) {
+                fs.unlinkSync(file);
+                return send(res, 200, { ok: true });
+            }
+            return send(res, 404, { error: 'Dataset not found' });
         }
 
         // ── 404 ───────────────────────────────────────────────────

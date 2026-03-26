@@ -3,8 +3,12 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = 3003;
+const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(__dirname, 'data.json');
 const CLOTHING_FILE = path.join(__dirname, 'clothing-data.json');
+
+// Ensure DATA_DIR exists
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const send = (res, status, data) => {
   const body = JSON.stringify(data);
@@ -62,6 +66,15 @@ const server = http.createServer((req, res) => {
 
   if (pathname === '/api/clothing' && req.method === 'GET') {
     return handleDataRequest(req, res, CLOTHING_FILE);
+  }
+
+  // Handle dynamic local datasets
+  const localMatch = pathname.match(/^\/api\/local\/([^/]+)$/);
+  if (localMatch && req.method === 'GET') {
+    const filePath = path.join(DATA_DIR, `${localMatch[1]}.json`);
+    if (fs.existsSync(filePath)) {
+      return handleDataRequest(req, res, filePath);
+    }
   }
 
   return send(res, 404, { error: 'Not found' });
