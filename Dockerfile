@@ -13,10 +13,8 @@ RUN npm install --omit=dev
 COPY api/ .
 
 # ── Stage 3: Prepare the local-api ────────────────────────────────
-FROM node:20-alpine AS local-api-build
+FROM alpine AS local-api-prep
 WORKDIR /app/local-api
-COPY local-api/package.json .
-RUN npm install --omit=dev
 COPY local-api/ .
 
 # ── Stage 4: Final image (nginx + Node.js) ────────────────────────
@@ -34,7 +32,7 @@ COPY --from=api-build /app/api /app/api
 RUN chmod -R 755 /app/api
 
 # Copy local-api
-COPY --from=local-api-build /app/local-api /app/local-api
+COPY --from=local-api-prep /app/local-api /app/local-api
 RUN chmod -R 755 /app/local-api
 
 # Copy frontend static files
