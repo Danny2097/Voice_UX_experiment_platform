@@ -1998,6 +1998,115 @@
         .return-btn:hover {
             background: var(--success-dark, #218838);
         }
+
+        /* Questionnaire Styles */
+        .questionnaire-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e2e6ed;
+        }
+
+        .questionnaire-fields {
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .question-field {
+            margin-bottom: 2rem;
+        }
+
+        .question-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+        }
+
+        .question-label .required-star {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .question-input-text {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .question-input-text:focus {
+            border-color: #4f6ef7;
+            box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.1);
+            outline: none;
+        }
+
+        .scale-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            max-width: 500px;
+            margin-top: 0.5rem;
+        }
+
+        .scale-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scale-radio {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .scale-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .choice-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .choice-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e6ed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .choice-item:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .choice-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .choice-text {
+            font-size: 14px;
+            color: #334155;
+        }
     </style>
 </head>
 <body>
@@ -2034,7 +2143,23 @@
     </div>
 </div>
 
-<!-- Phase 2: Active Session -->
+<!-- Phase 2: Pre-Experiment Questionnaire -->
+<div class="session-end-screen" id="preQuestionnaireScreen">
+    <div class="questionnaire-container">
+        <div class="consent-header">
+            <h1 class="consent-title">Pre-Experiment Questionnaire</h1>
+            <p class="consent-subtitle">Please answer the following questions before we begin the study.</p>
+        </div>
+        <form id="preQuestionnaireForm" class="questionnaire-form">
+            <div id="preQuestionnaireFields" class="questionnaire-fields"></div>
+            <div style="margin-top: 2rem;">
+                <button type="button" class="btn btn-primary" onclick="submitQuestionnaire('pre')" style="width: 100%; height: 44px; font-size: 16px;">Continue to Study</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Phase 3: Active Session -->
 <div class="session-wrapper" id="sessionWrapper">
     <!-- Header -->
     <div class="session-header">
@@ -2529,7 +2654,23 @@
     </div>
 </div>
 
-<!-- Phase 3: Session End — participant-facing thank you screen -->
+<!-- Phase 4: Post-Experiment Questionnaire -->
+<div class="session-end-screen" id="postQuestionnaireScreen">
+    <div class="questionnaire-container">
+        <div class="consent-header">
+            <h1 class="consent-title">Post-Experiment Questionnaire</h1>
+            <p class="consent-subtitle">Please answer a few final questions about your experience.</p>
+        </div>
+        <form id="postQuestionnaireForm" class="questionnaire-form">
+            <div id="postQuestionnaireFields" class="questionnaire-fields"></div>
+            <div style="margin-top: 2rem;">
+                <button type="button" class="btn btn-primary" onclick="submitQuestionnaire('post')" style="width: 100%; height: 44px; font-size: 16px;">Finish Session</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Phase 5: Session End — participant-facing thank you screen -->
 <div class="session-end-screen" id="sessionEndScreen">
     <div class="session-end-container">
 
@@ -2621,6 +2762,21 @@
 
 <script src="./js/api-adapter.js"></script>
 <script>
+    // ========== UTILITIES ==========
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
     // ========== URL PARAMS & STATE ==========
 
     const params = new URLSearchParams(window.location.search);
@@ -3166,8 +3322,97 @@
         currentPhase = phase;
 
         document.getElementById('consentScreen').classList.toggle('active', phase === 'consent');
+        document.getElementById('preQuestionnaireScreen').classList.toggle('active', phase === 'pre_questionnaire');
         document.getElementById('sessionWrapper').classList.toggle('active', phase === 'session');
+        document.getElementById('postQuestionnaireScreen').classList.toggle('active', phase === 'post_questionnaire');
         document.getElementById('sessionEndScreen').classList.toggle('active', phase === 'end');
+    }
+
+    // ========== QUESTIONNAIRE HANDLING ==========
+
+    function renderQuestionnaire(type) {
+        const questions = type === 'pre' ? experimentConfig.preQuestionnaire : experimentConfig.postQuestionnaire;
+        const container = document.getElementById(type + 'QuestionnaireFields');
+        
+        if (!questions || questions.length === 0) {
+            container.innerHTML = '<p class="text-muted">No questions for this phase.</p>';
+            return;
+        }
+
+        container.innerHTML = questions.map((q, idx) => {
+            const name = `${type}_q${idx}`;
+            const requiredAttr = q.required ? 'required' : '';
+            const requiredStar = q.required ? '<span class="required-star">*</span>' : '';
+
+            let inputHtml = '';
+            if (q.type === 'text') {
+                inputHtml = `<input type="text" name="${name}" class="question-input-text" ${requiredAttr} placeholder="Your answer...">`;
+            } else if (q.type === 'scale') {
+                inputHtml = `
+                    <div class="scale-container">
+                        ${[1, 2, 3, 4, 5].map(v => `
+                            <div class="scale-item">
+                                <input type="radio" name="${name}" value="${v}" id="${name}_${v}" class="scale-radio" ${requiredAttr}>
+                                <label for="${name}_${v}" class="scale-label">${v}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; max-width: 500px; margin-top: 4px; font-size: 11px; color: #94a3b8;">
+                        <span>Low</span>
+                        <span>High</span>
+                    </div>
+                `;
+            } else if (q.type === 'choice') {
+                inputHtml = `
+                    <div class="choice-container">
+                        ${(q.options || []).map((opt, oIdx) => `
+                            <label class="choice-item" for="${name}_${oIdx}">
+                                <input type="radio" name="${name}" value="${opt}" id="${name}_${oIdx}" ${requiredAttr}>
+                                <span class="choice-text">${escapeHtml(opt)}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="question-field">
+                    <label class="question-label">${escapeHtml(q.text)}${requiredStar}</label>
+                    ${inputHtml}
+                </div>
+            `;
+        }).join('');
+    }
+
+    function submitQuestionnaire(type) {
+        const form = document.getElementById(type + 'QuestionnaireForm');
+        if (!form.reportValidity()) return;
+
+        const formData = new FormData(form);
+        const responses = {};
+        const questions = type === 'pre' ? experimentConfig.preQuestionnaire : experimentConfig.postQuestionnaire;
+
+        questions.forEach((q, idx) => {
+            responses[q.text] = formData.get(`${type}_q${idx}`);
+        });
+
+        if (!sessionData.questionnaires) sessionData.questionnaires = {};
+        sessionData.questionnaires[type === 'pre' ? 'pre' : 'post'] = {
+            responses,
+            timestamp: new Date().toISOString()
+        };
+
+        logEvent('questionnaire_submit', { questionnaireType: type });
+
+        if (type === 'pre') {
+            showPhase('session');
+            loadExperimentData();
+            // Update header
+            document.getElementById('experimentName').textContent = experimentConfig.name || 'Experiment';
+            document.getElementById('participantBadge').textContent = participantId;
+        } else {
+            finalizeSession();
+        }
     }
 
     // ========== CONSENT SCREEN ==========
@@ -3209,12 +3454,17 @@
 
         logEvent('session_start', {});
 
-        showPhase('session');
-        loadExperimentData();
-
-        // Update header
-        document.getElementById('experimentName').textContent = experimentConfig.name || 'Experiment';
-        document.getElementById('participantBadge').textContent = participantId;
+        // Check if there's a pre-questionnaire
+        if (experimentConfig.preQuestionnaire && experimentConfig.preQuestionnaire.length > 0) {
+            renderQuestionnaire('pre');
+            showPhase('pre_questionnaire');
+        } else {
+            showPhase('session');
+            loadExperimentData();
+            // Update header
+            document.getElementById('experimentName').textContent = experimentConfig.name || 'Experiment';
+            document.getElementById('participantBadge').textContent = participantId;
+        }
 
         logDebug('CONSENT', 'info', `Consent accepted by ${participantId}`);
     }
@@ -3626,12 +3876,19 @@
         if (finalEl && final) {
             finalEl.textContent = final.trim();
             currentTranscript = final.trim();
+            
+            const workflow = getWorkflowArray();
+            const currentCard = (currentWorkflowStep !== -1 && currentWorkflowStep < workflow.length) 
+                ? workflow[currentWorkflowStep] 
+                : null;
+
             sessionData.transcript.push({
                 text: final.trim(),
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                highlightedCard: currentCard
             });
             logEvent('voice_query', { query: final.trim() });
-            logDebug('SPEECH', 'event', `Final transcript: ${final.trim()}`);
+            logDebug('SPEECH', 'event', `Final transcript: ${final.trim()}${currentCard ? ' (Target: Card #' + currentCard + ')' : ''}`);
 
             // Trigger voice search (only in action_transcript mode)
             const isActionMode = !experimentConfig.mode || experimentConfig.mode === 'action_transcript';
@@ -4118,10 +4375,18 @@
     // ========== EVENT LOGGING ==========
 
     function logEvent(type, data = {}) {
+        const workflow = getWorkflowArray();
+        const currentCard = (currentWorkflowStep !== -1 && currentWorkflowStep < workflow.length) 
+            ? workflow[currentWorkflowStep] 
+            : null;
+
         const event = {
             type,
             timestamp: new Date().toISOString(),
-            data
+            data: {
+                ...data,
+                highlightedCard: currentCard
+            }
         };
         sessionData.events.push(event);
     }
@@ -4341,14 +4606,29 @@
 
         // Stop recording and mic
         if (isRecording) {
-            document.getElementById('recordingToggle').checked = false;
+            const toggle = document.getElementById('recordingToggle');
+            if (toggle) toggle.checked = false;
             toggleRecording();
         }
         if (micEnabled) {
-            document.getElementById('micToggle').checked = false;
+            const toggle = document.getElementById('micToggle');
+            if (toggle) toggle.checked = false;
             await toggleMicrophone();
         }
 
+        // Record interaction end
+        logEvent('experiment_complete', {});
+
+        // Check if there's a post-questionnaire
+        if (experimentConfig.postQuestionnaire && experimentConfig.postQuestionnaire.length > 0) {
+            renderQuestionnaire('post');
+            showPhase('post_questionnaire');
+        } else {
+            await finalizeSession();
+        }
+    }
+
+    async function finalizeSession() {
         // Record session end
         sessionData.sessionEnd = new Date().toISOString();
         logEvent('session_end', {});
@@ -4530,7 +4810,10 @@ Generated by Voice Control Research Platform
     }
 
     function downloadTranscript() {
-        const text = sessionData.transcript.map(t => `[${t.timestamp}] ${t.text}`).join('\n\n');
+        const text = sessionData.transcript.map(t => {
+            const cardInfo = t.highlightedCard ? ` [Target Card #${t.highlightedCard}]` : '';
+            return `[${t.timestamp}]${cardInfo} ${t.text}`;
+        }).join('\n\n');
         const blob = new Blob([text], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -4676,12 +4959,14 @@ Generated by Voice Control Research Platform
         if (workflow.length === 0) return;
 
         currentWorkflowStep++;
+        logEvent('workflow_change', { step: currentWorkflowStep + 1, targetCard: workflow[currentWorkflowStep] || 'END' });
         logDebug('WORKFLOW', 'info', `Advanced to step ${currentWorkflowStep + 1} (Card #${workflow[currentWorkflowStep] || 'END'})`);
         updateWorkflowUI();
     }
 
     function resetWorkflow() {
         currentWorkflowStep = -1;
+        logEvent('workflow_reset', { step: -1 });
         logDebug('WORKFLOW', 'info', 'Workflow reset');
         updateWorkflowUI();
     }

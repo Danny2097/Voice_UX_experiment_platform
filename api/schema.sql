@@ -10,10 +10,12 @@ CREATE TABLE IF NOT EXISTS experiments (
     description TEXT         NOT NULL DEFAULT '',
     status      VARCHAR(20)  NOT NULL DEFAULT 'Draft',
     mode        VARCHAR(50)  NOT NULL DEFAULT 'action_transcript',
-    pis_data    JSONB        NOT NULL DEFAULT '{}',
-    grid_config JSONB        NOT NULL DEFAULT '{}',
-    api_config  JSONB        NOT NULL DEFAULT '{}',
-    created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    pis_data          JSONB        NOT NULL DEFAULT '{}',
+    grid_config       JSONB        NOT NULL DEFAULT '{}',
+    api_config        JSONB        NOT NULL DEFAULT '{}',
+    pre_questionnaire  JSONB        NOT NULL DEFAULT '[]',
+    post_questionnaire JSONB        NOT NULL DEFAULT '[]',
+    created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 

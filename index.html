@@ -1983,6 +1983,8 @@
                 mode: 'action_transcript',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
+                preQuestionnaire: [],
+                postQuestionnaire: [],
                 pis: {
                     studyTitle: '',
                     researcher: '',
@@ -2184,6 +2186,7 @@
                         <button class="tab-button ${state.currentTab === 'api' ? 'active' : ''}" data-tab="api">API Source</button>
                         <button class="tab-button ${state.currentTab === 'grid-layout' ? 'active' : ''}" data-tab="grid-layout">Layout</button>
                         <button class="tab-button ${state.currentTab === 'workflow' ? 'active' : ''}" data-tab="workflow">Workflow</button>
+                        <button class="tab-button ${state.currentTab === 'questionnaires' ? 'active' : ''}" data-tab="questionnaires">Questionnaires</button>
                         <button class="tab-button ${state.currentTab === 'pis' ? 'active' : ''}" data-tab="pis">PIS</button>
                         <button class="tab-button ${state.currentTab === 'participants' ? 'active' : ''}" data-tab="participants">Participants</button>
                         <button class="tab-button ${state.currentTab === 'export' ? 'active' : ''}" data-tab="export">Export</button>
@@ -2572,6 +2575,27 @@
                                 <input type="text" id="workflowNodes" value="${escapeHtml(exp.grid.workflowNodes || '')}" placeholder="e.g., 1, 4, 5">
                                 <p class="form-hint">Comma-separated card indices to highlight in sequence (starting from 1).</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: QUESTIONNAIRES -->
+                    <div class="tab-content ${state.currentTab === 'questionnaires' ? 'active' : ''}" id="tab-questionnaires">
+                        <div class="form-section">
+                            <div class="form-section-title">Pre-Experiment Questionnaire</div>
+                            <p class="form-hint" style="margin-bottom: 1rem;">Presented to the participant after they have accepted the study but before starting the main task.</p>
+                            <div id="preQuestionnaireEditor" class="questionnaire-editor">
+                                <!-- Dynamic content -->
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="addQuestion('pre')">+ Add Pre-Experiment Question</button>
+                        </div>
+
+                        <div class="form-section" style="margin-top: 3rem;">
+                            <div class="form-section-title">Post-Experiment Questionnaire</div>
+                            <p class="form-hint" style="margin-bottom: 1rem;">Presented to the participant after they have completed the main study tasks.</p>
+                            <div id="postQuestionnaireEditor" class="questionnaire-editor">
+                                <!-- Dynamic content -->
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="addQuestion('post')">+ Add Post-Experiment Question</button>
                         </div>
                     </div>
 
@@ -3020,6 +3044,12 @@
                 document.getElementById('btnPreviewPis').addEventListener('click', () => {
                     showPisPreview(exp);
                 });
+            }
+
+            // Questionnaires tab
+            if (state.currentTab === 'questionnaires') {
+                renderQuestionnaireEditor('pre');
+                renderQuestionnaireEditor('post');
             }
 
             // Grid Layout tab listeners
@@ -3822,7 +3852,7 @@
 
         async function exportParticipantsCSV(exp) {
             showToast('Fetching session data…', 'info');
-            let csv = 'Participant ID,Session Started,Session Ended,Duration (min),Total Events,Total Queries\n';
+            let csv = 'Participant ID,Session Started,Session Ended,Duration (min),Total Events,Total Queries,Pre-Qs,Post-Qs\n';
 
             for (const p of exp.participants) {
                 const session  = await getSessionByParticipant(p.id);
@@ -3830,9 +3860,16 @@
                 const ended    = p.endedAt ? new Date(p.endedAt).toLocaleString() : 'In progress';
                 const duration = p.endedAt
                     ? Math.round((new Date(p.endedAt) - new Date(p.startedAt)) / 60000) : '-';
+                
                 const eventCount = session ? (session.events?.length || 0) : 0;
                 const queryCount = session ? (session.transcript?.length || 0) : 0;
-                csv += `"${p.id}","${started}","${ended}",${duration},${eventCount},${queryCount}\n`;
+                
+                const preCount = (session && session.questionnaires && session.questionnaires.pre && session.questionnaires.pre.responses) 
+                    ? Object.keys(session.questionnaires.pre.responses).length : 0;
+                const postCount = (session && session.questionnaires && session.questionnaires.post && session.questionnaires.post.responses) 
+                    ? Object.keys(session.questionnaires.post.responses).length : 0;
+
+                csv += `"${p.id}","${started}","${ended}",${duration},${eventCount},${queryCount},${preCount},${postCount}\n`;
             }
 
             downloadFile(csv, `${exp.id}-summary.csv`, 'text/csv');
@@ -3943,6 +3980,101 @@
                 toast.remove();
             }, 3000);
         }
+
+        // ============================================================
+        // QUESTIONNAIRE MANAGEMENT
+        // ============================================================
+        function renderQuestionnaireEditor(type) {
+            const exp = getExperiment(state.selectedExperimentId);
+            const containerId = type === 'pre' ? 'preQuestionnaireEditor' : 'postQuestionnaireEditor';
+            const container = document.getElementById(containerId);
+            const questions = type === 'pre' ? (exp.preQuestionnaire || []) : (exp.postQuestionnaire || []);
+
+            if (questions.length === 0) {
+                container.innerHTML = '<p class="text-muted" style="padding: 1rem; border: 1px dashed #e2e6ed; border-radius: 8px; text-align: center; margin-bottom: 1rem;">No questions added yet.</p>';
+                return;
+            }
+
+            container.innerHTML = questions.map((q, index) => `
+                <div class="question-item" style="background: white; border: 1px solid #e2e6ed; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; position: relative;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 11px; text-transform: uppercase; color: #95a3b3;">Question Text</label>
+                            <input type="text" value="${escapeHtml(q.text)}" oninput="updateQuestion('${type}', ${index}, 'text', this.value)" placeholder="e.g., How often do you use voice assistants?">
+                        </div>
+                        <div style="width: 150px;">
+                            <label style="font-size: 11px; text-transform: uppercase; color: #95a3b3;">Type</label>
+                            <select onchange="updateQuestion('${type}', ${index}, 'type', this.value)">
+                                <option value="text" ${q.type === 'text' ? 'selected' : ''}>Text Input</option>
+                                <option value="scale" ${q.type === 'scale' ? 'selected' : ''}>Linear Scale (1-5)</option>
+                                <option value="choice" ${q.type === 'choice' ? 'selected' : ''}>Multiple Choice</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    ${q.type === 'choice' ? `
+                        <div style="margin-bottom: 1rem;">
+                            <label style="font-size: 11px; text-transform: uppercase; color: #95a3b3;">Options (comma separated)</label>
+                            <input type="text" value="${escapeHtml(q.options ? q.options.join(', ') : '')}" 
+                                   oninput="updateQuestion('${type}', ${index}, 'options', this.value)" 
+                                   placeholder="e.g., Daily, Weekly, Monthly, Never">
+                        </div>
+                    ` : ''}
+
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="toggle-group" style="margin-bottom: 0;">
+                            <div class="toggle ${q.required ? 'active' : ''}" onclick="updateQuestion('${type}', ${index}, 'required', ${!q.required})">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                            <div class="toggle-label" style="font-size: 12px;">Required field</div>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" style="color: #ef4444; border-color: #fee2e2;" onclick="deleteQuestion('${type}', ${index})">Remove Question</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.addQuestion = function(type) {
+            const exp = getExperiment(state.selectedExperimentId);
+            const list = type === 'pre' ? 'preQuestionnaire' : 'postQuestionnaire';
+            if (!exp[list]) exp[list] = [];
+            
+            exp[list].push({
+                text: '',
+                type: 'text',
+                required: false,
+                options: []
+            });
+            
+            saveStateSoon();
+            renderQuestionnaireEditor(type);
+        };
+
+        window.updateQuestion = function(type, index, field, value) {
+            const exp = getExperiment(state.selectedExperimentId);
+            const list = type === 'pre' ? 'preQuestionnaire' : 'postQuestionnaire';
+            
+            if (field === 'options') {
+                value = value.split(',').map(s => s.trim()).filter(s => s !== '');
+            }
+            
+            exp[list][index][field] = value;
+            saveStateSoon();
+            
+            // Re-render editor if type changed (to show/hide options field)
+            if (field === 'type' || field === 'required') {
+                renderQuestionnaireEditor(type);
+            }
+        };
+
+        window.deleteQuestion = function(type, index) {
+            if (!confirm('Remove this question?')) return;
+            const exp = getExperiment(state.selectedExperimentId);
+            const list = type === 'pre' ? 'preQuestionnaire' : 'postQuestionnaire';
+            exp[list].splice(index, 1);
+            saveStateSoon();
+            renderQuestionnaireEditor(type);
+        };
 
         // ============================================================
         // USER MANAGEMENT

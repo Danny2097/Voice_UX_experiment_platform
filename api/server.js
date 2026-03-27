@@ -47,6 +47,24 @@ function hashPassword(password) {
 async function migrate() {
     const sql = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
     await pool.query(sql);
+    
+    // Manual Migrations (Idempotent ALTER TABLE statements)
+    try {
+        await pool.query(`
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='experiments' AND column_name='pre_questionnaire') THEN
+                    ALTER TABLE experiments ADD COLUMN pre_questionnaire JSONB NOT NULL DEFAULT '[]';
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='experiments' AND column_name='post_questionnaire') THEN
+                    ALTER TABLE experiments ADD COLUMN post_questionnaire JSONB NOT NULL DEFAULT '[]';
+                END IF;
+            END $$;
+        `);
+    } catch (e) {
+        console.warn('[API] Migration notice:', e.message);
+    }
+
     console.log('[API] Schema applied');
 
     // Seed admin user
@@ -261,6 +279,8 @@ async function handle(req, res) {
                 pis:         exp.pis_data,
                 grid:        exp.grid_config,
                 api:         exp.api_config,
+                preQuestionnaire:  exp.pre_questionnaire,
+                postQuestionnaire: exp.post_questionnaire,
                 createdAt:   exp.created_at,
                 updatedAt:   exp.updated_at,
                 participants: parts.rows
@@ -282,17 +302,19 @@ async function handle(req, res) {
             const exp = await parseBody(req);
             await pool.query(`
                 INSERT INTO experiments
-                    (id, name, description, status, mode, pis_data, grid_config, api_config, updated_at)
-                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW())
+                    (id, name, description, status, mode, pis_data, grid_config, api_config, pre_questionnaire, post_questionnaire, updated_at)
+                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())
                 ON CONFLICT (id) DO UPDATE SET
-                    name        = EXCLUDED.name,
-                    description = EXCLUDED.description,
-                    status      = EXCLUDED.status,
-                    mode        = EXCLUDED.mode,
-                    pis_data    = EXCLUDED.pis_data,
-                    grid_config = EXCLUDED.grid_config,
-                    api_config  = EXCLUDED.api_config,
-                    updated_at  = NOW()
+                    name              = EXCLUDED.name,
+                    description       = EXCLUDED.description,
+                    status            = EXCLUDED.status,
+                    mode              = EXCLUDED.mode,
+                    pis_data          = EXCLUDED.pis_data,
+                    grid_config       = EXCLUDED.grid_config,
+                    api_config        = EXCLUDED.api_config,
+                    pre_questionnaire  = EXCLUDED.pre_questionnaire,
+                    post_questionnaire = EXCLUDED.post_questionnaire,
+                    updated_at        = NOW()
             `, [
                 exp.id,
                 exp.name        || 'Untitled Experiment',
@@ -302,6 +324,8 @@ async function handle(req, res) {
                 JSON.stringify(exp.pis  || {}),
                 JSON.stringify(exp.grid || {}),
                 JSON.stringify(exp.api  || {}),
+                JSON.stringify(exp.preQuestionnaire || []),
+                JSON.stringify(exp.postQuestionnaire || []),
             ]);
             return send(res, 200, { ok: true });
         }
@@ -333,6 +357,8 @@ async function handle(req, res) {
                 pis:         exp.pis_data,
                 grid:        exp.grid_config,
                 api:         exp.api_config,
+                preQuestionnaire:  exp.pre_questionnaire,
+                postQuestionnaire: exp.post_questionnaire,
                 createdAt:   exp.created_at,
                 updatedAt:   exp.updated_at,
                 participants: parts.rows.map(p => ({
