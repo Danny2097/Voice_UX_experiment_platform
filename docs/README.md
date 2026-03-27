@@ -120,10 +120,16 @@ Switch to the **Workflow** tab to set up the participant's task:
 - **Task Prompt** – Enter the instructions shown at the top of the grid (e.g., "Find the red sneakers")
 - **Card Sequence** – Enter a comma-separated list of card indices (e.g., `1, 4, 12`) to guide the researcher through the study.
 
-### Step 7: Participant Information Sheet (PIS)
+### Step 7: Define Questionnaires (Optional)
+Switch to the **Questionnaires** tab to add pre- and post-study questions:
+- **Pre-Experiment** questions are shown after consent but before the participant sees the grid.
+- **Post-Experiment** questions are shown after the session ends but before the final thank you.
+- Choose from **Text**, **Linear Scale**, or **Multiple Choice** types.
+
+### Step 8: Participant Information Sheet (PIS)
 Add any fields you need to collect (Age, Gender, etc.) and customize the study purpose and withdrawal information.
 
-### Step 8: Run the experiment
+### Step 9: Run the experiment
 1. Switch to the **Run** tab
 2. Use **High-Fidelity Preview** to test the flow yourself (this mirrors the participant's experience exactly but doesn't save data)
 3. Use the **Participants** tab to launch live sessions for real users.
@@ -235,13 +241,13 @@ The platform offers two ways to run your experiment:
 1.  **High-Fidelity Preview:** Located in the **Run** tab. This allows you to experience the study exactly as a participant would, including the consent screen and session-end flow. It is useful for verifying your layout, workflow, and API connection. **Data is not saved to the database** in this mode.
 2.  **Live Session:** Managed through the **Participants** tab. Each session is unique to a participant and **all data is saved** to the persistent database for later export.
 
-### Consent flow
+### Consent and Questionnaire flow
 When a participant (or researcher in preview) begins a session, they see:
-1. A consent screen displaying:
-   - Experiment overview
-   - All Participant Information Sheet fields
-2. Participant must enter their details and click "I agree"
-3. Their responses are stored with the session data
+1.  **Consent Screen**: Displaying study overview and PIS fields.
+2.  **Pre-Experiment Questionnaire**: (If configured) Participants answer demographic or initial survey questions. **The experiment grid is only loaded after this step is complete.**
+3.  **Active Session**: The main task grid with voice and researcher controls.
+4.  **Post-Experiment Questionnaire**: (If configured) Shown after the session is ended to capture participant feedback.
+5.  **Session End**: Final thank-you screen with participation ID.
 
 ### The session interface
 
@@ -256,13 +262,18 @@ The Experiment Runner provides:
   - Notes – Researcher observations (stored with session)
   - Debug terminal – Real-time API calls, mic activity, grid interactions
 
+### Workflow-Aware Logging
+The platform automatically relates participant actions to the researcher's defined workflow:
+- **Highlighted Card ID**: Every event (click, voice query, search) and transcript entry is automatically tagged with the ID of the card currently highlighted in the researcher's workflow.
+- **Transcript Context**: Exported transcripts include the target card ID for each utterance, making it easy to identify which item a participant was responding to.
+
 ### Grid interaction logging
 Every interaction is logged automatically:
-- Card selection (time, card ID, method: voice/click)
+- Card selection (time, card ID, method: voice/click, and currently highlighted workflow card)
 - Workflow advancement (step number, target card ID)
 - Microphone state changes
 - Errors or API timeouts
-- Participant voice transcripts (if enabled)
+- Participant voice transcripts (including target card context)
 
 ### Features for Researchers
 - **Workflow Autoscroll:** When advancing a step, the target card is automatically scrolled into the center of the viewport and highlighted with a pulsing border.
@@ -279,69 +290,20 @@ Every interaction is logged automatically:
 
 ## Data & Exports
 
-### Local storage
-
-All experiments and session data are stored in the browser's `localStorage`:
-
-- **`vrp_experiments`** – Experiment configurations (JSON array)
-- **`vrp_sessions`** – Session recordings (JSON array, one object per session)
-
-You can inspect these in the browser DevTools (F12 > Application > Local Storage).
+### Persistent Storage
+The platform uses a PostgreSQL database for persistent storage. This ensures that experiment configurations, participant records, and session interaction logs are safely stored on the server.
 
 ### Exporting data
-
 From the Experiment Manager:
-1. Click an experiment row to expand details
-2. Click **Download as JSON** or **Download as CSV** for each session
+1. Click an experiment row to expand details.
+2. Select the **Export** tab to download bulk data:
+   - **JSON Export**: Contains all session events, full transcripts, and all questionnaire responses.
+   - **Summary CSV**: Provides a high-level overview of sessions, including participation status and the count of completed pre- and post-questionnaire items.
+   - **Audio Export**: Downloads a ZIP archive of all voice recordings for the experiment.
+3. Select the **Participants** tab for individual session JSON downloads.
 
-### JSON export format
-
-```json
-{
-  "sessionId": "sess_abc123",
-  "experimentId": "exp_def456",
-  "startTime": "2026-03-06T14:30:00Z",
-  "endTime": "2026-03-06T14:45:00Z",
-  "participantInfo": {
-    "name": "Alice Smith",
-    "age": 28,
-    "profession": "Librarian",
-    "customField": "Yes"
-  },
-  "interactions": [
-    {
-      "timestamp": "2026-03-06T14:30:15Z",
-      "type": "cardSelected",
-      "method": "voice",
-      "cardId": "123",
-      "cardTitle": "Mona Lisa"
-    },
-    {
-      "timestamp": "2026-03-06T14:30:20Z",
-      "type": "microphoneToggle",
-      "state": "on"
-    }
-  ],
-  "researcherNotes": "Participant found the task straightforward.",
-  "rawTranscripts": [
-    {
-      "timestamp": "2026-03-06T14:30:10Z",
-      "transcript": "show me paintings by da vinci"
-    }
-  ]
-}
-```
-
-### CSV export format
-
-Columns include:
-- `sessionId`, `experimentId`, `startTime`, `endTime`
-- All Participant Information Sheet fields
-- Card selection events (one row per selection)
-- Microphone state changes
-- Researcher notes
-
-**Important:** Clearing your browser's localStorage or cache will permanently delete all data. Export your data regularly.
+### Questionnaire Data
+All questionnaire responses (text, scale, and choice) are stored within the session data object and are exported in the `questionnaires` field of the JSON export. Summary counts are included in the CSV export.
 
 ---
 

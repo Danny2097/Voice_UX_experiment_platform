@@ -5,10 +5,17 @@
 The Voice Control Research Platform is a browser-based, modular tool designed for researchers conducting user studies involving voice-controlled grid interfaces. It allows for the creation of voice-driven experiments, participant management, configuration of external data sources via REST APIs, and collection of rich interaction logs. 
 
 The architecture consists of:
-- **Frontend**: A vanilla HTML, CSS, and JavaScript interface served without a build step, maintaining portability. It uses the Web Speech API for voice interactions.
+- **Frontend**: A vanilla HTML, CSS, and JavaScript interface served without a build step, maintaining portability. It uses the Web Speech API for voice interactions and supports pre- and post-experiment questionnaires.
 - **API Server**: A Node.js backend (in `api/`) utilizing a PostgreSQL database for persistent storage of experiments, sessions, participants, and audio recordings.
 - **Proxy Server**: A separate Node.js service (in `proxy/`) that handles CORS issues when querying external REST APIs (e.g., Museum APIs).
 - **Gateway**: Nginx routes static traffic and API requests locally in a Dockerized setup.
+
+## Key Features
+
+- **Dynamic Questionnaires**: Researchers can define pre- and post-experiment questionnaires with support for text, linear scale, and multiple-choice questions.
+- **Workflow-Aware Logging**: Every interaction and transcript is automatically tagged with the currently "highlighted" card from the researcher's defined workflow, enabling precise stimulus-response analysis.
+- **Persistent Storage**: All experiment configurations and participant sessions are stored in a centralized PostgreSQL database, moving away from browser-only storage.
+- **Rich Interaction Exports**: Export session data in JSON (full detail) or CSV (summary) formats, including questionnaire responses.
 
 ## Building and Running
 
