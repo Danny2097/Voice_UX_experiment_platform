@@ -3663,10 +3663,10 @@
 
                 // Try to map response
                 const itemsPath = exp.api.mapping.itemsPath || 'records';
-                const items = getNestedValue(data, itemsPath) || [];
-                const firstItem = Array.isArray(items) ? items[0] : null;
+                const items = getNestedValue(data, itemsPath);
 
-                if (firstItem) {
+                if (items && Array.isArray(items) && items.length > 0) {
+                    const firstItem = items[0];
                     const mapped = {
                         id: getNestedValue(firstItem, exp.api.mapping.id) || firstItem.id || firstItem.systemNumber,
                         title: getNestedValue(firstItem, exp.api.mapping.title) || firstItem.title || firstItem._primaryTitle,
@@ -3678,15 +3678,22 @@
 
                     resultDiv.innerHTML = `
                         <div class="test-result success">
-                            <strong>Success!</strong> Found ${Array.isArray(items) ? items.length : 1} items<br><br>
+                            <strong>Success!</strong> Found ${items.length} items at <code>${itemsPath}</code><br><br>
                             <strong>First item (mapped):</strong><br>
                             ${Object.entries(mapped).map(([k, v]) => `<strong>${k}:</strong> ${escapeHtml(String(v || '-'))}`).join('<br>')}
                         </div>
                     `;
                 } else {
-                    resultDiv.innerHTML = '<div class="test-result error">Could not find items in response. Check your items array path.</div>';
-                }
-            } catch (err) {
+                    // Diagnostic: what DID we find?
+                    const keys = Object.keys(data).filter(k => Array.isArray(data[k]));
+                    let diagnostic = `Could not find a valid items array at <code>${itemsPath}</code>.`;
+                    if (keys.length > 0) {
+                        diagnostic += `<br><br><strong>Suggestion:</strong> Try one of these paths instead: ${keys.map(k => `<code>${k}</code>`).join(', ')}`;
+                    } else {
+                        diagnostic += `<br><br><strong>Response Data:</strong><pre style="font-size: 10px; background: #f8fafc; padding: 8px; margin-top: 8px;">${escapeHtml(JSON.stringify(data, null, 2).substring(0, 500))}${JSON.stringify(data).length > 500 ? '...' : ''}</pre>`;
+                    }
+                    resultDiv.innerHTML = `<div class="test-result error">${diagnostic}</div>`;
+                }            } catch (err) {
                 resultDiv.innerHTML = `<div class="test-result error"><strong>Error:</strong> ${escapeHtml(err.message)}</div>`;
             }
         }

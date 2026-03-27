@@ -628,12 +628,28 @@ async function handle(req, res) {
             const items = [];
             
             for (let i = 1; i < lines.length; i++) {
-                // Better CSV regex to handle commas inside quoted fields
-                const row = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+                // Better CSV parser that handles empty fields and quotes
+                const row = [];
+                let current = '';
+                let inQuotes = false;
+                const line = lines[i];
+                
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        row.push(current.trim().replace(/^"|"$/g, ''));
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                row.push(current.trim().replace(/^"|"$/g, ''));
+
                 const item = {};
                 headers.forEach((h, index) => {
                     let val = row[index] || '';
-                    val = val.trim().replace(/^"|"$/g, '');
                     if (h === 'tags') {
                         item[h] = val.split(/[;,]/).map(t => t.trim()).filter(t => t);
                     } else {
