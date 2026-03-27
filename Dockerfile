@@ -12,10 +12,17 @@ COPY api/package.json .
 RUN npm install --omit=dev
 COPY api/ .
 
-# ── Stage 3: Final image (nginx + Node.js) ────────────────────────
+# ── Stage 3: Prepare the local-api ────────────────────────────────
+FROM node:20-alpine AS local-api-build
+WORKDIR /app/local-api
+COPY local-api/package.json .
+RUN npm install --omit=dev
+COPY local-api/ .
+
+# ── Stage 4: Final image (nginx + Node.js) ────────────────────────
 FROM nginx:alpine
 
-# Node.js is needed to run both backend servers
+# Node.js is needed to run the backend servers
 RUN apk add --no-cache nodejs
 
 # Copy CORS proxy
@@ -25,6 +32,10 @@ RUN chmod -R 755 /app/proxy
 # Copy database API
 COPY --from=api-build /app/api /app/api
 RUN chmod -R 755 /app/api
+
+# Copy local-api
+COPY --from=local-api-build /app/local-api /app/local-api
+RUN chmod -R 755 /app/local-api
 
 # Copy frontend static files
 COPY index.html        /usr/share/nginx/html/

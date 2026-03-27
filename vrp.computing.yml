@@ -1,0 +1,214 @@
+---
+- name: Deploy Project vrp — Voice Control Research Platform
+  hosts: k8s_cluster
+  vars_files:
+    - vars/secrets.yml
+
+  tasks:
+    - name: Create the vrp namespace
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        wait: yes
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: vrp
+
+    - name: Create K8s Secret from Vault variables
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: vrp-credentials
+          type: Opaque
+          stringData:
+            ADMIN_USER: "Admin"
+            ADMIN_PASSWORD: "{{ vault_vrp_admin_password }}"
+            DB_USER: "vrp_user"
+            DB_PASS: "{{ vault_vrp_db_password }}"
+            DB_NAME: "vrp"
+            DB_HOST: "vrp-db"
+            DB_PORT: "5432"
+
+    - name: Create PersistentVolumeClaim for Postgres data
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: vrp-db-pvc
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 2Gi
+
+    - name: Create PersistentVolumeClaim for Exports
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: vrp-exports-pvc
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 1Gi
+
+    - name: Deploy the VRP Database (Postgres)
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: vrp-db
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: vrp-db
+            template:
+              metadata:
+                labels:
+                  app: vrp-db
+              spec:
+                containers:
+                  - name: postgres
+                    image: postgres:15-alpine
+                    env:
+                      - name: POSTGRES_DB
+                        value: "vrp"
+                      - name: POSTGRES_USER
+                        valueFrom:
+                          secretKeyRef:
+                            name: vrp-credentials
+                            key: DB_USER
+                      - name: POSTGRES_PASSWORD
+                        valueFrom:
+                          secretKeyRef:
+                            name: vrp-credentials
+                            key: DB_PASS
+                    ports:
+                      - containerPort: 5432
+                    volumeMounts:
+                      - name: db-storage
+                        mountPath: /var/lib/postgresql/data
+                volumes:
+                  - name: db-storage
+                    persistentVolumeClaim:
+                      claimName: vrp-db-pvc
+
+    - name: Deploy the VRP Database Service
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: vrp-db
+          spec:
+            selector:
+              app: vrp-db
+            ports:
+              - protocol: TCP
+                port: 5432
+                targetPort: 5432
+
+    - name: Deploy the VRP App Deployment
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        wait: yes
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: vrp-app
+            labels:
+              app: vrp-app
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: vrp-app
+            template:
+              metadata:
+                labels:
+                  app: vrp-app
+              spec:
+                containers:
+                  - name: vrp-app
+                    image: danny2097/vrp-platform:latest
+                    ports:
+                      - containerPort: 80
+                    envFrom:
+                      - secretRef:
+                          name: vrp-credentials
+                    volumeMounts:
+                      - name: vrp-exports
+                        mountPath: /exports
+                imagePullSecrets:
+                  - name: regcred
+                volumes:
+                  - name: vrp-exports
+                    persistentVolumeClaim:
+                      claimName: vrp-exports-pvc
+
+    - name: Deploy the VRP App Service
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: vrp-service
+          spec:
+            selector:
+              app: vrp-app
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 80
+
+    - name: Deploy the VRP App Ingress
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        namespace: vrp
+        definition:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: vrp-ingress
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-production
+          spec:
+            rules:
+              - host: vrp.computing.edgehill.ac.uk
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: vrp-service
+                          port:
+                            number: 80
+            tls:
+              - hosts:
+                  - vrp.computing.edgehill.ac.uk
+                secretName: vrp-cert

@@ -13,15 +13,6 @@ services:
       timeout: 5s
       retries: 5
 
-  local-api:
-    build: ./local-api
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
   vrp:
     build: .
     ports:
@@ -45,7 +36,7 @@ services:
       - ./experiment_images:/usr/share/nginx/html/experiment_images:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost/ > /dev/null && wget -qO- http://localhost:3003/health > /dev/null"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -49,6 +49,10 @@ cd /app/proxy && node server.js &
 echo "[VRP] Starting database API on port 3002…"
 API_PORT=3002 node /app/api/server.js &
 
+# ── Start the local-api in background (port 3003) ─────────────
+echo "[VRP] Starting local-api on port 3003…"
+cd /app/local-api && node server.js &
+
 # ── Start nginx in foreground (keeps container alive) ─────────
 echo "[VRP] Starting nginx…"
 nginx -g 'daemon off;'
