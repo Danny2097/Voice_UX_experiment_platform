@@ -3859,7 +3859,7 @@
 
         async function exportParticipantsCSV(exp) {
             showToast('Fetching session data…', 'info');
-            let csv = 'Participant ID,Session Started,Session Ended,Duration (min),Total Events,Total Queries,Pre-Qs,Post-Qs\n';
+            let csv = 'Participant ID,Session Started,Session Ended,Duration (min),Total Events,Total Queries,Pre-Qs,Post-Qs,Rage Clicks,Dead Clicks,Attention Focus,Max Scroll Depth,Mouse Confusion\n';
 
             for (const p of exp.participants) {
                 const session  = await getSessionByParticipant(p.id);
@@ -3871,12 +3871,27 @@
                 const eventCount = session ? (session.events?.length || 0) : 0;
                 const queryCount = session ? (session.transcript?.length || 0) : 0;
                 
+                // Advanced metrics
+                const rageClicks = session && session.events ? session.events.filter(e => e.type === 'rage_click').length : 0;
+                const deadClicks = session && session.events ? session.events.filter(e => e.type === 'dead_click').length : 0;
+                const focusEvents = session && session.events ? session.events.filter(e => e.type === 'attention_focus').length : 0;
+                const confusionEvents = session && session.events ? session.events.filter(e => e.type === 'user_confusion').length : 0;
+                
+                // Calculate max scroll depth
+                let maxScroll = 0;
+                if (session && session.events) {
+                    session.events.filter(e => e.type === 'scroll_depth').forEach(e => {
+                        const depth = parseInt(e.data.depth);
+                        if (depth > maxScroll) maxScroll = depth;
+                    });
+                }
+
                 const preCount = (session && session.questionnaires && session.questionnaires.pre && session.questionnaires.pre.responses) 
                     ? Object.keys(session.questionnaires.pre.responses).length : 0;
                 const postCount = (session && session.questionnaires && session.questionnaires.post && session.questionnaires.post.responses) 
                     ? Object.keys(session.questionnaires.post.responses).length : 0;
 
-                csv += `"${p.id}","${started}","${ended}",${duration},${eventCount},${queryCount},${preCount},${postCount}\n`;
+                csv += `"${p.id}","${started}","${ended}",${duration},${eventCount},${queryCount},${preCount},${postCount},${rageClicks},${deadClicks},${focusEvents},"${maxScroll}%",${confusionEvents}\n`;
             }
 
             downloadFile(csv, `${exp.id}-summary.csv`, 'text/csv');
