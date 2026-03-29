@@ -2974,9 +2974,14 @@
                 if (pBadge) pBadge.textContent = 'PREVIEW';
             }
 
-            // Always start with consent phase (Preview should be the same as Experiment)
-            showPhase('consent');
-            populateConsentScreen();
+            // Start with consent phase, unless in Preview mode
+            if (isPreview) {
+                // Skip consent screen in preview mode
+                acceptConsent();
+            } else {
+                showPhase('consent');
+                populateConsentScreen();
+            }
         } catch (err) {
             console.error('[Runner] Fatal initialization error:', err);
             showErrorScreen('A fatal error occurred during startup: ' + err.message);
