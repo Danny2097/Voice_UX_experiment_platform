@@ -474,7 +474,7 @@ Browser (http://localhost:8080)
 
 ## Privacy & Ethics
 
-**Data location:** All experiment configurations, session recordings, and interaction logs are stored in your browser's localStorage. No data is sent to external servers except:
+**Data location:** All experiment configurations, session recordings, and interaction logs are stored in your project's PostgreSQL database. No data is sent to external servers except:
 1. API calls to your configured data source (e.g., Museum API)
 2. Optional custom adapters you write
 
@@ -496,7 +496,7 @@ Browser (http://localhost:8080)
 | **Microphone not working** | 1. Ensure you're on HTTPS or localhost. 2. Check browser permissions (DevTools > Security tab). 3. Try a different browser. |
 | **"No data from API" error** | 1. Test the API endpoint directly in your browser address bar. 2. Check the field mapping in the API source config. 3. Click "Test Connection" in the Experiment Config. 4. Inspect the Debug terminal during a session. |
 | **"CORS error" in browser console** | 1. Ensure the Node.js proxy is running (`cd proxy && node server.js`). 2. Check that nginx is proxying `/proxy/*` correctly. 3. View proxy logs with `docker compose logs -f proxy`. |
-| **Session data disappears after browser reload** | Session data is stored in localStorage. Check browser cache settings or privacy mode (incognito). Disable "Clear data on exit" in browser settings. Export data regularly. |
+| **Session data disappears after browser reload** | Session data is stored in a PostgreSQL database. Ensure the `db` container is running and healthy. Check the API server logs for connection errors. |
 | **Docker port 8080 already in use** | Change the host port in `docker-compose.yml`: change `"8080:80"` to `"8081:80"`, then open http://localhost:8081. |
 | **Proxy returns 502 Bad Gateway** | The Node.js proxy has crashed. Run `docker compose logs -f proxy` and check for errors. Restart: `docker compose restart proxy`. |
 | **Field mapping showing nested fields incorrectly** | Use dot notation: `"subtitle": "artist.name"` or `"image": "images[0].url"`. Test with "Test Connection". |
@@ -508,14 +508,14 @@ Browser (http://localhost:8080)
 - **Report bugs or request features:** Create an issue in the repository
 - **API documentation:** Consult the documentation of your chosen data source (e.g., [V&A Collections API](https://www.vam.ac.uk/api), [Open Library API](https://openlibrary.org/developers))
 - **Web Speech API:** [Mozilla Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
-- **localStorage limits:** Typically 5–10 MB per origin; export data if approaching limit
+- **Database Persistence:** The system uses PostgreSQL 15 for robust, persistent storage of all research data.
 
 ---
 
 ## Version
 
-Platform version: 1.0.0  
-Last updated: 6 March 2026
+Platform version: 1.1.1  
+Last updated: 29 March 2026
 
 . Click "Test Connection" in the Experiment Config. 4. Inspect the Debug terminal during a session. |
 | **"CORS error" in browser console** | 1. Ensure the Node.js proxy is running (`cd proxy && node server.js`). 2. Check that nginx is proxying `/proxy/*` correctly. 3. View proxy logs with `docker compose logs -f proxy`. |
