@@ -299,7 +299,11 @@ From the Experiment Manager:
 1. Click an experiment row to expand details.
 2. Select the **Export** tab to download bulk data:
    - **JSON Export**: Contains all session events, full transcripts, and all questionnaire responses.
-   - **Summary CSV**: Provides a high-level overview of sessions, including participation status and the count of completed pre- and post-questionnaire items.
+    - **Summary CSV**: Provides a high-level overview of sessions, including participation status and the following advanced interaction summaries:
+      - **Rage/Dead Click counts**
+      - **Attention Focus incidents**
+      - **Max Scroll Depth reached**
+      - **Mouse Confusion signals**
    - **Audio Export**: Downloads a ZIP archive of all voice recordings for the experiment.
 3. Select the **Participants** tab for individual session JSON downloads.
 
@@ -458,6 +462,29 @@ Browser (http://localhost:8080)
 |---------|----------|
 | **Microphone not working** | 1. Ensure you're on HTTPS or localhost. 2. Check browser permissions (DevTools > Security tab). 3. Try a different browser. |
 | **"No data from API" error** | 1. Test the API endpoint directly in your browser address bar. 2. Check the field mapping in the API source config. 3. Click "Test Connection" in the Experiment Config. 4. Inspect the Debug terminal during a session. |
+| **"CORS error" in browser console** | 1. Ensure the Node.js proxy is running (`cd proxy && node server.js`). 2. Check that nginx is proxying `/proxy/*` correctly. 3. View proxy logs with `docker compose logs -f proxy`. |
+| **Session data disappears after browser reload** | Session data is stored in localStorage. Check browser cache settings or privacy mode (incognito). Disable "Clear data on exit" in browser settings. Export data regularly. |
+| **Docker port 8080 already in use** | Change the host port in `docker-compose.yml`: change `"8080:80"` to `"8081:80"`, then open http://localhost:8081. |
+| **Proxy returns 502 Bad Gateway** | The Node.js proxy has crashed. Run `docker compose logs -f proxy` and check for errors. Restart: `docker compose restart proxy`. |
+| **Field mapping showing nested fields incorrectly** | Use dot notation: `"subtitle": "artist.name"` or `"image": "images[0].url"`. Test with "Test Connection". |
+
+---
+
+## Support & Further Reading
+
+- **Report bugs or request features:** Create an issue in the repository
+- **API documentation:** Consult the documentation of your chosen data source (e.g., [V&A Collections API](https://www.vam.ac.uk/api), [Open Library API](https://openlibrary.org/developers))
+- **Web Speech API:** [Mozilla Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+- **localStorage limits:** Typically 5–10 MB per origin; export data if approaching limit
+
+---
+
+## Version
+
+Platform version: 1.0.0  
+Last updated: 6 March 2026
+
+. Click "Test Connection" in the Experiment Config. 4. Inspect the Debug terminal during a session. |
 | **"CORS error" in browser console** | 1. Ensure the Node.js proxy is running (`cd proxy && node server.js`). 2. Check that nginx is proxying `/proxy/*` correctly. 3. View proxy logs with `docker compose logs -f proxy`. |
 | **Session data disappears after browser reload** | Session data is stored in localStorage. Check browser cache settings or privacy mode (incognito). Disable "Clear data on exit" in browser settings. Export data regularly. |
 | **Docker port 8080 already in use** | Change the host port in `docker-compose.yml`: change `"8080:80"` to `"8081:80"`, then open http://localhost:8081. |
