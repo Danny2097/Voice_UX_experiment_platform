@@ -2,9 +2,4 @@ node_modules
 *.log
 .git
 .DS_Store
-docs/
-*.md
-.env
-.env.local
-.env.*.local
 **/*.csv

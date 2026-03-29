@@ -1903,7 +1903,7 @@
                 if (grid.showImage) {
                     innerHTML += `<div class="preview-card-image">🖼️</div>`;
                 }
-
+                
                 innerHTML += `<div class="preview-card-body">`;
                 if (grid.showTitle) innerHTML += `<div class="preview-card-title"></div>`;
                 if (grid.showSubtitle) innerHTML += `<div class="preview-card-subtitle"></div>`;
@@ -2209,7 +2209,7 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="expStatus">Status</label>
-                                    <select id="expStatus">
+                                    <select id="expStatus" class="form-select">
                                         <option value="Draft" ${exp.status === 'Draft' ? 'selected' : ''}>Draft</option>
                                         <option value="Active" ${exp.status === 'Active' ? 'selected' : ''}>Active</option>
                                         <option value="Complete" ${exp.status === 'Complete' ? 'selected' : ''}>Complete</option>
@@ -2545,10 +2545,11 @@
                             <div class="form-section-title">Experiment Logic</div>
                             <div class="form-group">
                                 <label for="experimentMode">Interaction Model</label>
-                                <select id="experimentMode">
+                                <select id="experimentMode" class="form-select" style="max-width: 400px;">
                                     <option value="action_transcript" ${exp.mode === 'action_transcript' ? 'selected' : ''}>Action and Transcript (Full interactive)</option>
                                     <option value="transcript_only" ${exp.mode === 'transcript_only' ? 'selected' : ''}>Transcript Only (No voice-driven actions)</option>
                                 </select>
+
                                 <div class="text-muted" style="margin-top: 8px; font-size: 12px; line-height: 1.5;">
                                     <strong>Action and Transcript:</strong> Voice queries trigger API searches and update the UI in real-time.<br>
                                     <strong>Transcript Only:</strong> Voice is recorded and transcribed for analysis, but the UI remains static.
@@ -2627,13 +2628,12 @@
 
                             <div class="form-group">
                                 <label for="authType">Authentication Type</label>
-                                <select id="authType">
+                                <select id="authType" class="form-select" style="max-width: 300px;">
                                     <option value="none" ${exp.api.authType === 'none' ? 'selected' : ''}>None</option>
                                     <option value="bearer" ${exp.api.authType === 'bearer' ? 'selected' : ''}>Bearer Token</option>
                                     <option value="apikey" ${exp.api.authType === 'apikey' ? 'selected' : ''}>API Key</option>
                                 </select>
                             </div>
-
                             <div class="form-group ${exp.api.authType === 'none' ? 'hidden' : ''}" id="authValueGroup">
                                 <label for="authValue">${exp.api.authType === 'bearer' ? 'Bearer Token' : 'API Key'}</label>
                                 <input type="text" id="authValue" value="${escapeHtml(exp.api.authValue)}" placeholder="Enter your authentication token">
@@ -3806,7 +3806,7 @@
                 itemsPath: 'items'
             };
             
-            state.currentTab = 'api';
+            state.currentTab = 'grid-layout';
             saveStateSoon(exp.id);
             renderUI();
             showToast('Local dataset configured as API source', 'success');
@@ -4009,9 +4009,9 @@
                             <label style="font-size: 11px; text-transform: uppercase; color: #95a3b3;">Question Text</label>
                             <input type="text" value="${escapeHtml(q.text)}" oninput="updateQuestion('${type}', ${index}, 'text', this.value)" placeholder="e.g., How often do you use voice assistants?">
                         </div>
-                        <div style="width: 150px;">
+                        <div style="width: 180px;">
                             <label style="font-size: 11px; text-transform: uppercase; color: #95a3b3;">Type</label>
-                            <select onchange="updateQuestion('${type}', ${index}, 'type', this.value)">
+                            <select class="form-select" onchange="updateQuestion('${type}', ${index}, 'type', this.value)" style="width: 100%;">
                                 <option value="text" ${q.type === 'text' ? 'selected' : ''}>Text Input</option>
                                 <option value="scale" ${q.type === 'scale' ? 'selected' : ''}>Linear Scale (1-5)</option>
                                 <option value="choice" ${q.type === 'choice' ? 'selected' : ''}>Multiple Choice</option>

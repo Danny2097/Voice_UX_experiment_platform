@@ -27,16 +27,21 @@ const handleDataRequest = (req, res, filePath) => {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     const query = url.searchParams.get('q')?.toLowerCase();
 
+    let items = Array.isArray(data) ? data : (data.items || []);
+    
     if (query) {
-      const filtered = data.items.filter(item =>
-        item.title.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query) ||
-        item.tags.some(tag => tag.toLowerCase().includes(query))
+      items = items.filter(item =>
+        item.title?.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query) ||
+        item.category?.toLowerCase().includes(query) ||
+        item.tags?.some(tag => tag.toLowerCase().includes(query))
       );
-      return send(res, 200, { count: filtered.length, items: filtered });
     }
-    return send(res, 200, data);
+    
+    return send(res, 200, { 
+      count: items.length, 
+      items: items 
+    });
   } catch (err) {
     console.error(`Error reading ${filePath}:`, err.message);
     return send(res, 500, { error: 'Failed to read data' });
