@@ -2622,10 +2622,10 @@
 
     <!-- Mock Navigation -->
     <nav class="mock-nav" id="mockNav">
-        <a href="#" class="mock-nav-item active">Collection</a>
-        <a href="#" class="mock-nav-item">Exhibitions</a>
-        <a href="#" class="mock-nav-item">Research</a>
-        <a href="#" class="mock-nav-item">About Us</a>
+        <a href="#" class="mock-nav-item active" id="nav-collection">Collection</a>
+        <a href="#" class="mock-nav-item" id="nav-exhibitions">Exhibitions</a>
+        <a href="#" class="mock-nav-item" id="nav-research">Research</a>
+        <a href="#" class="mock-nav-item" id="nav-about">About Us</a>
         <div style="margin-left: auto; color: #9ca3af; font-size: 0.8rem;">Mock Website Interface</div>
     </nav>
 
@@ -2756,8 +2756,8 @@
         <div class="modal-title">End Session?</div>
         <div class="modal-text">Are you sure you want to end this session? You can still download the data on the next screen.</div>
         <div class="modal-actions">
-            <button class="modal-btn modal-btn-confirm" onclick="confirmEndSession()">End Session</button>
-            <button class="modal-btn modal-btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+            <button class="modal-btn modal-btn-confirm" id="btn-modal-confirm" onclick="confirmEndSession()">End Session</button>
+            <button class="modal-btn modal-btn-cancel" id="btn-modal-cancel" onclick="closeConfirmModal()">Cancel</button>
         </div>
     </div>
 </div>
@@ -3351,10 +3351,10 @@
 
             let inputHtml = '';
             if (q.type === 'text') {
-                inputHtml = `<input type="text" name="${name}" class="question-input-text" ${requiredAttr} placeholder="Your answer...">`;
+                inputHtml = `<input type="text" name="${name}" id="${name}" class="question-input-text" ${requiredAttr} placeholder="Your answer...">`;
             } else if (q.type === 'scale') {
                 inputHtml = `
-                    <div class="scale-container">
+                    <div class="scale-container" id="${name}_container">
                         ${[1, 2, 3, 4, 5].map(v => `
                             <div class="scale-item">
                                 <input type="radio" name="${name}" value="${v}" id="${name}_${v}" class="scale-radio" ${requiredAttr}>
@@ -3362,14 +3362,10 @@
                             </div>
                         `).join('')}
                     </div>
-                    <div style="display: flex; justify-content: space-between; max-width: 500px; margin-top: 4px; font-size: 11px; color: #94a3b8;">
-                        <span>Low</span>
-                        <span>High</span>
-                    </div>
-                `;
+`;
             } else if (q.type === 'choice') {
                 inputHtml = `
-                    <div class="choice-container">
+                    <div class="choice-container" id="${name}_container">
                         ${(q.options || []).map((opt, oIdx) => `
                             <label class="choice-item" for="${name}_${oIdx}">
                                 <input type="radio" name="${name}" value="${opt}" id="${name}_${oIdx}" ${requiredAttr}>
@@ -3381,7 +3377,7 @@
             }
 
             return `
-                <div class="question-field">
+                <div class="question-field" id="${name}_field">
                     <label class="question-label">${escapeHtml(q.text)}${requiredStar}</label>
                     ${inputHtml}
                 </div>
@@ -4131,6 +4127,11 @@
         const apiConfig = experimentConfig.api || {};
         const mapping = apiConfig.mapping || {};
         
+        // Add unique ID for tracking
+        if (item.id) card.id = `card-${item.id}`;
+        else card.id = `card-index-${index}`;
+        card.dataset.id = item.id;
+
         const cardHeight = grid.cardHeight || 'medium';
         const cardStyle = grid.cardStyle || 'modern';
         card.className = `card ${cardHeight} ${cardStyle}`;
@@ -4326,15 +4327,18 @@
             ];
         }
 
-        content.innerHTML = filterSets.map(set => `
+        content.innerHTML = filterSets.map((set, setIdx) => `
             <div class="filter-group">
                 <div class="filter-title">${set.title}</div>
-                ${set.items.map(item => `
-                    <div class="filter-item">
-                        <div class="filter-checkbox"></div>
-                        <span>${item}</span>
-                    </div>
-                `).join('')}
+                ${set.items.map((item, itemIdx) => {
+                    const filterId = `filter-${setIdx}-${itemIdx}`;
+                    return `
+                        <div class="filter-item" id="${filterId}">
+                            <div class="filter-checkbox"></div>
+                            <span>${item}</span>
+                        </div>
+                    `;
+                }).join('')}
             </div>
         `).join('');
     }

@@ -276,6 +276,39 @@ Every interaction is logged automatically:
 - Errors or API timeouts
 - Participant voice transcripts (including target card context)
 
+---
+
+## Advanced Interaction Tracking
+
+To help researchers identify UI frustration and participant confusion, the platform captures several advanced interaction metrics during the core experiment session (tracking is automatically disabled during questionnaire phases).
+
+### 1. Focus Areas (Attention Tracking)
+Tracks sustained attention on primary elements (buttons, headers, etc.).
+- **Trigger**: User hovers over a key element for more than 2 seconds without clicking.
+- **Data captured**: Element tag, text content, and ID.
+
+### 2. Rage Clicks
+Identifies points of user frustration.
+- **Definition**: 3 or more clicks within a 500ms window on the same static (non-interactive) element.
+- **Data captured**: Target element ID and tag.
+
+### 3. Dead Clicks (False Affordances)
+Tracks clicks on elements that appear interactive but trigger no DOM changes or navigation.
+- **Definition**: A click on a non-button/non-link element that does not result in any mutation to the document body within 100ms.
+- **Data captured**: Coordinates and element details.
+
+### 4. Scroll Depth (Human Input)
+Measures how far a participant explores the grid vertically.
+- **Milestones**: 25%, 50%, 75%, and 90%.
+- **Filter**: Only fires if the user remains at that depth for at least 1.5 seconds (filtering out rapid "flick-scrolling"). 
+- **Exclusion**: Programmatic "Auto-scrolling" from the researcher's workflow is automatically excluded from these metrics.
+
+### 5. Mouse Cursor Tracking
+- **Thrashing Detection**: Detects rapid, erratic mouse movements within a small area, often signalling participant confusion or indecision.
+- **Sampled Coordinates**: Samples mouse (x, y) coordinates every 5 seconds to allow for approximate session reconstruction.
+
+---
+
 ### Features for Researchers
 - **Workflow Autoscroll:** When advancing a step, the target card is automatically scrolled into the center of the viewport and highlighted with a pulsing border.
 - **Preview Parity:** High-fidelity preview mode now uses the exact same consent and session flow as participant experiments.
