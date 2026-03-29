@@ -3458,6 +3458,7 @@
         sessionData.sessionStart = sessionStartTime.toISOString();
 
         logEvent('session_start', {});
+        setupAdvancedTracking();
 
         // Check if there's a pre-questionnaire
         if (experimentConfig.preQuestionnaire && experimentConfig.preQuestionnaire.length > 0) {
@@ -4416,6 +4417,183 @@
         sessionData.events.push(event);
     }
 
+    // ========== ADVANCED TRACKING (Focus, Rage, Dead, Scroll, Mouse) ==========
+
+    let trackingState = {
+        hoverTimer: null,
+        hoverElement: null,
+        clickHistory: [],
+        scrollMilestones: { 25: false, 50: false, 75: false, 90: false },
+        scrollTimer: null,
+        mousePositions: [],
+        thrashedTimer: null,
+        lastScrollTop: 0,
+        isAutoScrolling: false
+    };
+
+    function setupAdvancedTracking() {
+        logDebug('TRACKING', 'info', 'Initializing advanced interaction tracking');
+        
+        // 1. Focus Areas (Attention Tracking)
+        document.addEventListener('mouseover', handleHoverStart);
+        document.addEventListener('mouseout', handleHoverEnd);
+        
+        // 2 & 3. Rage Clicks & Dead Clicks
+        document.addEventListener('mousedown', handleMouseDown);
+        
+        // 4. Scroll Depth
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        // 5. Mouse Cursor Tracking (Thrashing)
+        document.addEventListener('mousemove', handleMouseMove);
+        
+        // Track coordinate-based movement (sampled)
+        trackingState.mouseCoordInterval = setInterval(() => {
+            if (trackingState.mousePositions.length > 0) {
+                const pos = trackingState.mousePositions[trackingState.mousePositions.length - 1];
+                logEvent('mouse_pos_sample', { x: pos.x, y: pos.y });
+            }
+        }, 5000); 
+    }
+
+    function stopAdvancedTracking() {
+        document.removeEventListener('mouseover', handleHoverStart);
+        document.removeEventListener('mouseout', handleHoverEnd);
+        document.removeEventListener('mousedown', handleMouseDown);
+        window.removeEventListener('scroll', handleScroll);
+        document.removeEventListener('mousemove', handleMouseMove);
+        clearInterval(trackingState.mouseCoordInterval);
+        clearTimeout(trackingState.hoverTimer);
+        clearTimeout(trackingState.scrollTimer);
+        clearTimeout(trackingState.thrashedTimer);
+    }
+
+    // --- Hover Tracking ---
+    function handleHoverStart(e) {
+        const target = e.target.closest('.btn, .card-title, .card-subtitle, h1, h2, h3');
+        if (!target) return;
+        
+        trackingState.hoverElement = target;
+        trackingState.hoverTimer = setTimeout(() => {
+            if (trackingState.hoverElement === target) {
+                logEvent('attention_focus', { 
+                    elementId: target.id || 'unnamed',
+                    elementTag: target.tagName,
+                    elementText: target.textContent.substring(0, 50),
+                    duration: '2s+'
+                });
+                logDebug('TRACKING', 'verbose', `Focus detected on ${target.tagName}`);
+            }
+        }, 2000);
+    }
+
+    function handleHoverEnd(e) {
+        if (trackingState.hoverElement === e.target) {
+            clearTimeout(trackingState.hoverTimer);
+            trackingState.hoverElement = null;
+        }
+    }
+
+    // --- Click Tracking (Rage & Dead) ---
+    function handleMouseDown(e) {
+        const now = Date.now();
+        const element = e.target;
+        const elementId = element.id || 'unnamed';
+        
+        // Rage Click Detection
+        trackingState.clickHistory.push({ time: now, x: e.clientX, y: e.clientY, target: element });
+        // Keep only last 5 clicks
+        if (trackingState.clickHistory.length > 5) trackingState.clickHistory.shift();
+        
+        if (trackingState.clickHistory.length >= 3) {
+            const last3 = trackingState.clickHistory.slice(-3);
+            const timeDiff = last3[2].time - last3[0].time;
+            
+            // 3 clicks within 500ms on same static element
+            if (timeDiff <= 500 && last3.every(c => c.target === element)) {
+                logEvent('rage_click', { elementId, elementTag: element.tagName });
+                logDebug('TRACKING', 'warn', `Rage click detected on ${element.tagName}#${elementId}`);
+            }
+        }
+
+        // Dead Click Detection
+        // Wait a tick to see if any DOM change or navigation occurs
+        const observer = new MutationObserver(() => {
+            element._clickedAndChanged = true;
+        });
+        observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+        
+        setTimeout(() => {
+            observer.disconnect();
+            // If it's a static element (not a button, a, or card) and no DOM change happened
+            const isInteractive = element.closest('button, a, .card, input, select, textarea');
+            if (!isInteractive && !element._clickedAndChanged) {
+                logEvent('dead_click', { 
+                    elementId, 
+                    elementTag: element.tagName,
+                    x: e.clientX,
+                    y: e.clientY,
+                    category: 'False Affordance'
+                });
+                logDebug('TRACKING', 'verbose', `Dead click on ${element.tagName}`);
+            }
+            delete element._clickedAndChanged;
+        }, 100);
+    }
+
+    // --- Scroll Depth ---
+    function handleScroll() {
+        if (trackingState.isAutoScrolling) return;
+
+        clearTimeout(trackingState.scrollTimer);
+        trackingState.scrollTimer = setTimeout(() => {
+            const winHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollPercent = Math.round((scrollTop + winHeight) / docHeight * 100);
+            
+            [25, 50, 75, 90].forEach(milestone => {
+                if (scrollPercent >= milestone && !trackingState.scrollMilestones[milestone]) {
+                    trackingState.scrollMilestones[milestone] = true;
+                    logEvent('scroll_depth', { depth: milestone + '%' });
+                    logDebug('TRACKING', 'info', `Reached ${milestone}% scroll depth`);
+                }
+            });
+        }, 1500);
+    }
+
+    // --- Mouse Thrashing ---
+    function handleMouseMove(e) {
+        const now = Date.now();
+        trackingState.mousePositions.push({ x: e.clientX, y: e.clientY, time: now });
+        if (trackingState.mousePositions.length > 20) trackingState.mousePositions.shift();
+        
+        if (trackingState.mousePositions.length >= 10) {
+            const recent = trackingState.mousePositions.slice(-10);
+            const timeSpan = recent[recent.length - 1].time - recent[0].time;
+            
+            if (timeSpan < 500) { // 10 movements in 500ms
+                // Calculate bounding box
+                const xs = recent.map(p => p.x);
+                const ys = recent.map(p => p.y);
+                const width = Math.max(...xs) - Math.min(...xs);
+                const height = Math.max(...ys) - Math.min(...ys);
+                
+                // Rapid movement within a small area (50px)
+                if (width < 50 && height < 50) {
+                    if (!trackingState.isThrashing) {
+                        trackingState.isThrashing = true;
+                        logEvent('user_confusion', { type: 'Thrashed Cursor', area: `${width}x${height}` });
+                        logDebug('TRACKING', 'warn', 'Mouse thrashing detected (confusion signal)');
+                        
+                        // Reset after a while
+                        setTimeout(() => { trackingState.isThrashing = false; }, 2000);
+                    }
+                }
+            }
+        }
+    }
+
     // ========== DEBUG PANEL ==========
 
     function logDebug(category, level, message) {
@@ -4654,6 +4832,7 @@
     }
 
     async function finalizeSession() {
+        stopAdvancedTracking();
         // Record session end
         sessionData.sessionEnd = new Date().toISOString();
         logEvent('session_end', {});
@@ -4952,6 +5131,9 @@ Generated by Voice Control Research Platform
                 
                 // Use setTimeout to ensure any layout changes (like class adding) have settled
                 setTimeout(() => {
+                    // Flag auto-scrolling to avoid triggering scroll depth tracking
+                    trackingState.isAutoScrolling = true;
+
                     // Try to scroll it into view. Using 'nearest' for block to avoid jumping 
                     // if already partially visible, combined with the scroll-margin-top 
                     // we added to the CSS.
@@ -4972,6 +5154,9 @@ Generated by Voice Control Research Platform
                              });
                         }
                     }
+
+                    // Reset flag after animation completes
+                    setTimeout(() => { trackingState.isAutoScrolling = false; }, 1000);
                 }, 100);
             } else {
                 card.classList.remove('workflow-active');
