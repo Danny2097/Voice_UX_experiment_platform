@@ -99,21 +99,22 @@ Fill in:
 
 ### Step 3: Local Data (Optional)
 If you have a custom dataset:
-1. Switch to the **Local Data** tab
-2. Download the CSV template
-3. Upload your populated CSV; the **Dataset name** will automatically be suggested based on your filename
-4. This creates a local API endpoint for your experiment
+1. Switch to the **Local Data** tab.
+2. Download the CSV template.
+3. Upload your populated CSV; the **Dataset name** will automatically be suggested based on your filename.
+4. Click **Use in Experiment**. The platform will automatically configure the API settings and redirect you to the **Grid Layout** tab to finalize the appearance.
 
 ### Step 4: Configure the API source
-- **API endpoint** – Full URL to the REST API or your Local Data endpoint
-- **Field mapping** – Map API response fields to grid display fields
-- Click **Test Connection** to verify the data loads correctly
+- **API endpoint** – Full URL to the REST API or your Local Data endpoint.
+- **Field mapping** – Map API response fields to grid display fields.
+- Click **Test Connection** to verify the data loads correctly.
 
 ### Step 5: Configure the grid layout
-- **Grid columns** – How many columns the card grid displays
-- **Card style** – Choose from Modern, Brutalist, Nike, Etsy, and more
-- **Interaction Styles** – Enable "Highlight on hover" and customize the border color/width
-- **Display fields** – Toggle visibility of images, titles, subtitles, tags, and descriptions
+- **Grid columns** – How many columns the card grid displays.
+- **Card style** – Choose from Modern, Brutalist, Nike, Etsy, Polaroid, and more.
+- **Interaction Styles** – Enable "Highlight on hover" and customize the border color/width (Thin to Extra Thick).
+- **Technical Overlays** – Add analysis aids like "Rule of Thirds", "Golden Ratio", or "Isometric Grid".
+- **Display fields** – Toggle visibility of images, titles, subtitles, tags, and descriptions.
 
 ### Step 6: Define the Workflow
 Switch to the **Workflow** tab to set up the participant's task:
@@ -412,8 +413,8 @@ Browser (http://localhost:8080)
 
 - **nginx** – Lightweight, battle-tested, handles static files and routing efficiently
 - **Node.js CORS proxy** – Standalone service; no framework overhead; easy to scale or replace
-- **No framework** (React, Vue, etc.) – Keeps the platform portable; runs in any modern browser without a build step; suitable for offline or air-gapped deployments
-- **localStorage** – Offline-first design; data persists between sessions; no backend database needed
+- **No framework** (React, Vue, etc.) – Keeps the platform portable; runs in any modern browser without a build step; suitable for offline or air-gapped deployments.
+- **PostgreSQL Persistence** – All experiment configurations and session logs are stored in a central database, ensuring data safety and easy multi-researcher access.
 
 ---
 

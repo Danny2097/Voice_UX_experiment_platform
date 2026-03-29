@@ -16,6 +16,8 @@ The architecture consists of:
 - **Workflow-Aware Logging**: Every interaction and transcript is automatically tagged with the currently "highlighted" card from the researcher's defined workflow, enabling precise stimulus-response analysis.
 - **Persistent Storage**: All experiment configurations and participant sessions are stored in a centralized PostgreSQL database, moving away from browser-only storage.
 - **Rich Interaction Exports**: Export session data in JSON (full detail) or CSV (summary) formats, including questionnaire responses.
+- **Enhanced UI Consistency**: Standardized form elements with visual dropdown indicators (chevrons) and responsive layouts across the dashboard and experiment runner.
+- **Robust Asset Loading**: Automatic resolution of relative image paths and improved loading states (fade-in) for external and local datasets.
 
 ## Building and Running
 
