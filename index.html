@@ -1890,6 +1890,11 @@
                 card.className = `preview-card ${height} ${style}`;
                 if (style === 'horizontal') card.classList.add('horizontal');
 
+                // Apply custom pixel height if selected
+                if (height === 'custom' && grid.cardHeightPx) {
+                    card.style.height = `${grid.cardHeightPx}px`;
+                }
+
                 // Apply custom layout settings to preview cards
                 if (grid.itemRadius !== undefined) {
                     card.style.borderRadius = `${grid.itemRadius}px`;
@@ -2390,15 +2395,23 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="cardHeight">Card Height</label>
-                                    <select id="cardHeight">
-                                        <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short</option>
-                                        <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium</option>
-                                        <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall</option>
-                                        <option value="nike-height" ${exp.grid.cardHeight === 'nike-height' ? 'selected' : ''}>Extra Tall</option>
+                                    <select id="cardHeight" class="form-select">
+                                        <option value="short" ${exp.grid.cardHeight === 'short' ? 'selected' : ''}>Short (160px)</option>
+                                        <option value="medium" ${exp.grid.cardHeight === 'medium' ? 'selected' : ''}>Medium (220px)</option>
+                                        <option value="tall" ${exp.grid.cardHeight === 'tall' ? 'selected' : ''}>Tall (280px)</option>
+                                        <option value="nike-height" ${exp.grid.cardHeight === 'nike-height' ? 'selected' : ''}>Extra Tall (576px)</option>
+                                        <option value="custom" ${exp.grid.cardHeight === 'custom' ? 'selected' : ''}>Custom Pixel Height</option>
                                     </select>
                                 </div>
-                            </div>
+                                </div>
 
+                                <div class="slider-group" id="customHeightGroup" style="margin-top: 1rem; display: ${exp.grid.cardHeight === 'custom' ? 'block' : 'none'};">
+                                <div class="slider-label">
+                                    <label>Custom Height (px)</label>
+                                    <span class="slider-value" id="cardHeightPxValue">${exp.grid.cardHeightPx || 220}px</span>
+                                </div>
+                                <input type="range" id="cardHeightPx" min="100" max="800" step="10" value="${exp.grid.cardHeightPx || 220}">
+                                </div>
                             <div class="slider-group" style="margin-top: 1rem;">
                                 <div class="slider-label">
                                     <label>Corner Radius (px)</label>
@@ -3149,6 +3162,18 @@
 
                 document.getElementById('cardHeight').addEventListener('change', (e) => {
                     exp.grid.cardHeight = e.target.value;
+                    const customGroup = document.getElementById('customHeightGroup');
+                    if (customGroup) {
+                        customGroup.style.display = e.target.value === 'custom' ? 'block' : 'none';
+                    }
+                    saveStateSoon();
+                    updateGridPreview();
+                });
+
+                document.getElementById('cardHeightPx').addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value);
+                    exp.grid.cardHeightPx = val;
+                    document.getElementById('cardHeightPxValue').textContent = `${val}px`;
                     saveStateSoon();
                     updateGridPreview();
                 });
